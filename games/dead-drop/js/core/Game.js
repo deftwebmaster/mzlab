@@ -60,6 +60,11 @@ export class Game {
       onDragEnd: () => this.executePlanning(),
       onCancelPlanning: () => this.cancelPlanning(),
       onExecutePlanning: () => this.executePlanning(),
+      isPlanning: () => !!this.planning?.active,
+      isLive: () => this.status === 'playing' || this.status === 'failed',
+      onUndo: () => this.hooks.onUndoKey ? this.hooks.onUndoKey() : this.undoMove(),
+      onRestart: () => this.hooks.onRestartKey ? this.hooks.onRestartKey() : this.restart(),
+      onPauseToggle: () => this.hooks.onPauseKey?.(),
     });
 
     this._lastFrameTime = performance.now();
@@ -101,6 +106,9 @@ export class Game {
     this.state = createInitialState(this.level);
     this.undo.reset();
     this.moveQueue = [];
+    // Clearing the tweens also drops the callback that unlocks input at the end of a
+    // move, so release the lock here — otherwise restarting mid-step froze the board.
+    this.inputLocked = false;
     this.animation.clear();
     this.particles.clear();
     this.displayPositions.clear();
@@ -155,6 +163,7 @@ export class Game {
     this.status = 'playing';
     this.state = prev;
     this.moveQueue = [];
+    this.inputLocked = false;
     this.animation.clear();
     this.particles.clear();
     this._syncDisplayPositions();
@@ -222,6 +231,7 @@ export class Game {
     if (!result.valid) {
       this.moveQueue = [];
       this._message('Blocked.', 'warning');
+      this.audio.blocked?.();
       return;
     }
     this.undo.push(previous);
@@ -439,6 +449,10 @@ export class Game {
 
   getMoveHints() {
     if (!this.state || this.status !== 'playing' || this.inputLocked || this.planning?.active) return [];
+    // The renderer asks every frame, but the answer only changes when the state does.
+    // Simulating four turns (four deep clones plus every vision cone) per frame was the
+    // single biggest idle cost in the game.
+    if (this._hintsFor === this.state) return this._hints;
     const hints = [];
     for (const [dir, delta] of Object.entries(DIRECTIONS)) {
       const x = this.state.player.x + delta.x;
@@ -454,6 +468,8 @@ export class Game {
         collect: result.events.some((event) => event.type === 'collected'),
       });
     }
+    this._hintsFor = this.state;
+    this._hints = hints;
     return hints;
   }
 

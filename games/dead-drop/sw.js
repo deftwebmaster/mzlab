@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2-mz1';
+const CACHE_VERSION = 'v2-mz2';
 const CACHE_NAME = `dead-drop-${CACHE_VERSION}`;
 
 const APP_SHELL = [

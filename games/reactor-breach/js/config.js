@@ -34,7 +34,8 @@ export const CONFIG = {
     trailLength: 10,
     maxOrbs: 5,
     substepMaxDist: 6,       // px per substep for swept collision
-    wallLoopBounceThreshold: 6, // consecutive near-horizontal bounces before correction
+    wallLoopBounceThreshold: 2, // consecutive near-horizontal wall bounces before correction
+    wallLoopEscapeRatio: 0.5,   // share of speed forced vertical when breaking a wall loop
     pierceDefaultCharges: 3,
     explosiveRadius: 46
   },

@@ -198,24 +198,11 @@ Settings and rules are saved to browser LocalStorage for convenience, but actual
 
 ## Contributing
 
-This is a portfolio/resume project, but feedback and suggestions are welcome:
+Feedback and suggestions are welcome:
 
 1. Open an issue for bugs or feature requests
 2. Fork and submit a PR for improvements
 3. Share how you're using it in ops/warehouse environments
-
----
-
-## Resume Context
-
-This project demonstrates:
-- **Operations domain knowledge**: Understanding of warehouse workflows, inventory management, and reconciliation processes
-- **Data manipulation skills**: Parsing, cleaning, validation, and transformation
-- **Web development**: Modern JavaScript, modular architecture, responsive design
-- **User experience**: Tools designed for actual warehouse/ops use cases
-- **Technical communication**: Clear documentation and logic explanations
-
-Built as part of a job search targeting **Operations Technology Technician** roles that bridge warehouse operations and technology support.
 
 ---
 
@@ -227,8 +214,5 @@ MIT License - free to use, modify, and distribute.
 
 ## Contact
 
-**Matt**  
-Portfolio: [matt.st](https://matt.st)  
-Location: Plano, Texas
-
-*Looking for opportunities in warehouse operations technology, WMS support, or operations coordination roles in the DFW area.*
+**ManicZone Lab**  
+[lab.maniczone.com](https://lab.maniczone.com)

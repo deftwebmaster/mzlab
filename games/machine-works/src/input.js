@@ -25,6 +25,7 @@ export class InputController {
     element.addEventListener('pointerup', this.onPointerUp);
     element.addEventListener('pointercancel', this.onPointerUp);
     element.addEventListener('wheel', this.onWheel, { passive: false });
+    element.addEventListener('contextmenu', (e) => e.preventDefault());
   }
 
   getRelativePoint(e) {
@@ -40,13 +41,24 @@ export class InputController {
   }
 
   onPointerDown = (e) => {
+    if (e.pointerType === 'mouse' && e.button === 2) {
+      // Right-click removes, the desktop twin of a long press.
+      e.preventDefault();
+      this.handlers.onLongPress?.(this.getRelativePoint(e));
+      return;
+    }
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     try { this.element.setPointerCapture(e.pointerId); } catch { /* not all pointer sources support capture */ }
     const pt = this.getRelativePoint(e);
     this.pointers.set(e.pointerId, pt);
 
     if (this.pointers.size === 2) {
       this.clearLongPress();
+      // Close out a one-finger drag properly, and retire that finger: when the pinch
+      // ends it would otherwise resume from a stale position and fling the camera.
+      if (this.dragging) this.handlers.onDragEnd?.();
       this.dragging = false;
+      this.dragPointerId = null;
       const pts = Array.from(this.pointers.values());
       this.pinch = {
         startDist: distance(pts[0], pts[1]),

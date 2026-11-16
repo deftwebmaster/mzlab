@@ -24,17 +24,23 @@ export function drawFrame(renderer, camera, mission, ship, projectilePool, parti
 
   drawParticles(ctx, camera, particlePool, W, H);
 
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.shadowColor = '#ffb84f';
+  ctx.shadowBlur = 8;
+  ctx.strokeStyle = '#ffe58a';
+  ctx.lineWidth = 2.4;
+  ctx.beginPath();
   for (const p of projectilePool.active) {
     if (p.__hit) continue;
     const pos = camera.toScreen(p.x, p.y, W, H);
-    ctx.strokeStyle = '#ffe58a';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(pos.x - Math.cos(p.angle) * 8, pos.y - Math.sin(p.angle) * 8);
+    ctx.moveTo(pos.x - Math.cos(p.angle) * 11, pos.y - Math.sin(p.angle) * 11);
     ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
   }
+  ctx.stroke();
+  ctx.restore();
 
+  if (!ship.alive) return; // the craft is debris now
   if (ship.tractorActive) drawTractorBeam(ctx, camera, ship, W, H);
   drawShip(ctx, camera, ship, W, H);
 }
@@ -61,17 +67,41 @@ function drawGate(ctx, camera, mission, W, H) {
     ctx.globalAlpha = 0.5;
     ctx.stroke();
     ctx.globalAlpha = 1;
+    if (gate.active) {
+      // slow counter-rotating chevrons so the open gate reads as "fly in here"
+      const spin = performance.now() / 900;
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 4; i++) {
+        const a = spin + i * Math.PI / 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, gate.radius * 0.42, a, a + 0.7);
+        ctx.stroke();
+      }
+    }
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = color;
+    ctx.font = '600 11px "Segoe UI", Roboto, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(gate.active ? 'EXTRACTION GATE' : 'GATE OFFLINE', 0, gate.radius + 18);
     ctx.restore();
   } else if (gate.active) {
-    // off-screen nav arrow toward the gate
-    const angle = Math.atan2(pos.y - H / 2, pos.x - W / 2);
-    const margin = 46;
-    const ax = W / 2 + Math.cos(angle) * (Math.min(W, H) / 2 - margin);
-    const ay = H / 2 + Math.sin(angle) * (Math.min(W, H) / 2 - margin);
+    // off-screen nav arrow toward the gate, pinned to the screen edge with its distance
+    const dx = pos.x - W / 2, dy = pos.y - H / 2;
+    const angle = Math.atan2(dy, dx);
+    const margin = 54;
+    const k = Math.min((W / 2 - margin) / Math.max(Math.abs(dx), 0.001), (H / 2 - margin) / Math.max(Math.abs(dy), 0.001));
+    const ax = W / 2 + dx * k;
+    const ay = H / 2 + dy * k;
+    const bob = 1 + Math.sin(performance.now() / 180) * 0.12;
     ctx.save();
     ctx.translate(ax, ay);
-    ctx.rotate(angle);
     ctx.fillStyle = '#4fd8e8';
+    ctx.font = '700 11px "Segoe UI", Roboto, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(Math.round(Math.hypot(dx, dy) / 10) + ' m', 0, 28);
+    ctx.rotate(angle);
+    ctx.scale(bob, bob);
     ctx.shadowColor = '#4fd8e8';
     ctx.shadowBlur = 12;
     ctx.beginPath();
@@ -125,7 +155,46 @@ function drawWreck(ctx, camera, w, W, H) {
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
+
+  // Inner structure: reads as plating, and dims as the wreck takes damage.
+  if (!w.sharp && !w.def.rotates) {
+    const integrity = Math.max(0, Math.min(1, w.hp / w.maxHp));
+    ctx.globalAlpha = 0.22 + 0.4 * integrity;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.55, -r * 0.15); ctx.lineTo(r * 0.5, -r * 0.3);
+    ctx.moveTo(-r * 0.4, r * 0.35); ctx.lineTo(r * 0.45, r * 0.2);
+    ctx.moveTo(-r * 0.1, -r * 0.6); ctx.lineTo(r * 0.05, r * 0.6);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  if (w.def.explosive || w.def.reactor) {
+    // hazard core
+    const pulse = 0.55 + 0.45 * Math.sin(performance.now() / (w.def.reactor ? 260 : 420) + w.id);
+    ctx.fillStyle = hexAlpha(w.def.color, 0.35 + 0.4 * pulse);
+    ctx.shadowColor = w.def.color;
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.arc(0, 0, r * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
   ctx.restore();
+
+  if (w.reactorCountdown >= 0) {
+    // countdown ring + blast radius preview, drawn unrotated
+    ctx.save();
+    ctx.translate(pos.x, pos.y);
+    ctx.strokeStyle = 'rgba(255,77,77,0.28)';
+    ctx.setLineDash([6, 8]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, w.radius * 5, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 15px "Segoe UI", Roboto, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(Math.max(0, w.reactorCountdown).toFixed(1), 0, 0);
+    ctx.restore();
+  }
 }
 
 function drawSalvage(ctx, camera, s, W, H) {

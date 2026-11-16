@@ -43,7 +43,7 @@
             <p class="lede">A private, self-hosted click and download counter for ordinary websites.</p>
             <p class="hero-text">Create clean tracking URLs, count redirects and download starts, view simple stats, and show public counters from your own hosting. No database, no Composer, no framework, no cloud account.</p>
             <div class="hero-actions">
-                <a class="button primary" href="downloads/click-counter-1.0.0.zip" download>Download Free</a>
+                <a class="button primary" href="downloads/click-counter-1.1.0.zip" download>Download Free</a>
                 <a class="button secondary" href="#install">See Install Steps</a>
             </div>
             <ul class="quick-facts" aria-label="Script facts">
@@ -147,7 +147,7 @@
             </li>
             <li>
                 <b>Edit <code>config.php</code></b>
-                <span>Set your base URL, timezone, storage paths, and administrator password hash.</span>
+                <span>Set your timezone, storage paths, and administrator password hash. The base URL is detected for you.</span>
             </li>
             <li>
                 <b>Generate the password hash</b>
@@ -160,10 +160,11 @@
         </ol>
         <div class="download-panel">
             <div>
-                <h3>Download Click Counter 1.0.0</h3>
+                <h3>Download Click Counter 1.1.0</h3>
                 <p>Includes the PHP app, admin dashboard, public endpoints, assets, documentation, and test scripts.</p>
+                <p><strong>New in 1.1.0:</strong> editing a link no longer erases its expiration, Reset counter now resets the total, fresh installs find their own address, and link checkers and prefetches are no longer counted as clicks. See <code>CHANGELOG.md</code> in the ZIP.</p>
             </div>
-            <a class="button primary" href="downloads/click-counter-1.0.0.zip" download>Download ZIP</a>
+            <a class="button primary" href="downloads/click-counter-1.1.0.zip" download>Download ZIP</a>
         </div>
     </section>
 
@@ -217,8 +218,8 @@
 </main>
 
 <footer class="page-footer">
-    <p><strong>Click Counter</strong> is a free Script Shed PHP script from lab.maniczone.com.</p>
-    <a href="downloads/click-counter-1.0.0.zip" download>Download Free</a>
+    <p><strong>Click Counter</strong> is a free Script Shed PHP script from ManicZone Lab.</p>
+    <a href="downloads/click-counter-1.1.0.zip" download>Download Free</a>
 </footer>
 </body>
 </html>

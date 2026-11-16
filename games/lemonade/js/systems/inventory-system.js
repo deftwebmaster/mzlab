@@ -86,7 +86,7 @@ export function maxCupsFromInventory(state, perCupIngredients) {
 
 /** Ages batches by one day and drops anything past its shelf life. Ice melts
  * fully each night unless cooling upgrades grant retention. */
-export function applyDailySpoilage(state) {
+export function applyDailySpoilage(state, spoilageMultiplier = 1) {
   const effects = getUpgradeEffects(state);
   const spoiledSummary = {};
 
@@ -105,7 +105,8 @@ export function applyDailySpoilage(state) {
 
     if (ingredient.shelfLifeDays === Infinity) continue;
 
-    const adjustedShelfLife = ingredient.shelfLifeDays * (1 + effects.spoilageReduction);
+    // spoilageMultiplier comes from the difficulty: below 1 keeps stock longer, above 1 turns it sooner.
+    const adjustedShelfLife = (ingredient.shelfLifeDays * (1 + effects.spoilageReduction)) / (spoilageMultiplier || 1);
     let spoiled = 0;
     entry.batches = entry.batches.filter((batch) => {
       const age = state.calendar.day - batch.purchasedDay;

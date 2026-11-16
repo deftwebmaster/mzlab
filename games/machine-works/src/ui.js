@@ -37,6 +37,7 @@ export class UI {
     this.powerReadoutEl = document.getElementById('power-readout');
     this.objectiveReadoutEl = document.getElementById('objective-readout');
     this.sessionStatsEl = document.getElementById('session-stats');
+    this.rateReadoutEl = document.getElementById('rate-readout');
     this.inspectorPanel = document.getElementById('inspector-panel');
     this.inspectorTitleEl = document.getElementById('inspector-title');
     this.inspectorDetailEl = document.getElementById('inspector-detail');
@@ -102,19 +103,48 @@ export class UI {
     this.speedBtn.classList.toggle('active', speed > 1);
   }
 
-  setPowerStats({ supply, demand }) {
-    if (!this.powerReadoutEl) return;
-    this.powerReadoutEl.textContent = `⚡ ${Math.round(demand)}/${Math.round(supply)} kW`;
-    this.powerReadoutEl.classList.toggle('warning', demand > supply);
+  // Writes text only when it actually changed, so a steady HUD costs nothing.
+  setText(el, text) {
+    if (el && el.textContent !== text) el.textContent = text;
   }
 
-  setObjective({ label, current, target, complete }) {
+  setPowerStats({ supply, demand }) {
+    if (!this.powerReadoutEl) return;
+    this.setText(this.powerReadoutEl, `⚡ ${Math.round(demand)}/${Math.round(supply)} kW`);
+    this.powerReadoutEl.classList.toggle('warning', demand > supply);
+    this.powerReadoutEl.title = demand > supply
+      ? 'Not enough power: some machines are shut down. Add a generator.'
+      : 'Power demand / supply';
+  }
+
+  setObjective({ label, current, target, complete, rate }) {
     if (!this.objectiveReadoutEl) return;
     const prefix = complete ? '✓ ' : '';
-    this.objectiveReadoutEl.textContent = `${prefix}${label}: ${current}/${target}`;
+    this.setText(this.objectiveReadoutEl, `${prefix}${label}: ${Math.min(current, 99999)}/${target}`);
     const progress = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
     this.objectiveReadoutEl.style.setProperty('--objective-progress', `${progress}%`);
     this.objectiveReadoutEl.classList.toggle('complete', complete);
+    if (this.rateReadoutEl) {
+      this.rateReadoutEl.classList.toggle('hidden', rate == null);
+      if (rate != null) this.setText(this.rateReadoutEl, `${rate.toFixed(1)} plates/min`);
+    }
+  }
+
+  showIntroOnce() {
+    const el = document.getElementById('intro-card');
+    if (!el) return;
+    let seen = false;
+    try { seen = localStorage.getItem('machineworks.intro.v1') === '1'; } catch { /* private mode */ }
+    document.getElementById('btn-help')?.addEventListener('click', () => el.classList.toggle('hidden'));
+    document.getElementById('btn-intro-close')?.addEventListener('click', () => this.hideIntro());
+    if (!seen) el.classList.remove('hidden');
+  }
+
+  hideIntro() {
+    const el = document.getElementById('intro-card');
+    if (!el || el.classList.contains('hidden')) return;
+    el.classList.add('hidden');
+    try { localStorage.setItem('machineworks.intro.v1', '1'); } catch { /* private mode */ }
   }
 
   setAnalysisMode(active) {
@@ -127,8 +157,8 @@ export class UI {
     if (!this.sessionStatsEl) return;
     const mins = Math.floor(uptimeSeconds / 60);
     const secs = uptimeSeconds % 60;
-    this.sessionStatsEl.textContent =
-      `Produced ${itemsProduced} · Exported ${itemsExported} · Belts ${beltsPlaced} · Machines ${machinesPlaced} · Uptime ${mins}:${String(secs).padStart(2, '0')}`;
+    this.setText(this.sessionStatsEl,
+      `Produced ${itemsProduced} · Exported ${itemsExported} · Belts ${beltsPlaced} · Machines ${machinesPlaced} · Uptime ${mins}:${String(secs).padStart(2, '0')}`);
   }
 
   setBlueprintPanelOpen(open) {
@@ -139,19 +169,27 @@ export class UI {
     if (!this.inspectorPanel) return;
     this.inspectorPanel.classList.toggle('hidden', !details);
     if (!details) return;
-    this.inspectorTitleEl.textContent = details.title;
-    this.inspectorDetailEl.textContent = details.detail;
+    this.setText(this.inspectorTitleEl, details.title);
+    this.setText(this.inspectorDetailEl, details.detail);
     this.inspectorRotateBtn.disabled = !details.canRotate;
     this.inspectorDeleteBtn.disabled = !details.canDelete;
   }
 
   showToast(message, tone = 'info') {
     if (!this.toastStack) return;
+    // A repeated notice refreshes the one already showing instead of stacking copies.
+    const last = this.toastStack.lastElementChild;
+    if (last && last.textContent === message) {
+      window.clearTimeout(last._timer);
+      last._timer = window.setTimeout(() => last.remove(), 2700);
+      return;
+    }
+    while (this.toastStack.children.length >= 3) this.toastStack.firstElementChild.remove();
     const toast = document.createElement('div');
     toast.className = `toast ${tone}`;
     toast.textContent = message;
     this.toastStack.appendChild(toast);
-    window.setTimeout(() => toast.remove(), 2700);
+    toast._timer = window.setTimeout(() => toast.remove(), 2700);
   }
 
   setBlueprintList(blueprints) {

@@ -12,7 +12,7 @@
  * Bump CACHE_VERSION on every deploy; old caches are deleted on activate.
  */
 
-const CACHE_VERSION = 'v2.0.0-mz1';
+const CACHE_VERSION = 'v2.0.0-mz2';
 const CACHE_NAME = `blackbox-courier-${CACHE_VERSION}`;
 
 const PRECACHE = [

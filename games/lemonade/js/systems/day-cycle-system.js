@@ -32,8 +32,11 @@ export function getPrepEstimate(state) {
   const cupCost = costPerCup(menuItemId, recipe);
   const activeCompetitors = getActiveCompetitors(state.reputation.score);
   const campaignReach = getActiveCampaignReach(state);
+  const difficulty = DIFFICULTIES[state.meta.difficulty] || DIFFICULTIES.standard;
 
   const dayModifier = computeDayModifier({
+    demandMultiplier: difficulty.demandMultiplier,
+    competitorAggression: difficulty.competitorAggression,
     location,
     weather: state.today.forecast,
     season: state.calendar.season,
@@ -135,6 +138,7 @@ export function startDay(state) {
     campaignReach,
     activeCompetitors,
     competitorAggression: difficulty.competitorAggression,
+    demandMultiplier: difficulty.demandMultiplier,
     cupsAvailable: state.pendingPrep.cupsPlanned,
     serviceSpeedFactor: effects.serviceSpeed * empContribution.speedBonus,
     capacityBonus: effects.capacity,
@@ -152,7 +156,7 @@ export function finalizeDay(state, session) {
   const cupsWasted = Math.max(0, session.cupsAvailable);
   const cupsSold = session.totals.cupsSold;
 
-  const spoiledRaw = applyDailySpoilage(state);
+  const spoiledRaw = applyDailySpoilage(state, (DIFFICULTIES[state.meta.difficulty] || DIFFICULTIES.standard).spoilageMultiplier);
   const spoiledRawValue = Object.entries(spoiledRaw).reduce(
     (sum, [id, qty]) => sum + qty * unitCost(id), 0
   );

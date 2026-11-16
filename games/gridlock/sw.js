@@ -14,7 +14,7 @@
  * page is told to reload at the user's convenience (see main.js).
  */
 
-const CACHE_VERSION = 'gridlock-v2.0.0-mz1';
+const CACHE_VERSION = 'gridlock-v2.0.0-mz2';
 
 /** Paths are relative so the app works from a GitHub Pages project subpath. */
 const PRECACHE = [

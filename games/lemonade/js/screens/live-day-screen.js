@@ -227,7 +227,16 @@ export function renderLiveDayScreen(container, { navigate }) {
           showToast(`Price lowered to ${formatMoney(session.price)}`, 'info');
           close();
         });
-        body.querySelector('#act-flash').addEventListener('click', () => {
+        // One flash sale and two late hours a day: unlimited, they stacked into a
+        // free demand multiplier and a day that never had to end.
+        const flashBtn = body.querySelector('#act-flash');
+        if (session.flashSaleUsed) {
+          flashBtn.disabled = true;
+          flashBtn.textContent = '🔥 Flash Sale (already running)';
+        }
+        flashBtn.addEventListener('click', () => {
+          if (session.flashSaleUsed) return;
+          session.flashSaleUsed = true;
           session.price = Math.max(0.25, Math.round(session.price * 0.8 * 100) / 100);
           session.dayModifier *= 1.1;
           showToast('Flash sale started! Word will spread fast.', 'success');
@@ -237,7 +246,14 @@ export function renderLiveDayScreen(container, { navigate }) {
           close();
           openPrepSheet();
         });
-        body.querySelector('#act-extend').addEventListener('click', () => {
+        const extendBtn = body.querySelector('#act-extend');
+        if ((session.extraHours || 0) >= 2) {
+          extendBtn.disabled = true;
+          extendBtn.textContent = '⏰ Stay Open Later (as late as you can go)';
+        }
+        extendBtn.addEventListener('click', () => {
+          if ((session.extraHours || 0) >= 2) return;
+          session.extraHours = (session.extraHours || 0) + 1;
           session.ticksPerDay += 4;
           showToast('Staying open an extra hour today.', 'info');
           close();
@@ -273,14 +289,17 @@ export function renderLiveDayScreen(container, { navigate }) {
           body.querySelector('#q-minus').addEventListener('click', () => { qty = Math.max(0, qty - 5); refresh(); });
           body.querySelector('#q-plus').addEventListener('click', () => { qty = Math.min(maxCups, qty + 5); refresh(); });
           body.querySelector('#confirm-prep')?.addEventListener('click', () => {
+            let added = 0;
             setState((s) => {
               const result = prepareAdditionalBatch(s, session, qty);
               if (result.success) {
+                added = result.cupsAdded;
                 session.cupsAvailable += result.cupsAdded;
                 session.cupsPreparedTotal += result.cupsAdded;
               }
             });
-            showToast(`Prepared ${qty} more cups.`, 'success');
+            if (added > 0) showToast(`Prepared ${added} more cups.`, 'success');
+            else showToast('Not enough ingredients for another batch.', 'error');
             close();
           });
         }

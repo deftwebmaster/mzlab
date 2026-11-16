@@ -8,4 +8,4 @@ Files:
 - `styles.css`
 - `assets/download-vault-preview.png`
 
-The download buttons point to `download-vault-1.0.0.zip`, so this folder can be uploaded as `/shed/download-vault/` with the ZIP in the same directory.
+The download buttons point to `download-vault-1.1.0.zip`, so this folder can be uploaded as `/shed/download-vault/` with the ZIP in the same directory.

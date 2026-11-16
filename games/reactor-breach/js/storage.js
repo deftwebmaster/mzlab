@@ -119,16 +119,41 @@ export function loadSave() {
   }
 }
 
+// Stats tick up many times a second during play (every hit, every energy packet).
+// Serialising the whole save to localStorage on each one stalls the frame on phones,
+// so writes are coalesced: the in-memory save updates immediately, the disk write
+// follows within a second, and flushSave() forces it at every natural checkpoint.
+let flushTimer = null;
+
+export function flushSave() {
+  if (flushTimer) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+  if (!localStorageAvailable || !cachedSave) return;
+  try {
+    window.localStorage.setItem(SAVE_KEY, JSON.stringify(cachedSave));
+  } catch (e) {
+    console.warn('[storage] Failed to persist save.', e);
+  }
+}
+
 export function saveGame(mutatorFn) {
   const save = loadSave();
   if (mutatorFn) mutatorFn(save);
   cachedSave = save;
-  if (!localStorageAvailable) return;
-  try {
-    window.localStorage.setItem(SAVE_KEY, JSON.stringify(save));
-  } catch (e) {
-    console.warn('[storage] Failed to persist save.', e);
-  }
+  if (!localStorageAvailable || flushTimer) return;
+  flushTimer = setTimeout(() => {
+    flushTimer = null;
+    flushSave();
+  }, 800);
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('pagehide', flushSave);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) flushSave();
+  });
 }
 
 export function getStageRecord(stageId) {
@@ -192,6 +217,7 @@ export function updateSettings(partial) {
   saveGame((save) => {
     Object.assign(save.settings, partial);
   });
+  flushSave();
 }
 
 export function markTutorialSeen(key) {

@@ -60,7 +60,9 @@ export function createDefaultState({ businessName, ownerName, difficulty = 'stan
       price: 1.75,
     },
     production: {
-      cupsPlanned: 20,
+      // A first batch sized for a driveway's handful of customers. The old default of
+      // 20 used every ingredient the player owned and poured most of it away on day one.
+      cupsPlanned: 6,
       iceLevel: 2,
     },
     locations: {

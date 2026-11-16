@@ -8,9 +8,9 @@ export function reflectVelocity(vx, vy, nx, ny, restitution = 1) {
 
 // Ensures the orb never travels too close to horizontal, which would create
 // an unrecoverable stall loop between two walls.
-export function enforceMinimumVerticalSpeed(vx, vy) {
+export function enforceMinimumVerticalSpeed(vx, vy, ratio = CONFIG.orb.minVerticalSpeedRatio) {
   const speed = vecLen(vx, vy) || 1;
-  const minVy = speed * CONFIG.orb.minVerticalSpeedRatio;
+  const minVy = speed * ratio;
   if (Math.abs(vy) < minVy) {
     const sign = vy === 0 ? -1 : Math.sign(vy);
     const newVy = minVy * sign;

@@ -1,4 +1,4 @@
-# Script Shed Homepage Dark Clone
+# Script Shed Homepage
 
 Static darker homepage files for `https://lab.maniczone.com/shed/`.
 
@@ -19,10 +19,10 @@ Files:
 The page assumes these URLs after upload:
 
 - `/shed/download-vault/`
-- `/shed/download-vault/download-vault-1.0.0.zip`
+- `/shed/download-vault/download-vault-1.1.0.zip`
 - `/shed/click-counter/`
-- `/shed/click-counter/downloads/click-counter-1.0.0.zip`
+- `/shed/click-counter/downloads/click-counter-1.1.0.zip`
 - `/shed/form-inbox/`
-- `/shed/form-inbox/downloads/form-inbox-1.0.0.zip`
+- `/shed/form-inbox/downloads/form-inbox-1.1.0.zip`
 
 If the Download Vault ZIP or product page live somewhere else, update the matching links in `index.html`.

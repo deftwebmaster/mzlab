@@ -1,6 +1,6 @@
 // Bump this on every deploy that changes cached assets so old clients pick
 // up the new cache instead of serving stale files forever.
-const CACHE_VERSION = 'treasure-hunter-v2-mz1';
+const CACHE_VERSION = 'treasure-hunter-v2-mz2';
 
 const SHELL_ASSETS = [
   './',
@@ -9,9 +9,25 @@ const SHELL_ASSETS = [
   './assets/icons/icon.svg'
 ];
 
+// The built bundle. On a first visit these load before this worker controls the page,
+// so "cache on first request" never saw them and the game could not open offline until
+// a second online visit. They are added one by one and failures are ignored, so a
+// rebuild that renames them (Vite hashes the filenames) cannot break the install —
+// update the three names here when the build changes.
+const BUILD_ASSETS = [
+  './assets/build/index-BJwu9a6s.js',
+  './assets/build/index-D_cntu95.css',
+  './assets/build/alerts-sheet-CtHHcE65.js',
+  './assets/icons/icon-192.png',
+  './assets/icons/apple-touch-icon.png'
+];
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(SHELL_ASSETS)).catch((err) => {
+    caches.open(CACHE_VERSION).then(async (cache) => {
+      await cache.addAll(SHELL_ASSETS);
+      await Promise.all(BUILD_ASSETS.map((url) => cache.add(url).catch(() => {})));
+    }).catch((err) => {
       console.error('Service worker install failed to pre-cache shell assets', err);
     })
   );
@@ -42,8 +58,11 @@ self.addEventListener('fetch', (event) => {
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_VERSION).then((cache) => cache.put('./index.html', copy));
+        // Never let an error page (404, 5xx) overwrite the cached shell.
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_VERSION).then((cache) => cache.put('./index.html', copy));
+        }
         return response;
       }).catch(() => caches.match('./index.html'))
     );

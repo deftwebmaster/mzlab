@@ -21,7 +21,8 @@ import {
   recordStageResult,
   updateStats,
   markTutorialSeen,
-  updateSettings
+  updateSettings,
+  flushSave
 } from './storage.js';
 import { initPwa, promptInstall } from './pwa.js';
 
@@ -75,7 +76,11 @@ export class Game {
     this.loop = new GameLoop((dt) => this.update(dt));
     this.loop.onVisibilityPause = () => {
       if (this.state === STATES.PLAYING) this._goPaused();
+      flushSave();
     };
+    window.addEventListener('blur', () => {
+      if (this.state === STATES.PLAYING) this._goPaused();
+    });
 
     this._resize = this._resize.bind(this);
     window.addEventListener('resize', this._resize);
@@ -121,6 +126,7 @@ export class Game {
         this._goStageIntro(this.currentStageId);
         break;
       case 'stageselect':
+        this._wakeAudio();
         this.overlayReturnState = STATES.STAGE_SELECT;
         this.ui.buildStageGrid();
         this._setState(STATES.STAGE_SELECT);
@@ -193,7 +199,15 @@ export class Game {
   }
 
   // ---------------------------------------------------------------- flow
+  // Pausing suspends the audio context; any route out of the pause menu other than
+  // Resume has to wake it again or the rest of the session plays silent.
+  _wakeAudio() {
+    if (audio.ctx && audio.ctx.state === 'suspended' && audio.unlocked) audio.ctx.resume?.();
+  }
+
   _goMenu() {
+    this._wakeAudio();
+    flushSave();
     this.ui.updateMenu();
     this._setState(STATES.MENU);
   }
@@ -202,6 +216,7 @@ export class Game {
     const stage = getStage(stageId);
     if (!stage) return this._goMenu();
     this.currentStageId = stageId;
+    this._wakeAudio();
     this.ui.showStageIntro(stage);
     this._setState(STATES.STAGE_INTRO);
   }
@@ -209,6 +224,9 @@ export class Game {
   _beginStage(stageId) {
     const stage = getStage(stageId);
     if (!stage) return;
+    this._wakeAudio();
+    this.input.clearFlags();
+    this.input.releaseKeys();
     this.loaded = new LoadedStage(stage, CHAMBER.width, CHAMBER.height);
     const save = loadSave();
     this.charges = save.settings.assist ? Infinity : stage.containmentCharges ?? CONFIG.containmentChargesDefault;
@@ -279,6 +297,17 @@ export class Game {
   // ---------------------------------------------------------------- update
   update(dt) {
     audio.update(dt);
+    const live = this.state === STATES.PLAYING || this.state === STATES.READY;
+    this.input.captureKeys = live;
+    if (!live) {
+      // Nothing queued in a menu may leak into the next stage; Escape/P still works as
+      // "resume" on the pause menu and "back" on the panels opened from it.
+      const flags = this.input.consumeFrameFlags();
+      if (flags.pauseRequested) {
+        if (this.state === STATES.PAUSED) this._resumeFromPause();
+        else if (this.state === STATES.SETTINGS || this.state === STATES.HELP || this.state === STATES.STATS) this._popOverlay();
+      }
+    }
     if (this.state === STATES.READY) {
       this.readyTimer -= dt;
       if (this.readyTimer <= 0) this._setState(STATES.PLAYING, false);
@@ -547,6 +576,7 @@ export class Game {
       secondaryDone: Object.entries(this.runStats.secondaryResults).filter(([, v]) => v).map(([k]) => k)
     };
     recordStageResult(stage.id, result);
+    if (this.runStats.orbsLostThisStage === 0 && !loadSave().settings.assist) updateStats({ perfectStages: 1 });
     updateStats({ playTimeSeconds: Math.round(this.runStats.elapsedTime), highestCombo: this.runStats.maxCombo });
     if (rank === 'S+') updateStats({ sPlusRanks: 1 });
     audio.play('stageComplete');
@@ -554,6 +584,7 @@ export class Game {
     this.ui.showReactorFeed(`Chamber breached. Rank ${rank}.`, 'success');
     this.ui.showStageComplete(result, stage);
     this._setState(STATES.STAGE_COMPLETE, false);
+    flushSave();
   }
 
   _handleStageFailed() {
@@ -564,7 +595,9 @@ export class Game {
     audio.play('warning');
     this.ui.showReactorFeed('Containment failed. Reset recommended.', 'danger');
     this.ui.showStageFailed(result);
+    updateStats({ playTimeSeconds: Math.round(this.runStats.elapsedTime) });
     this._setState(STATES.STAGE_FAILED, false);
+    flushSave();
   }
 
   _updateHud() {

@@ -32,19 +32,21 @@
       <span id="factory-name">Loading…</span>
       <span id="milestone-badge">Factory Sandbox</span>
       <div class="top-bar-actions">
-        <button id="btn-pause" class="icon-button" title="Pause simulation">&#10074;&#10074;</button>
-        <button id="btn-speed" class="icon-button text-button" title="Simulation speed">1x</button>
-        <button id="btn-zoom-out" class="icon-button" title="Zoom out">-</button>
-        <button id="btn-zoom-in" class="icon-button" title="Zoom in">+</button>
-        <button id="btn-center" class="icon-button" title="Center factory">&#9673;</button>
-        <button id="btn-analysis" class="icon-button" title="Enter Analysis Mode">&#128202;</button>
-        <button id="btn-blueprints" class="icon-button" title="Blueprints">&#128190;</button>
+        <button id="btn-pause" aria-label="Pause simulation" class="icon-button" title="Pause simulation">&#10074;&#10074;</button>
+        <button id="btn-speed" aria-label="Simulation speed" class="icon-button text-button" title="Simulation speed">1x</button>
+        <button id="btn-zoom-out" aria-label="Zoom out" class="icon-button" title="Zoom out">-</button>
+        <button id="btn-zoom-in" aria-label="Zoom in" class="icon-button" title="Zoom in">+</button>
+        <button id="btn-center" aria-label="Center factory" class="icon-button" title="Center factory">&#9673;</button>
+        <button id="btn-analysis" aria-label="Analysis mode" class="icon-button" title="Enter Analysis Mode">&#128202;</button>
+        <button id="btn-blueprints" aria-label="Blueprints" class="icon-button" title="Blueprints">&#128190;</button>
+        <button id="btn-help" aria-label="How to play" class="icon-button text-button" title="How to play">?</button>
       </div>
     </header>
 
     <div id="hud-bar">
       <span id="power-readout" class="hud-pill">⚡ 0/0 kW</span>
       <span id="objective-readout" class="hud-pill objective-pill">Loading…</span>
+      <span id="rate-readout" class="hud-pill hidden" title="Plates exported per minute"></span>
       <span id="session-stats" class="hud-pill hidden"></span>
     </div>
 
@@ -54,17 +56,32 @@
         <span id="inspector-detail">Empty</span>
       </div>
       <div class="inspector-actions">
-        <button id="btn-inspector-rotate" title="Rotate selected">&#8635;</button>
-        <button id="btn-inspector-delete" title="Remove selected">&times;</button>
+        <button id="btn-inspector-rotate" aria-label="Rotate selected" title="Rotate selected (R)">&#8635;</button>
+        <button id="btn-inspector-delete" aria-label="Remove selected" title="Remove selected (Del)">&times;</button>
       </div>
     </aside>
 
     <div id="toast-stack" aria-live="polite"></div>
 
+    <section id="intro-card" class="hidden" aria-label="How to play">
+      <div class="panel-header">
+        <span>Bring the line back to life</span>
+        <button id="btn-intro-close" class="panel-close" aria-label="Close">&times;</button>
+      </div>
+      <p><strong>Drill</strong> digs ore &rarr; <strong>belts</strong> carry it &rarr; <strong>Smelter</strong> turns 2 ore into a plate &rarr; the <strong>Sink</strong> ships it. Machines push out the way they face and need <strong>Power</strong>.</p>
+      <ul>
+        <li><b>Build</b> pick a tool, then tap a tile. Drag to lay a run of belts.</li>
+        <li><b>Rotate</b> <kbd>R</kbd> or the Rotate button, before or after placing.</li>
+        <li><b>Remove</b> long-press or right-click a piece. <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes.</li>
+        <li><b>Look around</b> drag to pan, pinch or scroll to zoom, double-tap to centre.</li>
+      </ul>
+      <p class="intro-foot">One drill feeds half a smelter. Fill each order to unlock a bigger one &mdash; the starter line will not keep up for long.</p>
+    </section>
+
     <div id="blueprint-panel" class="hidden">
       <div class="panel-header">
         <span>Blueprints</span>
-        <button id="btn-close-blueprints" class="panel-close">&times;</button>
+        <button id="btn-close-blueprints" class="panel-close" aria-label="Close blueprints">&times;</button>
       </div>
       <div class="blueprint-save-row">
         <input id="blueprint-name-input" type="text" placeholder="Layout name" maxlength="40" />

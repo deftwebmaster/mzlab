@@ -1,6 +1,6 @@
 import { CONFIG } from './config.js';
 import { applyThrust, clampSpeed } from './physics.js';
-import { clamp, wrapValue } from './utils.js';
+import { clamp, wrapValue, angleDiff } from './utils.js';
 
 export function createShip(x, y, upgrades = {}) {
   const hullLevel = upgrades.hullReinforcement || 0;
@@ -41,7 +41,12 @@ export function updateShip(ship, input, dt, worldW, worldH) {
   ship.tractorActive = input.tractor && !ship.overheated;
 
   const rotateSpeed = ship.tractorActive ? CONFIG.SHIP.ROTATE_SPEED_TRACTOR : CONFIG.SHIP.ROTATE_SPEED;
-  ship.angle += input.rotate * rotateSpeed * dt;
+  let rotate = input.rotate;
+  if (input.aimAngle != null) {
+    // Touch stick: turn toward where the thumb points, easing in as the nose lines up.
+    rotate = clamp(angleDiff(input.aimAngle, ship.angle) * 4, -1, 1);
+  }
+  ship.angle += rotate * rotateSpeed * dt;
 
   ship.thrusting = input.thrust;
   ship.braking = input.brake;

@@ -8,6 +8,11 @@ const MOBILE_QUERY = window.matchMedia('(max-width: 760px), (max-height: 500px)'
 const REF_VIEW = { width: 1280, height: 800 };
 const ZOOM_MIN = 0.35;
 const ZOOM_MAX = 2.2;
+// The flight model advances in fixed 1/60 s steps no matter how fast the screen
+// refreshes, so one sketch always flies the same way — on a 60 Hz phone, a 120 Hz
+// tablet, or a laptop that drops frames — and shared routes replay exactly.
+const SIM_STEP = 1 / 60;
+const MAX_STEPS_PER_FRAME = 6;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -104,6 +109,7 @@ const state = {
 let dpr = 1;
 let view = { width: 0, height: 0 };
 let lastTime = performance.now();
+let simAccumulator = 0;
 let toastTimer = 0;
 let toastText = '';
 let audioContext = null;
@@ -173,31 +179,48 @@ function bindUi() {
   els.shareClose.addEventListener('click', closeShareModal);
 
   window.addEventListener('keydown', (event) => {
-    if (event.target instanceof HTMLInputElement) return;
-    const key = event.key.toLowerCase();
-    if (key === 'd') setTool('draw');
-    if (key === 'e') setTool('erase');
-    if (key === 'p') setTool('pan');
+    const target = event.target;
+    const typing = target instanceof HTMLElement
+      && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
+    const key = (event.key || '').toLowerCase();
+    if (typing && key !== 'escape') return;
+    // While a dialog is up, only Escape belongs to the game: Space and Enter must
+    // reach the focused button, and R / Space must not fly the plane behind the dialog.
+    const dialogOpen = state.menuOpen || !els.settingsModal.hidden || !els.shareModal.hidden;
+    if (dialogOpen && key !== 'escape') return;
+    const shortcut = event.metaKey || event.ctrlKey;
+    if (!shortcut && !event.altKey) {
+      if (key === 'd') setTool('draw');
+      if (key === 'e') setTool('erase');
+      if (key === 'p') setTool('pan');
+      if (key === 'l') setRailType('lift');
+      if (key === 'g') setRailType('gust');
+      if (key === 'r') retryChallenge();
+      if (key === 'n' && state.result?.success) nextChallenge();
+      if (key === ' ' || key === 'enter') {
+        if (key === 'enter' && target instanceof HTMLButtonElement) return;
+        event.preventDefault();
+        state.simRunning ? resetPlane() : launchPlane();
+      }
+    }
     if (key === 'escape') {
       if (!els.shareModal.hidden) closeShareModal();
       else if (!els.settingsModal.hidden) closeSettings();
+      else if (!els.resultModal.hidden && !state.menuOpen) hideResult();
       else if (!state.menuOpen) openMenu();
       else closeMenu();
     }
-    if (key === 'r') retryChallenge();
-    if (key === 'n' && state.result?.success) nextChallenge();
-    if (key === ' ') {
-      event.preventDefault();
-      state.simRunning ? resetPlane() : launchPlane();
-    }
-    if ((event.metaKey || event.ctrlKey) && key === 'z') {
+    if (shortcut && key === 'z') {
       event.preventDefault();
       event.shiftKey ? redoStroke() : undoStroke();
     }
-    if ((event.metaKey || event.ctrlKey) && key === 's') {
+    if (shortcut && key === 'y') {
+      event.preventDefault();
+      redoStroke();
+    }
+    if (shortcut && key === 's') {
       event.preventDefault();
       saveSketch();
-      showToast('Sketch saved locally.');
     }
   });
 }
@@ -239,14 +262,52 @@ function computeDefaultCamera(level) {
 }
 
 function frame(now) {
-  const dt = Math.min(0.032, Math.max(0.001, (now - lastTime) / 1000));
+  const elapsed = Math.min(0.25, Math.max(0, (now - lastTime) / 1000));
   lastTime = now;
-  if (state.simRunning) stepPlane(dt);
-  updateParticles(dt);
+  if (state.simRunning) {
+    simAccumulator += elapsed;
+    let steps = 0;
+    while (state.simRunning && simAccumulator >= SIM_STEP && steps < MAX_STEPS_PER_FRAME) {
+      stepPlane(SIM_STEP);
+      simAccumulator -= SIM_STEP;
+      steps += 1;
+    }
+    if (steps === MAX_STEPS_PER_FRAME) simAccumulator = 0; // too slow to keep up: slow down rather than spiral
+  } else {
+    simAccumulator = 0;
+  }
+  updatePlaneRenderPose();
+  updateParticles(Math.min(0.032, Math.max(0.001, elapsed)));
   render();
   updateReadouts();
   updateChromeMode();
   requestAnimationFrame(frame);
+}
+
+// Between physics steps the plane is drawn part-way from its previous pose to its
+// current one, which keeps motion smooth on displays faster than the 60 Hz step.
+function updatePlaneRenderPose() {
+  const p = state.plane;
+  if (!state.simRunning || !p.prev) {
+    p.render = null;
+    return;
+  }
+  const t = clamp(simAccumulator / SIM_STEP, 0, 1);
+  p.render = {
+    x: p.prev.x + (p.pos.x - p.prev.x) * t,
+    y: p.prev.y + (p.pos.y - p.prev.y) * t,
+    angle: p.prev.angle + normalizeAngle(p.angle - p.prev.angle) * t
+  };
+}
+
+function safeSetItem(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    // Storage can be full or blocked (private browsing); the game still plays.
+    return false;
+  }
 }
 
 function populateLevels() {
@@ -283,7 +344,7 @@ function setupLevel(index) {
   state.flightTime = 0;
   state.score = 0;
   state.result = null;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ selectedLevel: level.id }));
+  safeSetItem(STORAGE_KEY, JSON.stringify({ selectedLevel: level.id }));
   els.levelSelect.value = String(boundedIndex);
   hideResult();
   resetPlane();
@@ -340,6 +401,7 @@ function launchPlane() {
   state.plane.vel.y = Math.sin(angle) * state.launch.power;
   state.attempts += 1;
   state.flightTime = 0;
+  simAccumulator = 0;
   state.simRunning = true;
   els.launch.textContent = 'Flying';
   els.status.textContent = 'In Flight';
@@ -350,6 +412,7 @@ function launchPlane() {
 function stepPlane(dt) {
   const p = state.plane;
   const previous = { x: p.pos.x, y: p.pos.y };
+  p.prev = { x: p.pos.x, y: p.pos.y, angle: p.angle };
   const lift = sampleWind(p.pos);
   const speed = len(p.vel);
   const forward = angleVector(p.angle);
@@ -364,7 +427,8 @@ function stepPlane(dt) {
   p.vel.y *= 1 - Math.min(0.06, dt * 0.2);
   p.spin += angleDelta * 8 * dt;
   p.spin += lift.roll * dt;
-  p.spin += Math.sin(performance.now() * 0.012 + p.pos.x * 0.02) * lift.strength * 0.18 * dt;
+  // Turbulence follows flight time, not the wall clock, so a retry repeats exactly.
+  p.spin += Math.sin(state.flightTime * 12 + p.pos.x * 0.02) * lift.strength * 0.18 * dt;
   p.spin *= 1 - Math.min(0.25, dt * 2.4);
   p.angle += p.spin * dt;
 
@@ -692,7 +756,7 @@ function recordBestScore() {
   if (state.score > current) {
     state.progress.bestScores[id] = state.score;
   }
-  localStorage.setItem(PROGRESS_KEY, JSON.stringify(state.progress));
+  safeSetItem(PROGRESS_KEY, JSON.stringify(state.progress));
   populateLevels();
   els.levelSelect.value = String(state.levelIndex);
   updateMenuStats();
@@ -796,7 +860,7 @@ function closeSettings() {
 
 function updateSetting(key, value) {
   state.settings[key] = value;
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+  safeSetItem(SETTINGS_KEY, JSON.stringify(state.settings));
   applySettings();
 }
 
@@ -829,14 +893,15 @@ async function copyShareCode() {
 function importShareCode() {
   try {
     const payload = parseShareCode(els.shareText.value.trim());
-    if (!payload?.strokes?.length || !payload.launch?.pos) throw new Error('Invalid route.');
+    if (!payload?.strokes?.length || !payload.launch) throw new Error('Invalid route.');
     const targetIndex = LEVELS.findIndex((level) => level.id === payload.levelId);
     if (targetIndex >= 0 && targetIndex !== state.levelIndex) {
       if (!isLevelUnlocked(targetIndex)) throw new Error('Locked level.');
       setupLevel(targetIndex);
     }
     state.strokes = payload.strokes;
-    state.launch = cloneLaunch(payload.launch);
+    // The launch pad is part of the level; only the aim and power travel with a route.
+    state.launch = { pos: { ...state.level.launch.pos }, angle: payload.launch.angle, power: payload.launch.power };
     state.redo = [];
     saveSketch({ quiet: true });
     resetPlane();
@@ -858,10 +923,40 @@ function buildShareCode() {
 }
 
 function parseShareCode(code) {
-  const payload = JSON.parse(decodeURIComponent(atob(code)));
+  const payload = JSON.parse(decodeURIComponent(atob(code.replace(/\s+/g, ''))));
   return {
-    ...payload,
-    strokes: payload.strokes.filter((stroke) => Array.isArray(stroke.points) && stroke.points.length > 1)
+    levelId: String(payload.levelId || ''),
+    launch: sanitizeLaunch(payload.launch),
+    strokes: sanitizeStrokes(payload.strokes)
+  };
+}
+
+// Anything read back from storage or pasted in as a share code is rebuilt field by
+// field, so a damaged or hand-edited code can never put NaN into the flight model
+// (which would otherwise be saved and break the level until progress was reset).
+function sanitizeStrokes(strokes) {
+  if (!Array.isArray(strokes)) return [];
+  const finite = (n) => typeof n === 'number' && Number.isFinite(n);
+  return strokes.slice(0, 200).map((stroke) => {
+    const points = (Array.isArray(stroke?.points) ? stroke.points : [])
+      .filter((pt) => pt && finite(pt.x) && finite(pt.y))
+      .slice(0, 800)
+      .map((pt) => ({ x: clamp(pt.x, -4000, 12000), y: clamp(pt.y, -4000, 6000) }));
+    return {
+      id: String(stroke?.id || Date.now() + Math.random()),
+      type: stroke?.type === 'gust' ? 'gust' : 'lift',
+      points
+    };
+  }).filter((stroke) => stroke.points.length > 1);
+}
+
+function sanitizeLaunch(launch) {
+  const finite = (n) => typeof n === 'number' && Number.isFinite(n);
+  if (!launch || !launch.pos || !finite(launch.pos.x) || !finite(launch.pos.y)) return null;
+  return {
+    pos: { x: launch.pos.x, y: launch.pos.y },
+    angle: clamp(finite(launch.angle) ? launch.angle : -0.32, -1.35, 0.32),
+    power: clamp(finite(launch.power) ? launch.power : 420, 230, 680)
   };
 }
 
@@ -974,10 +1069,10 @@ function saveSketch(options = {}) {
     camera: state.camera,
     launch: state.launch
   };
-  localStorage.setItem(levelStorageKey(state.level.id), JSON.stringify(payload));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ selectedLevel: state.level.id }));
+  const stored = safeSetItem(levelStorageKey(state.level.id), JSON.stringify(payload));
+  safeSetItem(STORAGE_KEY, JSON.stringify({ selectedLevel: state.level.id }));
   state.savedAt = payload.savedAt;
-  if (!options.quiet) showToast('Sketch saved locally.');
+  if (!options.quiet) showToast(stored ? 'Sketch saved locally.' : 'This browser is blocking storage — sketch not saved.');
 }
 
 function loadLevelSketch(levelId) {
@@ -986,9 +1081,14 @@ function loadLevelSketch(levelId) {
     if (!raw) return null;
     const payload = JSON.parse(raw);
     if (!Array.isArray(payload.strokes)) return null;
+    const camera = payload.camera && [payload.camera.x, payload.camera.y, payload.camera.zoom].every(Number.isFinite)
+      ? { x: payload.camera.x, y: payload.camera.y, zoom: clamp(payload.camera.zoom, ZOOM_MIN, ZOOM_MAX) }
+      : null;
     return {
       ...payload,
-      strokes: payload.strokes.filter((stroke) => Array.isArray(stroke.points) && stroke.points.length > 1)
+      camera,
+      launch: sanitizeLaunch(payload.launch),
+      strokes: sanitizeStrokes(payload.strokes)
     };
   } catch (error) {
     console.warn('Could not load Paper Pilot sketch.', error);
@@ -1308,9 +1408,10 @@ function drawPlaneTrail() {
 
 function drawPlane() {
   const p = state.plane;
+  const pose = p.render || { x: p.pos.x, y: p.pos.y, angle: p.angle };
   ctx.save();
-  ctx.translate(p.pos.x, p.pos.y);
-  ctx.rotate(p.angle);
+  ctx.translate(pose.x, pose.y);
+  ctx.rotate(pose.angle);
   const wobble = Math.sin(performance.now() * 0.014) * (p.wind || 0) * 3;
   ctx.fillStyle = 'rgba(33, 48, 71, 0.18)';
   ctx.beginPath();

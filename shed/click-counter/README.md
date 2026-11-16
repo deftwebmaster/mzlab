@@ -9,7 +9,7 @@ lab.maniczone.com/shed/click-counter/
 The download button points to:
 
 ```text
-downloads/click-counter-1.0.0.zip
+downloads/click-counter-1.1.0.zip
 ```
 
 Keep that ZIP in the `downloads` folder unless you update the links in `index.html`.

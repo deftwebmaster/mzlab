@@ -20,11 +20,68 @@ export class AudioEngine {
   }
 
   setEnabled(enabled) { this.enabled = enabled; }
-  setMusicEnabled(enabled) { this.musicEnabled = enabled; }
+
+  setMusicEnabled(enabled) {
+    this.musicEnabled = enabled;
+    if (enabled) this._startAmbient();
+    else this._stopAmbient();
+  }
 
   resume() {
     this.ensureContext();
     if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+    this._unlocked = true;
+    if (this.musicEnabled) this._startAmbient();
+  }
+
+  // The Music setting drives a quiet synthesized bed: two detuned low voices under a
+  // slow filter sweep. It only starts after the first user gesture has unlocked audio.
+  _startAmbient() {
+    if (this._ambient || !this._unlocked) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const ctx = this.ctx;
+    const out = ctx.createGain();
+    out.gain.setValueAtTime(0.0001, ctx.currentTime);
+    out.gain.exponentialRampToValueAtTime(0.16, ctx.currentTime + 3);
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 420;
+    filter.Q.value = 2;
+    const lfo = ctx.createOscillator();
+    lfo.frequency.value = 0.07;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 180;
+    lfo.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+    const voices = [55, 55.4, 82.4, 110.3].map((freq, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = i < 2 ? 'sawtooth' : 'triangle';
+      osc.frequency.value = freq;
+      const g = ctx.createGain();
+      g.gain.value = i < 2 ? 0.22 : 0.12;
+      osc.connect(g);
+      g.connect(filter);
+      osc.start();
+      return osc;
+    });
+    filter.connect(out);
+    out.connect(this.masterGain);
+    lfo.start();
+    this._ambient = { out, nodes: [...voices, lfo] };
+  }
+
+  _stopAmbient() {
+    const amb = this._ambient;
+    if (!amb || !this.ctx) return;
+    this._ambient = null;
+    const t = this.ctx.currentTime;
+    amb.out.gain.cancelScheduledValues(t);
+    amb.out.gain.setValueAtTime(Math.max(0.0001, amb.out.gain.value), t);
+    amb.out.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+    for (const node of amb.nodes) {
+      try { node.stop(t + 0.7); } catch { /* already stopped */ }
+    }
   }
 
   tone({ freq = 440, duration = 0.12, type = 'sine', gain = 0.5, sweepTo = null, delay = 0 } = {}) {
@@ -47,6 +104,7 @@ export class AudioEngine {
   }
 
   move() { this.tone({ freq: 220, duration: 0.06, type: 'square', gain: 0.18 }); }
+  blocked() { this.tone({ freq: 110, duration: 0.07, type: 'triangle', gain: 0.22, sweepTo: 70 }); }
   door() { this.tone({ freq: 160, duration: 0.18, type: 'triangle', gain: 0.3, sweepTo: 90 }); }
   pickup() { this.tone({ freq: 520, duration: 0.14, type: 'sine', gain: 0.35, sweepTo: 880 }); }
   camera() { this.tone({ freq: 700, duration: 0.05, type: 'square', gain: 0.12 }); }

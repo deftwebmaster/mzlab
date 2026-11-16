@@ -16,6 +16,7 @@ export function createDaySession({
   day, location, weather, season, menuItem, recipe, price, quality,
   reputation, brandAwareness, campaignReach, activeCompetitors, competitorAggression,
   cupsAvailable, serviceSpeedFactor, capacityBonus = 0, waitTolerance = 0, localActivity, rngSeed,
+  demandMultiplier = 1,
 }) {
   const hours = location.weekendOnly ? location.hours : (location.hours || [DAY_START_HOUR, DAY_END_HOUR]);
   const dayModifierBase = computeDayModifier({
@@ -23,6 +24,8 @@ export function createDaySession({
     competitorCount: activeCompetitors.length,
     localEventMultiplier: localActivity?.trafficMultiplier || 1,
     menuSeasonality: menuItem.seasonality[season] ?? 1,
+    demandMultiplier,
+    competitorAggression,
   });
 
   return {

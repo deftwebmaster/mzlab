@@ -2,7 +2,7 @@ export const APP_CONFIG = {
   name: "ATS Lens",
   tagline: "See what resume software can actually read.",
   version: "1.0.0",
-  authorLabel: "Matt Livingston",
+  authorLabel: "ManicZone Lab",
   portfolioUrl: "https://lab.maniczone.com",
   maxFileSizeBytes: 10 * 1024 * 1024,
   acceptedExtensions: ["pdf", "docx", "txt"],

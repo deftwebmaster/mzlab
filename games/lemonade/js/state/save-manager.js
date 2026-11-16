@@ -90,13 +90,22 @@ export async function deleteSlot(slot) {
 }
 
 export function getActiveSlot() {
-  const raw = localStorage.getItem(ACTIVE_SLOT_KEY);
+  let raw = null;
+  try {
+    raw = localStorage.getItem(ACTIVE_SLOT_KEY);
+  } catch {
+    /* storage blocked: fall back to slot 1 */
+  }
   const parsed = raw ? Number.parseInt(raw, 10) : 1;
   return Number.isInteger(parsed) && parsed >= 1 && parsed <= MAX_SAVE_SLOTS ? parsed : 1;
 }
 
 export function setActiveSlot(slot) {
-  localStorage.setItem(ACTIVE_SLOT_KEY, String(slot));
+  try {
+    localStorage.setItem(ACTIVE_SLOT_KEY, String(slot));
+  } catch {
+    /* storage blocked */
+  }
 }
 
 export function exportSaveAsJson(state) {
@@ -117,6 +126,16 @@ let autosaveTimer = null;
 export function scheduleAutosave(getState, slot, delayMs = 1500) {
   if (autosaveTimer) clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => {
+    autosaveTimer = null;
     saveToSlot(slot, getState()).catch((err) => console.error('Autosave failed', err));
   }, delayMs);
+}
+
+/** Write a pending autosave immediately (page is being hidden or closed). */
+export function flushAutosave(getState, slot) {
+  if (!autosaveTimer) return;
+  clearTimeout(autosaveTimer);
+  autosaveTimer = null;
+  const state = getState();
+  if (state) saveToSlot(slot, state).catch((err) => console.error('Autosave failed', err));
 }

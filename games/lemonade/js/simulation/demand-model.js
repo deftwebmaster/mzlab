@@ -15,8 +15,8 @@ export function awarenessTrafficFactor(brandAwareness, campaignReach = 0) {
   return base + campaignReach;
 }
 
-export function competitionTrafficFactor(competitionLevel, competitorCount) {
-  return clamp(1 - competitionLevel * 0.5 - competitorCount * 0.03, 0.4, 1);
+export function competitionTrafficFactor(competitionLevel, competitorCount, aggression = 1) {
+  return clamp(1 - (competitionLevel * 0.5 + competitorCount * 0.03) * aggression, 0.4, 1);
 }
 
 // Rough intraday shape: slow morning, lunch peak, afternoon lull, second peak.
@@ -43,13 +43,17 @@ export function computeDayModifier({
   competitorCount = 0,
   localEventMultiplier = 1,
   menuSeasonality = 1,
+  // Difficulty: the new-game screen promises "forgiving demand" and "gentler / sharper
+  // competition", but these two settings were defined and never applied anywhere.
+  demandMultiplier = 1,
+  competitorAggression = 1,
 }) {
   const weatherMod = weatherTrafficMultiplier(weather.type) * temperatureDemandFactor(weather.temperature);
   const repMod = reputationTrafficFactor(reputation);
   const awareMod = awarenessTrafficFactor(brandAwareness, campaignReach);
-  const compMod = competitionTrafficFactor(location.competitionLevel || 0, competitorCount);
+  const compMod = competitionTrafficFactor(location.competitionLevel || 0, competitorCount, competitorAggression);
   const exposureMod = 1 - (location.weatherExposure || 0.5) * (1 - clamp(weatherMod, 0.3, 1.3)) * 0.6;
-  return weatherMod * repMod * awareMod * compMod * exposureMod * localEventMultiplier * menuSeasonality;
+  return weatherMod * repMod * awareMod * compMod * exposureMod * localEventMultiplier * menuSeasonality * demandMultiplier;
 }
 
 /** Estimated cup-demand range shown on the prep screen (never an exact number). */

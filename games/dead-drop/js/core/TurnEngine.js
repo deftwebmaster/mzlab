@@ -73,7 +73,7 @@ export function simulateTurn(state, level, moveDir) {
   }
 
   // 6. Detection check against the final post-toggle board.
-  const detection = checkDetection(newState, level);
+  const detection = checkSwap(state, newState) || checkDetection(newState, level);
   if (detection) {
     newState.status = GAME_STATUS.FAILED;
     newState.detectionReason = detection;
@@ -97,6 +97,21 @@ export function simulateTurn(state, level, moveDir) {
   }
 
   return { valid: true, state: newState, events };
+}
+
+// Trading places with a guard means walking straight through them: the two end the
+// turn on each other's old tiles, so the same-tile contact test alone would miss it.
+function checkSwap(before, after) {
+  for (const guard of after.guards) {
+    const was = before.guards.find((g) => g.id === guard.id);
+    if (!was) continue;
+    if (guard.x === before.player.x && guard.y === before.player.y &&
+        was.x === after.player.x && was.y === after.player.y &&
+        (was.x !== guard.x || was.y !== guard.y)) {
+      return { type: 'contact', id: guard.id };
+    }
+  }
+  return null;
 }
 
 function checkDetection(state, level) {

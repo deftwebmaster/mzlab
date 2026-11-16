@@ -215,6 +215,7 @@ export function buildMissionRuntime(def) {
     reactorExplosions: 0,
     hullDamageTaken: 0,
     rareCollected: 0,
+    rareSpawned: 0,
     rareTotal: countRare(def),
     wrecksDestroyedTotal: 0,
     wrecksTotal: countTotalWrecks(def),

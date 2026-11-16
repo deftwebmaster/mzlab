@@ -145,10 +145,11 @@ export class Input {
     }
     if (KEY_LEFT.has(e.key)) {
       this._keyLeft = down;
-      if (down) e.preventDefault();
+      // Only claim the arrows during a run; in menus they still move sliders and focus.
+      if (down && this.enabled) e.preventDefault();
     } else if (KEY_RIGHT.has(e.key)) {
       this._keyRight = down;
-      if (down) e.preventDefault();
+      if (down && this.enabled) e.preventDefault();
     } else if (KEY_PHASE.has(e.key)) {
       // Space must not scroll or re-trigger focused buttons during play.
       if (this.enabled) e.preventDefault();

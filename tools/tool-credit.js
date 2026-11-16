@@ -23,7 +23,7 @@
     credit.setAttribute('aria-label', 'Tool credit');
     credit.innerHTML = [
       '<div class="ml-tool-credit__inner">',
-      '<span>Built by <a href="' + creatorUrl + '">Matt Livingston</a></span>',
+      '<span>Built by <a href="' + creatorUrl + '">ManicZone Lab</a></span>',
       '<span class="ml-tool-credit__dot" aria-hidden="true"></span>',
       '<a href="' + toolsUrl + '">All tools</a>',
       '<span class="ml-tool-credit__dot" aria-hidden="true"></span>',

@@ -1,4 +1,7 @@
-import { wrapDelta, randRange, clamp } from './utils.js';
+import { wrapDelta, wrapValue, randRange } from './utils.js';
+
+const STAR_TILE = 1400;
+const NEBULA_TILE = 2600;
 
 // Background theme palettes — subtle parallax starfields, no external images.
 export const BACKGROUNDS = {
@@ -14,6 +17,9 @@ export class Camera {
   constructor(worldW, worldH) {
     this.x = worldW / 2;
     this.y = worldH / 2;
+    // Unwrapped travel, so parallax layers scroll smoothly across the world seam.
+    this.ux = 0;
+    this.uy = 0;
     this.worldW = worldW;
     this.worldH = worldH;
     this.shake = 0;
@@ -22,10 +28,12 @@ export class Camera {
   }
 
   follow(target, dt) {
+    this.ux += wrapDelta(target.x, this.x, this.worldW);
+    this.uy += wrapDelta(target.y, this.y, this.worldH);
     this.x = target.x;
     this.y = target.y;
     if (this.shake > 0) {
-      this.shake = Math.max(0, this.shake - dt * 3.2);
+      this.shake = Math.max(0, this.shake - dt * 26);
       const s = this.shake;
       this.shakeOffsetX = randRange(-s, s);
       this.shakeOffsetY = randRange(-s, s);
@@ -76,21 +84,25 @@ export class Renderer {
     this.height = h;
   }
 
+  // Stars and nebula live on a repeating tile rather than in world space: each layer
+  // scrolls at its own fraction of camera travel and wraps at the tile edge, so the sky
+  // fills any screen size evenly and never pops when the craft crosses the world seam.
   generateStars(worldW, worldH, density = 1) {
     this.stars = [];
     const layers = [
-      { count: 90 * density, speed: 0.15, size: [0.6, 1.2], alpha: 0.35 },
-      { count: 60 * density, speed: 0.35, size: [0.9, 1.8], alpha: 0.55 },
-      { count: 34 * density, speed: 0.6, size: [1.2, 2.4], alpha: 0.85 },
+      { count: 150 * density, speed: 0.12, size: [0.6, 1.2], alpha: 0.35 },
+      { count: 95 * density, speed: 0.28, size: [0.9, 1.8], alpha: 0.55 },
+      { count: 50 * density, speed: 0.5, size: [1.2, 2.4], alpha: 0.85 },
     ];
     for (const layer of layers) {
       for (let i = 0; i < layer.count; i++) {
         this.stars.push({
-          x: Math.random() * worldW,
-          y: Math.random() * worldH,
+          x: Math.random() * STAR_TILE,
+          y: Math.random() * STAR_TILE,
           size: randRange(layer.size[0], layer.size[1]),
           alpha: layer.alpha * randRange(0.6, 1),
           speed: layer.speed,
+          twinkle: Math.random() * Math.PI * 2,
         });
       }
     }
@@ -98,15 +110,15 @@ export class Renderer {
 
   generateNebula(worldW, worldH, theme) {
     this.nebula = [];
-    const count = 7;
+    const count = 6;
     for (let i = 0; i < count; i++) {
       this.nebula.push({
-        x: Math.random() * worldW,
-        y: Math.random() * worldH,
-        radius: randRange(220, 480),
-        alpha: randRange(0.05, 0.13),
+        x: Math.random() * NEBULA_TILE,
+        y: Math.random() * NEBULA_TILE,
+        radius: randRange(260, 520),
+        alpha: randRange(0.06, 0.14),
         speed: 0.06,
-        color: theme.accent,
+        color: i % 3 === 2 ? theme.tint : theme.accent,
       });
     }
   }
@@ -114,16 +126,19 @@ export class Renderer {
   drawNebula(camera) {
     const ctx = this.ctx;
     for (const n of this.nebula) {
-      const dx = wrapDelta(n.x, camera.x * n.speed + n.x * (1 - n.speed), camera.worldW);
-      const dy = wrapDelta(n.y, camera.y * n.speed + n.y * (1 - n.speed), camera.worldH);
-      const px = this.width / 2 + dx;
-      const py = this.height / 2 + dy;
-      if (px < -n.radius || px > this.width + n.radius || py < -n.radius || py > this.height + n.radius) continue;
-      const g = ctx.createRadialGradient(px, py, 0, px, py, n.radius);
-      g.addColorStop(0, hexAlphaColor(n.color, n.alpha));
-      g.addColorStop(1, hexAlphaColor(n.color, 0));
-      ctx.fillStyle = g;
-      ctx.fillRect(px - n.radius, py - n.radius, n.radius * 2, n.radius * 2);
+      const bx = wrapValue(n.x - camera.ux * n.speed, NEBULA_TILE) - n.radius;
+      const by = wrapValue(n.y - camera.uy * n.speed, NEBULA_TILE) - n.radius;
+      for (let px = bx - NEBULA_TILE; px - n.radius < this.width; px += NEBULA_TILE) {
+        if (px + n.radius < 0) continue;
+        for (let py = by - NEBULA_TILE; py - n.radius < this.height; py += NEBULA_TILE) {
+          if (py + n.radius < 0) continue;
+          const g = ctx.createRadialGradient(px, py, 0, px, py, n.radius);
+          g.addColorStop(0, hexAlphaColor(n.color, n.alpha));
+          g.addColorStop(1, hexAlphaColor(n.color, 0));
+          ctx.fillStyle = g;
+          ctx.fillRect(px - n.radius, py - n.radius, n.radius * 2, n.radius * 2);
+        }
+      }
     }
   }
 
@@ -139,16 +154,17 @@ export class Renderer {
 
   drawStars(camera) {
     const ctx = this.ctx;
+    const t = this.reducedMotion ? 0 : performance.now() / 1000;
+    ctx.fillStyle = '#eef4f8';
     for (const s of this.stars) {
-      // Parallax: stars use a fraction of the camera's motion via wrapDelta scaled by (1-speed)
-      const dx = wrapDelta(s.x, camera.x * s.speed + s.x * (1 - s.speed), camera.worldW);
-      const dy = wrapDelta(s.y, camera.y * s.speed + s.y * (1 - s.speed), camera.worldH);
-      const px = this.width / 2 + dx;
-      const py = this.height / 2 + dy;
-      if (px < -4 || px > this.width + 4 || py < -4 || py > this.height + 4) continue;
-      ctx.globalAlpha = s.alpha;
-      ctx.fillStyle = '#eef4f8';
-      ctx.fillRect(px, py, s.size, s.size);
+      const bx = wrapValue(s.x - camera.ux * s.speed, STAR_TILE);
+      const by = wrapValue(s.y - camera.uy * s.speed, STAR_TILE);
+      ctx.globalAlpha = s.alpha * (0.82 + 0.18 * Math.sin(t * 1.3 + s.twinkle));
+      for (let px = bx; px < this.width; px += STAR_TILE) {
+        for (let py = by; py < this.height; py += STAR_TILE) {
+          ctx.fillRect(px, py, s.size, s.size);
+        }
+      }
     }
     ctx.globalAlpha = 1;
   }

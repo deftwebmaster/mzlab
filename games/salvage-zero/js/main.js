@@ -8,3 +8,4 @@ if ('serviceWorker' in navigator) {
 
 const game = new Game();
 game.boot();
+

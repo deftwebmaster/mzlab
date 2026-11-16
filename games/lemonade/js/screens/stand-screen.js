@@ -67,7 +67,8 @@ export function renderStandScreen(container, { navigate }) {
     root.querySelector('#start-day-btn')?.addEventListener('click', () => {
       advanceTutorial(state, 'start-day');
       playSound('day-start');
-      setState((s) => { s.liveDay = startDay(s); });
+      // A day already under way (left via the nav bar) is resumed, not restarted.
+      setState((s) => { if (!s.liveDay) s.liveDay = startDay(s); });
       navigate('/stand/live');
     });
   }

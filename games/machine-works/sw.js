@@ -1,6 +1,6 @@
 // Minimal cache-first service worker for the static app shell.
 // Real asset precaching (sprites/audio) will expand this list in later milestones.
-const CACHE_NAME = 'machineworks-shell-v6-mz1';
+const CACHE_NAME = 'machineworks-shell-v6-mz2';
 const SHELL_ASSETS = [
   './',
   './index.html',
@@ -51,8 +51,12 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
       return fetch(event.request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        // Only keep good same-origin responses: caching a 404 or an error page would
+        // serve it forever under this cache-first strategy.
+        if (response && response.ok && new URL(event.request.url).origin === self.location.origin) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
         return response;
       }).catch(() => cached);
     })

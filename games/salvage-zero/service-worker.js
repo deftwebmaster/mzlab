@@ -1,4 +1,4 @@
-const CACHE_NAME = 'salvage-zero-v1-mz1';
+const CACHE_NAME = 'salvage-zero-v1-mz2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -32,7 +32,9 @@ const APP_SHELL = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
+      .then((cache) => cache.addAll(APP_SHELL)
+        // Menu backdrop: nice to have offline, never worth failing the install over.
+        .then(() => cache.add('../img/salvage-zero.webp').catch(() => {})))
       .then(() => self.skipWaiting())
   );
 });

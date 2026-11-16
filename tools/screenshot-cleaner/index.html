@@ -1999,7 +1999,7 @@
       const iendOffset = findPngChunk(base, 'IEND');
       const chunks = [
         makePngTextChunk('Software', 'Portfolio Metadata Cleaner Demo'),
-        makePngTextChunk('Author', 'Matt Livingston demo metadata'),
+        makePngTextChunk('Author', 'ManicZone Lab demo metadata'),
         makePngTextChunk('Creation Time', '2026:07:14 09:15:00')
       ];
       const demoBytes = concatBytes([base.slice(0, iendOffset), ...chunks, base.slice(iendOffset)]);

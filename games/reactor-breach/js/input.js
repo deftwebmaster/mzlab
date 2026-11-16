@@ -22,6 +22,9 @@ export class InputManager {
     this.logicalWidth = 480;
     this.logicalHeight = 800;
     this.mobileButtons = { launch: false, catchHold: false };
+    // Set by game.js: true only while a stage is live, so menus keep normal
+    // keyboard behaviour (Space/Enter on buttons, arrows on sliders).
+    this.captureKeys = false;
 
     this._bind();
   }
@@ -39,7 +42,13 @@ export class InputManager {
 
   _bind() {
     window.addEventListener('keydown', (e) => {
+      if (e.code === 'KeyP' || e.code === 'Escape') {
+        if (!e.repeat) this.pauseRequested = true;
+        return;
+      }
+      if (!this.captureKeys) return;
       this.keys.add(e.code);
+      if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') e.preventDefault();
       if (e.code === 'Space') {
         if (!this._launchLatch) {
           this.launchRequested = true;
@@ -58,9 +67,11 @@ export class InputManager {
       if (e.code === 'Digit3') this.routeSelectRequested = 3;
       if (e.code === 'KeyQ') this.cycleRequested = 'left';
       if (e.code === 'KeyE') this.cycleRequested = 'right';
-      if (e.code === 'KeyP' || e.code === 'Escape') this.pauseRequested = true;
-      if (e.code === 'KeyR') this.restartRequested = true;
+      if (e.code === 'KeyR' && !e.repeat) this.restartRequested = true;
     });
+    // A key released while the window is unfocused never sends keyup — drop held keys
+    // so the deflector can't keep sliding on its own.
+    window.addEventListener('blur', () => this.releaseKeys());
     window.addEventListener('keyup', (e) => {
       this.keys.delete(e.code);
       if (e.code === 'Space') this._launchLatch = false;
@@ -124,6 +135,24 @@ export class InputManager {
       if (kind === 'catch') this.catchRequested = true;
     };
     el.addEventListener('pointerdown', start, { passive: false });
+  }
+
+  releaseKeys() {
+    this.keys.clear();
+    this._launchLatch = false;
+    this._catchLatch = false;
+    this.pointerActive = false;
+    this._touchStartX = null;
+  }
+
+  /** Drop any one-shot requests queued while no stage was running. */
+  clearFlags() {
+    this.launchRequested = false;
+    this.catchRequested = false;
+    this.routeSelectRequested = null;
+    this.cycleRequested = null;
+    this.pauseRequested = false;
+    this.restartRequested = false;
   }
 
   computeMoveAxis() {

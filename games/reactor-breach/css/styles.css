@@ -276,9 +276,13 @@ canvas#gameCanvas {
   background: linear-gradient(180deg, rgba(90,216,255,0.35), rgba(90,216,255,0.1));
   border-color: var(--cyan);
 }
-@media (min-width: 820px) {
+/* Shown by ui.js on touch devices of any width (tablets and landscape phones included);
+   a mouse-and-keyboard desktop never needs them. */
+@media (hover: hover) and (pointer: fine) {
   .mobile-controls { display: none !important; }
 }
+.mobile-btn { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.mobile-btn:active { filter: brightness(1.5); transform: scale(0.97); }
 
 /* ---------- Screens ---------- */
 .screen {

@@ -8,7 +8,7 @@ Upload **the contents of this directory** to the new domain’s document root. `
 
 - `/apps/24/meetings/` — 24 Meeting Tracker (schedule and attendance)
 - `/games/` — 12 browser games
-- `/tools/` — 30 browser tools
+- `/tools/` — 30 Lab browser tools plus 4 linked ManicWebmaster tools
 - `/projects/` — projects and experiments, including Minecraft tools
 - `/shed/` — Script Shed pages and downloadable PHP packages
 
@@ -16,7 +16,7 @@ On GitHub Pages, retain `CNAME` (`lab.maniczone.com`) and `.nojekyll`. On other 
 
 ## What changed
 
-The four collections retain their existing URL paths. Old website references were replaced in pages, styles, JavaScript, metadata, documentation, and downloadable ZIP contents. Site branding now points to ManicZone Lab; author credits retain Matt Livingston. Shared icons and the generic social cards belong to the Lab. Individual game/project artwork remains intact.
+The four collections retain their existing URL paths. Old website references were replaced in pages, styles, JavaScript, metadata, documentation, and downloadable ZIP contents. Site branding and author credits now point to ManicZone Lab across the homepage, games, tools, projects and the Script Shed (`/apps/` has not been reviewed). Shared icons and the generic social cards belong to the Lab. Individual game/project artwork remains intact.
 
 The homepage links to all four collections and the meeting tracker, with the dark cyan/violet visual style used across the Lab. Added a sitemap, robots.txt, and a branded 404 page. Each game’s service worker only removes its own obsolete caches, allowing all twelve games to coexist on this origin.
 

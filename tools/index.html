@@ -66,7 +66,11 @@
       <dl class="trust-strip" aria-label="Tool collection details">
         <div>
           <dt>30</dt>
-          <dd>Tools</dd>
+          <dd>Lab tools</dd>
+        </div>
+        <div>
+          <dt>+ 4</dt>
+          <dd>From ManicWebmaster</dd>
         </div>
         <div>
           <dt>0</dt>
@@ -93,7 +97,7 @@
         </div>
       </section>
 
-      <p class="result-count" id="resultCount" aria-live="polite">Showing the curated shelf.</p>
+      <p class="result-count" id="resultCount" aria-live="polite">Showing 30 Lab tools + 4 from ManicWebmaster.</p>
 
       <section class="tool-section" aria-labelledby="featured-title" data-section="featured">
         <div class="section-heading">
@@ -226,6 +230,47 @@
             <p>Sanitize logs, stack traces, headers, env dumps, and JSON payloads before sharing them in tickets, chats, or bug reports.</p>
             <div class="tech-badges"><span>Redaction</span><span>Secrets</span><span>Local-only</span></div>
             <a href="logshare-sanitizer/" class="card-link">Open tool</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="manicwebmaster" class="tool-section network-section" aria-labelledby="manicwebmaster-title" data-section="manicwebmaster">
+        <div class="section-heading">
+          <p class="eyebrow">More from the Manic universe</p>
+          <h2 id="manicwebmaster-title">From ManicWebmaster</h2>
+          <p class="network-intro">Four more tools for building a stronger web presence. Built by ManicZone Lab and hosted on <a href="https://manicwebmaster.com/tools/">ManicWebmaster <span aria-hidden="true">↗</span></a>.</p>
+        </div>
+        <div class="tools-grid network-grid">
+          <article class="tool-card network-tool" data-category="dev" data-source="manicwebmaster" data-title="Launch Hero" data-tags="hero landing page generator copy html css react tailwind design business website">
+            <div class="card-meta"><span class="tag dev">Web dev</span><span class="source-badge">ManicWebmaster <span aria-hidden="true">↗</span></span></div>
+            <h3>Launch Hero</h3>
+            <p>Generate a landing-page hero section with copy, styling, and code you can use as a starting point for your next build.</p>
+            <div class="tech-badges"><span>Hero sections</span><span>Landing pages</span><span>Code export</span></div>
+            <a href="https://manicwebmaster.com/tools/launch-hero/" class="card-link external-link">Open on ManicWebmaster</a>
+          </article>
+
+          <article class="tool-card network-tool" data-category="dev" data-source="manicwebmaster" data-title="Site Rescue" data-tags="website audit review conversions conversion business rescue design first impression">
+            <div class="card-meta"><span class="tag dev">Web dev</span><span class="source-badge">ManicWebmaster <span aria-hidden="true">↗</span></span></div>
+            <h3>Site Rescue</h3>
+            <p>Audit your website and uncover the issues that could be holding back its first impression and conversions.</p>
+            <div class="tech-badges"><span>Website audit</span><span>Conversions</span><span>First impressions</span></div>
+            <a href="https://manicwebmaster.com/tools/site-rescue/" class="card-link external-link">Open on ManicWebmaster</a>
+          </article>
+
+          <article class="tool-card network-tool" data-category="dev" data-source="manicwebmaster" data-title="Favicon Forge" data-tags="favicon logo small tiny size brand branding icon design forge">
+            <div class="card-meta"><span class="tag dev">Web dev</span><span class="source-badge">ManicWebmaster <span aria-hidden="true">↗</span></span></div>
+            <h3>Favicon Forge</h3>
+            <p>Check how your logo holds up at tiny sizes, where a good-looking mark still needs to be recognizable.</p>
+            <div class="tech-badges"><span>Logo checks</span><span>Small-size previews</span><span>Branding</span></div>
+            <a href="https://manicwebmaster.com/tools/favicon-forge/" class="card-link external-link">Open on ManicWebmaster</a>
+          </article>
+
+          <article class="tool-card network-tool" data-category="dev" data-source="manicwebmaster" data-title="ShareSpark" data-tags="open graph og social share card image preview design branding marketing sharespark">
+            <div class="card-meta"><span class="tag dev">Web dev</span><span class="source-badge">ManicWebmaster <span aria-hidden="true">↗</span></span></div>
+            <h3>ShareSpark</h3>
+            <p>Design Open Graph cards that make your links look sharp when your website gets shared.</p>
+            <div class="tech-badges"><span>Open Graph</span><span>Social cards</span><span>Design</span></div>
+            <a href="https://manicwebmaster.com/tools/sharespark/" class="card-link external-link">Open on ManicWebmaster</a>
           </article>
         </div>
       </section>
@@ -414,7 +459,7 @@
 
     <footer class="footer">
       <div>
-        <strong>Built by <a href="https://lab.maniczone.com">Matt Livingston</a></strong>
+        <strong>Built by <a href="https://lab.maniczone.com">ManicZone Lab</a></strong>
         <p>Small tools, no accounts, no tracking, and a bias toward getting the work done.</p>
       </div>
       <a href="https://lab.maniczone.com">ManicZone Lab</a>
@@ -429,6 +474,8 @@
       const sections = Array.from(document.querySelectorAll('[data-section]'));
       const resultCount = document.getElementById('resultCount');
       const emptyState = document.getElementById('emptyState');
+      const networkCount = cards.filter(card => card.dataset.source === 'manicwebmaster').length;
+      const labCount = cards.length - networkCount;
       let activeFilter = 'all';
 
       function normalize(value) {
@@ -464,11 +511,11 @@
         });
 
         emptyState.classList.toggle('hidden', visibleCount !== 0);
-        const mode = activeFilter === 'all' ? 'curated shelf' : activeFilter;
+        const mode = activeFilter === 'dev' ? 'web development' : 'utility';
         resultCount.textContent = query
           ? `Showing ${visibleCount} matching ${visibleCount === 1 ? 'tool' : 'tools'} for "${searchInput.value}".`
           : activeFilter === 'all'
-            ? 'Showing the curated shelf.'
+            ? `Showing ${labCount} Lab tools + ${networkCount} from ManicWebmaster.`
             : `Showing ${visibleCount} ${mode} ${visibleCount === 1 ? 'tool' : 'tools'}.`;
       }
 
@@ -481,6 +528,7 @@
       });
 
       searchInput.addEventListener('input', updateView);
+      updateView();
     })();
   </script>
 </body>

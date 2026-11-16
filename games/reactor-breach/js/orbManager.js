@@ -123,6 +123,8 @@ export class OrbManager {
 
       if (!piercing) {
         [orb.vx, orb.vy] = reflectVelocity(orb.vx, orb.vy, hit.nx, hit.ny);
+        // A corner hit can leave the orb skimming almost flat; keep some climb or dive in it.
+        [orb.vx, orb.vy] = enforceMinimumVerticalSpeed(orb.vx, orb.vy);
         orb.x += hit.nx * (hit.penetration + 0.5);
         orb.y += hit.ny * (hit.penetration + 0.5);
       } else {
@@ -205,7 +207,9 @@ export class OrbManager {
         orb.consecutiveShallowBounces = 0;
       }
       if (orb.consecutiveShallowBounces >= CONFIG.orb.wallLoopBounceThreshold) {
-        [orb.vx, orb.vy] = enforceMinimumVerticalSpeed(orb.vx, orb.vy * 1.15);
+        // Kick the orb firmly out of a side-to-side loop instead of nudging it a few
+        // degrees, which used to leave it crawling across the chamber for many seconds.
+        [orb.vx, orb.vy] = enforceMinimumVerticalSpeed(orb.vx, orb.vy, CONFIG.orb.wallLoopEscapeRatio);
         orb.consecutiveShallowBounces = 0;
       }
       world.audio?.play('wallBounce');

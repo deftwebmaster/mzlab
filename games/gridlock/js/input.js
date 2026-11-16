@@ -83,6 +83,10 @@ export class Input {
         }
         const action = KEY_TO_ACTION[e.code];
         if (action) {
+          // Enter/Space on a focused button, link or toggle is that control's own
+          // activation key. Hijacking it made every keyboard press fire the screen's
+          // default action instead of the button the player had tabbed to.
+          if (action === 'confirm' && target && target.closest && target.closest('button, a[href], select, summary, [role="button"]')) return;
           e.preventDefault();
           this._emitAction(action);
         }
@@ -99,6 +103,10 @@ export class Input {
 
     window.addEventListener('blur', () => {
       this.heldDirs.length = 0;
+      // A D-pad press whose release lands outside the window would repeat forever.
+      clearInterval(this._dpadRepeat);
+      this._dpadRepeat = null;
+      for (const btn of document.querySelectorAll('[data-dir].is-down')) btn.classList.remove('is-down');
     });
   }
 

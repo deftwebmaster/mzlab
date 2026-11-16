@@ -1,6 +1,6 @@
 /**
  * Website Launch Kit
- * Matt Livingston - 2025
+ * ManicZone Lab - 2025
  */
 
 (function() {
@@ -1109,7 +1109,7 @@
         lines.push('• Affiliate disclosures should be close to affiliate links or recommendations, not only in a footer');
         lines.push('');
         lines.push('---');
-        lines.push('Built by Matt Livingston');
+        lines.push('Built by ManicZone Lab');
 
         return lines.join(le);
     }

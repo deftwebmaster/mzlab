@@ -1,4 +1,4 @@
-const CACHE_NAME = "ats-lens-v1.0.0";
+const CACHE_NAME = "ats-lens-v1.0.0-mz2";
 const ASSETS = [
   "./",
   "./index.html",

@@ -76,8 +76,8 @@ Mobile ship polish
 Footer refresh
 --------------
 - Replaced path/version footers with a Tool Bench panel.
-- Added useful cross-links, page-specific notes, and "Built for fun by Matt
-  Livingston" credit text.
+- Added useful cross-links, page-specific notes, and "Built for fun by ManicZone
+  Lab" credit text.
 
 Deploy
 ------

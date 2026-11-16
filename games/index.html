@@ -141,7 +141,6 @@
       color: var(--text);
       border-color: var(--border);
       background: rgba(255, 255, 255, 0.04);
-      outline: none;
     }
 
     main { padding: 24px 0 72px; }
@@ -233,6 +232,65 @@
       line-height: 1.6;
     }
 
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: -6px 0 22px;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .filter-chip span {
+      color: var(--text-dim);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.7rem;
+    }
+
+    .filter-chip:hover { color: var(--text); border-color: rgba(255, 255, 255, 0.2); }
+
+    .filter-chip.is-active {
+      color: var(--cyan);
+      border-color: rgba(0, 229, 255, 0.45);
+      background: rgba(0, 229, 255, 0.08);
+    }
+
+    .filter-chip.is-active span { color: var(--cyan); opacity: 0.75; }
+
+    .games-grid.is-filtered .collection-group-label,
+    .game-card[hidden] { display: none; }
+
+    .game-card.is-entering { animation: card-in 260ms ease both; }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* A clear keyboard focus ring; the hover lift alone is not enough to track focus. */
+    .game-card:focus-visible,
+    .filter-chip:focus-visible,
+    .nav-link:focus-visible,
+    .brand:focus-visible,
+    .site-footer a:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
     .collection-group-label {
       grid-column: 1 / -1;
       margin: 14px 0 0;
@@ -290,7 +348,6 @@
       box-shadow:
         0 30px 80px rgba(0, 0, 0, 0.38),
         0 0 34px color-mix(in srgb, var(--accent) 9%, transparent);
-      outline: none;
     }
 
     .game-card::after {
@@ -578,6 +635,12 @@
       .site-footer { align-items: flex-start; flex-direction: column; gap: 10px; }
     }
 
+    /* On touch screens :hover sticks after a tap, leaving a card stuck in its lifted state. */
+    @media (hover: none) {
+      .game-card:hover { transform: none; }
+      .game-card:hover .game-art { transform: scale(1.01); }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after {
@@ -636,10 +699,17 @@
         </p>
       </div>
 
-      <div class="games-grid">
+      <div class="filter-bar" role="group" aria-label="Filter games by type">
+        <button class="filter-chip is-active" type="button" data-filter="all" aria-pressed="true">All <span>12</span></button>
+        <button class="filter-chip" type="button" data-filter="arcade" aria-pressed="false">Arcade <span>5</span></button>
+        <button class="filter-chip" type="button" data-filter="puzzle" aria-pressed="false">Puzzle <span>3</span></button>
+        <button class="filter-chip" type="button" data-filter="sim" aria-pressed="false">Strategy &amp; Sim <span>4</span></button>
+      </div>
+
+      <div class="games-grid" id="games-grid">
         <div class="collection-group-label">Featured games</div>
 
-        <a class="game-card card-featured" href="./salvage-zero/" style="--accent: #00e5ff; --accent-secondary: #ff8a3d;" aria-label="Play Salvage Zero">
+        <a class="game-card card-featured" href="./salvage-zero/" data-genre="arcade" style="--accent: #00e5ff; --accent-secondary: #ff8a3d;" aria-label="Play Salvage Zero">
           <div class="game-visual">
             <img class="game-art" src="img/salvage-zero.webp" alt="" width="1672" height="941" fetchpriority="high" aria-hidden="true">
             <span class="game-status">Featured</span>
@@ -655,7 +725,7 @@
           </div>
         </a>
 
-        <a class="game-card card-featured" href="./blackbox-courier/" style="--accent: #ff4d67; --accent-secondary: #8b5cf6;" aria-label="Play Blackbox Courier">
+        <a class="game-card card-featured" href="./blackbox-courier/" data-genre="arcade" style="--accent: #ff4d67; --accent-secondary: #8b5cf6;" aria-label="Play Blackbox Courier">
           <div class="game-visual"><img class="game-art" src="img/blackbox-courier.webp" alt="" width="1672" height="941" loading="lazy" aria-hidden="true">
             <span class="game-status">Featured</span></div>
           <div class="game-body">
@@ -671,7 +741,7 @@
 
         <div class="collection-group-label">More games</div>
 
-        <a class="game-card" href="./lemonade/" style="--accent: #ffd84d; --accent-secondary: #38e8a1;" aria-label="Play Lemonade Empire">
+        <a class="game-card" href="./lemonade/" data-genre="sim" style="--accent: #ffd84d; --accent-secondary: #38e8a1;" aria-label="Play Lemonade Empire">
           <div class="game-visual"><img class="game-art" src="img/lemonade-empire.webp" alt="" width="1672" height="941" loading="lazy" aria-hidden="true"></div>
           <div class="game-body">
             <div class="game-type">Business Simulation</div>
@@ -684,7 +754,7 @@
           </div>
         </a>
 
-        <a class="game-card" href="./circuit-breaker/" style="--accent: #8b5cf6; --accent-secondary: #00e5ff;" aria-label="Play Circuit Breaker">
+        <a class="game-card" href="./circuit-breaker/" data-genre="puzzle" style="--accent: #8b5cf6; --accent-secondary: #00e5ff;" aria-label="Play Circuit Breaker">
           <div class="game-visual"><img class="game-art" src="img/circuit-breaker.webp" alt="" width="1672" height="941" loading="lazy" aria-hidden="true"></div>
           <div class="game-body">
             <div class="game-type">Match-Three Puzzle</div>
@@ -697,7 +767,7 @@
           </div>
         </a>
 
-        <a class="game-card" href="./reactor-breach/" style="--accent: #ff8a3d; --accent-secondary: #8b5cf6;" aria-label="Play Reactor Breach">
+        <a class="game-card" href="./reactor-breach/" data-genre="arcade" style="--accent: #ff8a3d; --accent-secondary: #8b5cf6;" aria-label="Play Reactor Breach">
           <div class="game-visual"><img class="game-art" src="img/reactor-breach.webp" alt="" width="1672" height="941" loading="lazy" aria-hidden="true"></div>
           <div class="game-body">
             <div class="game-type">Ricochet Arcade</div>
@@ -710,7 +780,7 @@
           </div>
         </a>
 
-        <a class="game-card" href="./gridlock/" style="--accent: #ffd166; --accent-secondary: #ff4d67;" aria-label="Play Gridlock">
+        <a class="game-card" href="./gridlock/" data-genre="arcade" style="--accent: #ffd166; --accent-secondary: #ff4d67;" aria-label="Play Gridlock">
           <div class="game-visual"><img class="game-art" src="img/gridlock.webp" alt="" width="1672" height="941" loading="lazy" aria-hidden="true"></div>
           <div class="game-body">
             <div class="game-type">Maze-Chase Arcade</div>
@@ -723,7 +793,7 @@
           </div>
         </a>
 
-        <a class="game-card" href="./signal-runner/" style="--accent: #00e5ff; --accent-secondary: #8b5cf6;" aria-label="Play Signal Runner">
+        <a class="game-card" href="./signal-runner/" data-genre="arcade" style="--accent: #00e5ff; --accent-secondary: #8b5cf6;" aria-label="Play Signal Runner">
           <div class="game-visual"><img class="game-art" src="img/signal-runner.webp" alt="" width="1672" height="941" loading="lazy" aria-hidden="true"></div>
           <div class="game-body">
             <div class="game-type">Lane-Crossing Arcade</div>
@@ -736,7 +806,7 @@
           </div>
         </a>
 
-        <a class="game-card" href="./dead-drop/" style="--accent: #38e8a1; --accent-secondary: #00e5ff;" aria-label="Play Dead Drop">
+        <a class="game-card" href="./dead-drop/" data-genre="puzzle" style="--accent: #38e8a1; --accent-secondary: #00e5ff;" aria-label="Play Dead Drop">
           <div class="game-visual"><img class="game-art" src="img/dead-drop.webp" alt="" width="1672" height="941" loading="lazy" aria-hidden="true"></div>
           <div class="game-body">
             <div class="game-type">Turn-Based Stealth</div>
@@ -751,7 +821,7 @@
 
         <a
           class="game-card"
-          href="./machine-works/"
+          href="./machine-works/" data-genre="sim"
           style="--accent: #66d9ff; --accent-secondary: #ff9f43;"
           aria-label="Play Machine Works"
         >
@@ -777,7 +847,7 @@
           </div>
         </a>
 
-        <a class="game-card" href="./treasure-hunter/" style="--accent: #d6a85f; --accent-secondary: #38e8a1;" aria-label="Play Treasure Hunter">
+        <a class="game-card" href="./treasure-hunter/" data-genre="sim" style="--accent: #d6a85f; --accent-secondary: #38e8a1;" aria-label="Play Treasure Hunter">
           <div class="game-visual"><img class="game-art" src="img/treasure-hunter.webp" alt="" width="1672" height="941" loading="lazy" aria-hidden="true"></div>
           <div class="game-body">
             <div class="game-type">Expedition Management</div>
@@ -792,7 +862,7 @@
 
         <a
           class="game-card"
-          href="./paper-pilot/"
+          href="./paper-pilot/" data-genre="puzzle"
           style="--accent: #7bc8e8; --accent-secondary: #ffd166;"
           aria-label="Play Paper Pilot"
         >
@@ -819,7 +889,7 @@
 
         <a
           class="game-card"
-          href="./xeno-agency/"
+          href="./xeno-agency/" data-genre="sim"
           style="--accent: #38e8a1; --accent-secondary: #8b5cf6;"
           aria-label="Play Xeno Agency"
         >
@@ -864,8 +934,41 @@
     </section>
   </main>
 
+  <script>
+    // Genre filter. Without JavaScript the chips simply do nothing and every game shows.
+    (function () {
+      var grid = document.getElementById('games-grid');
+      var chips = Array.prototype.slice.call(document.querySelectorAll('.filter-chip'));
+      if (!grid || !chips.length) return;
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('.game-card'));
+      function apply(filter, animate) {
+        grid.classList.toggle('is-filtered', filter !== 'all');
+        cards.forEach(function (card) {
+          var show = filter === 'all' || card.getAttribute('data-genre') === filter;
+          card.hidden = !show;
+          card.classList.remove('is-entering');
+          if (show && animate) { void card.offsetWidth; card.classList.add('is-entering'); }
+        });
+        chips.forEach(function (chip) {
+          var on = chip.getAttribute('data-filter') === filter;
+          chip.classList.toggle('is-active', on);
+          chip.setAttribute('aria-pressed', String(on));
+        });
+      }
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          var filter = chip.getAttribute('data-filter');
+          apply(filter, true);
+          try { history.replaceState(null, '', filter === 'all' ? location.pathname : '#' + filter); } catch (e) {}
+        });
+      });
+      var initial = (location.hash || '').slice(1);
+      if (chips.some(function (c) { return c.getAttribute('data-filter') === initial; }) && initial !== 'all') apply(initial, false);
+    })();
+  </script>
+
   <footer class="site-footer">
-    <span>Designed, developed, and illustrated by Matt Livingston.</span>
+    <span>Designed, developed, and illustrated by ManicZone Lab.</span>
     <a href="/">ManicZone Lab</a>
   </footer>
 </body>

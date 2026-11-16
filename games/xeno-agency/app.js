@@ -43,18 +43,18 @@ const NAME_POOL = [
 ];
 
 const PORTRAIT_LIBRARY = [
-  { id: "xa-01-17", code: "XA-01-17", src: "./assets/portraits/alien-01.png", accent: "#bda4ff" },
-  { id: "xa-02-44", code: "XA-02-44", src: "./assets/portraits/alien-02.png", accent: "#74dff4" },
-  { id: "xa-03-29", code: "XA-03-29", src: "./assets/portraits/alien-03.png", accent: "#d5c36a" },
-  { id: "xa-04-08", code: "XA-04-08", src: "./assets/portraits/alien-04.png", accent: "#ff9b4a" },
-  { id: "xa-05-73", code: "XA-05-73", src: "./assets/portraits/alien-05.png", accent: "#a979ff" },
-  { id: "xa-06-31", code: "XA-06-31", src: "./assets/portraits/alien-06.png", accent: "#82efff" },
-  { id: "xa-07-62", code: "XA-07-62", src: "./assets/portraits/alien-07.png", accent: "#79b7ff" },
-  { id: "xa-08-19", code: "XA-08-19", src: "./assets/portraits/alien-08.png", accent: "#9ab6d8" },
-  { id: "xa-09-55", code: "XA-09-55", src: "./assets/portraits/alien-09.png", accent: "#83efc6" },
-  { id: "xa-10-21", code: "XA-10-21", src: "./assets/portraits/alien-10.png", accent: "#ff73c9" },
-  { id: "xa-11-46", code: "XA-11-46", src: "./assets/portraits/alien-11.png", accent: "#ffc85a" },
-  { id: "xa-12-90", code: "XA-12-90", src: "./assets/portraits/alien-12.png", accent: "#d8e3ef" }
+  { id: "xa-01-17", code: "XA-01-17", src: "./assets/portraits/alien-01.webp", accent: "#bda4ff" },
+  { id: "xa-02-44", code: "XA-02-44", src: "./assets/portraits/alien-02.webp", accent: "#74dff4" },
+  { id: "xa-03-29", code: "XA-03-29", src: "./assets/portraits/alien-03.webp", accent: "#d5c36a" },
+  { id: "xa-04-08", code: "XA-04-08", src: "./assets/portraits/alien-04.webp", accent: "#ff9b4a" },
+  { id: "xa-05-73", code: "XA-05-73", src: "./assets/portraits/alien-05.webp", accent: "#a979ff" },
+  { id: "xa-06-31", code: "XA-06-31", src: "./assets/portraits/alien-06.webp", accent: "#82efff" },
+  { id: "xa-07-62", code: "XA-07-62", src: "./assets/portraits/alien-07.webp", accent: "#79b7ff" },
+  { id: "xa-08-19", code: "XA-08-19", src: "./assets/portraits/alien-08.webp", accent: "#9ab6d8" },
+  { id: "xa-09-55", code: "XA-09-55", src: "./assets/portraits/alien-09.webp", accent: "#83efc6" },
+  { id: "xa-10-21", code: "XA-10-21", src: "./assets/portraits/alien-10.webp", accent: "#ff73c9" },
+  { id: "xa-11-46", code: "XA-11-46", src: "./assets/portraits/alien-11.webp", accent: "#ffc85a" },
+  { id: "xa-12-90", code: "XA-12-90", src: "./assets/portraits/alien-12.webp", accent: "#d8e3ef" }
 ];
 
 const SPECIES_SYLLABLES = {
@@ -1107,8 +1107,13 @@ async function loadSave() {
 async function saveGame() {
   if (!game) return;
   game.meta.updatedAt = clock.now();
-  localStorage.setItem(BACKUP_KEY, JSON.stringify(game));
-  localStorage.removeItem(LOAD_ERROR_KEY);
+  try {
+    localStorage.setItem(BACKUP_KEY, JSON.stringify(game));
+    localStorage.removeItem(LOAD_ERROR_KEY);
+  } catch {
+    // Storage full or blocked. IndexedDB below is the primary copy; a failed backup
+    // must not reject and leave the screen that called saveGame() half-updated.
+  }
   await withTimeout(dbSet(CURRENT_KEY, game), 1200).catch(() => {});
 }
 
@@ -1123,7 +1128,11 @@ function withTimeout(promise, ms) {
 
 function recordLoadError(source, error) {
   const message = error?.message || String(error || "Unknown save error");
-  localStorage.setItem(LOAD_ERROR_KEY, `${source}: ${message}`);
+  try {
+    localStorage.setItem(LOAD_ERROR_KEY, `${source}: ${message}`);
+  } catch {
+    /* storage unavailable */
+  }
 }
 
 function parseStoredSave(text, source) {
@@ -2319,7 +2328,7 @@ function shell(content) {
     <div class="shell">
       <header class="topbar">
         <div class="brand">
-          <img src="./xeno-agency-logo.png" alt="">
+          <img src="./xeno-agency-logo.webp" alt="">
           <div>
             <h1>${escapeHtml(game.agency.name)}</h1>
             <p>${escapeHtml(game.alien.identity.name)} · Level ${game.alien.progression.level}</p>
@@ -2479,7 +2488,7 @@ function renderStart() {
   app.innerHTML = `
     <section class="hero">
       <div class="hero-inner">
-        <img class="hero-logo" src="./xeno-agency-logo.png" alt="">
+        <img class="hero-logo" src="./xeno-agency-logo.webp" alt="">
         <p class="eyebrow">Persistent static browser RPG</p>
         <h2>Xeno Agency</h2>
         <p class="hero-copy">You inherit a failing interstellar adoption office, one damaged license, a sealed research file, and three unidentified alien candidates. Raise one alien that remembers what you choose.</p>
@@ -2584,7 +2593,48 @@ function candidateCard(candidate, index) {
   `;
 }
 
-function render() {
+// Older saves stored the PNG path of the chosen portrait. The art is identical in
+// WebP at about a tenth of the size, so every portrait is drawn through this.
+function artSrc(src) {
+  return typeof src === "string" ? src.replace(/^(\.\/assets\/portraits\/alien-\d+)\.png$/, "$1.webp") : src;
+}
+
+// Updates the live DOM to match freshly rendered markup, touching only what differs.
+// The once-a-second refresh used to replace the whole page, which reset focus and
+// scroll, restarted animations, and swallowed any tap that straddled the swap
+// (the button pressed no longer existed when the finger lifted).
+function morphChildren(target, source) {
+  const next = Array.from(source.childNodes);
+  const current = Array.from(target.childNodes);
+  for (let i = 0; i < next.length; i++) {
+    const want = next[i];
+    const have = current[i];
+    if (!have) {
+      target.appendChild(want);
+      continue;
+    }
+    if (have.nodeType !== want.nodeType || have.nodeName !== want.nodeName) {
+      target.replaceChild(want, have);
+      continue;
+    }
+    if (want.nodeType !== 1) {
+      if (have.nodeValue !== want.nodeValue) have.nodeValue = want.nodeValue;
+      continue;
+    }
+    // Leave whatever the player is typing in alone.
+    if (have === document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(have.nodeName)) continue;
+    for (const attr of Array.from(have.attributes)) {
+      if (!want.hasAttribute(attr.name)) have.removeAttribute(attr.name);
+    }
+    for (const attr of Array.from(want.attributes)) {
+      if (have.getAttribute(attr.name) !== attr.value) have.setAttribute(attr.name, attr.value);
+    }
+    if (have.nodeName !== "TEXTAREA") morphChildren(have, want);
+  }
+  for (let i = current.length - 1; i >= next.length; i--) target.removeChild(current[i]);
+}
+
+function render(options = {}) {
   lastRenderAt = clock.now();
   if (!game) {
     renderStart();
@@ -2601,7 +2651,14 @@ function render() {
     inventory: renderInventory,
     settings: renderSettings
   };
-  app.innerHTML = shell((views[activeView] || renderHome)());
+  const html = shell((views[activeView] || renderHome)());
+  if (options.soft && app.firstElementChild) {
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    morphChildren(app, template.content);
+    return; // a background refresh never moves focus
+  }
+  app.innerHTML = html;
   afterRender();
 }
 
@@ -2618,7 +2675,7 @@ function renderHome() {
     <div class="grid two">
       <section class="panel portrait-panel">
         <div class="portrait-stage">
-          <img class="portrait-main" src="${game.alien.appearance.portraitSrc}" alt="${escapeHtml(game.alien.identity.name)} portrait">
+          <img class="portrait-main" src="${artSrc(game.alien.appearance.portraitSrc)}" alt="${escapeHtml(game.alien.identity.name)} portrait">
           <div class="alien-badge">
             <p class="eyebrow">${escapeHtml(game.alien.appearance.portraitCode)} · ${escapeHtml(game.alien.personality.temperament)} ${escapeHtml(game.alien.appearance.bodyPlan)}</p>
             <h2>${escapeHtml(game.alien.identity.name)}</h2>
@@ -2681,7 +2738,7 @@ function bondDossierHtml() {
   return `
     <section class="panel dossier-panel">
       <div class="dossier-portrait" style="--accent: ${escapeHtml(game.alien.appearance.accent || "#74f4c7")}">
-        <img src="${game.alien.appearance.portraitSrc}" alt="${escapeHtml(game.alien.identity.name)} portrait">
+        <img src="${artSrc(game.alien.appearance.portraitSrc)}" alt="${escapeHtml(game.alien.identity.name)} portrait">
       </div>
       <div>
         <div class="panel-header">
@@ -3175,7 +3232,7 @@ function releaseAboutHtml() {
 function legacyArchiveHtml(entry) {
   return `
     <article class="legacy-card" style="--accent: ${escapeHtml(entry.accent || "#74f4c7")}">
-      ${entry.portraitSrc ? `<img src="${escapeHtml(entry.portraitSrc)}" alt="${escapeHtml(entry.alienName)} archived portrait">` : ""}
+      ${entry.portraitSrc ? `<img src="${escapeHtml(artSrc(entry.portraitSrc))}" alt="${escapeHtml(entry.alienName)} archived portrait">` : ""}
       <div>
         <strong>${escapeHtml(entry.alienName)} · ${escapeHtml(entry.endingTitle)}</strong>
         ${entry.variantTitle ? `<em>${escapeHtml(entry.variantTitle)}</em>` : ""}
@@ -3470,7 +3527,7 @@ async function createProfileCard() {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 1200, 630);
   const img = new Image();
-  img.src = game.alien.appearance.portraitSrc || PORTRAIT_LIBRARY[0].src;
+  img.src = artSrc(game.alien.appearance.portraitSrc) || PORTRAIT_LIBRARY[0].src;
   await img.decode().catch(() => {});
   ctx.globalAlpha = 0.32;
   ctx.drawImage(img, 560, 0, 640, 630);
@@ -3634,8 +3691,19 @@ document.addEventListener("click", async (event) => {
   }
 });
 
-window.addEventListener("beforeunload", () => {
-  if (game) localStorage.setItem("xeno-agency-backup", JSON.stringify(game));
+function writeBackupNow() {
+  if (!game) return;
+  try {
+    localStorage.setItem(BACKUP_KEY, JSON.stringify(game));
+  } catch {
+    /* storage unavailable */
+  }
+}
+window.addEventListener("beforeunload", writeBackupNow);
+// Mobile browsers rarely fire beforeunload; these two cover being backgrounded or closed.
+window.addEventListener("pagehide", writeBackupNow);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) writeBackupNow();
 });
 
 async function boot() {
@@ -3653,10 +3721,20 @@ async function boot() {
   render();
   setInterval(async () => {
     if (!game) return;
+    if (document.hidden) return; // timers are settled from timestamps when the tab returns
     const completed = processTimers(game);
-    if (completed) await saveGame();
-    if (clock.now() - lastRenderAt > 900) render();
+    if (completed) {
+      await saveGame();
+      render(); // something finished: full render so a new report or modal takes focus
+    } else if (clock.now() - lastRenderAt > 900) {
+      render({ soft: true });
+    }
   }, 1000);
+  document.addEventListener("visibilitychange", async () => {
+    if (document.hidden || !game) return;
+    if (processTimers(game)) await saveGame();
+    render({ soft: true });
+  });
 }
 
 boot();

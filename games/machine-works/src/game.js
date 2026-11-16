@@ -64,6 +64,9 @@ class Game {
     this.speedOptions = [1, 2, 4];
     this.analysisMode = false;
     this.objectiveCompleteAnnounced = false;
+    this.contractTier = 0;       // index into the escalating order sizes below
+    this.rateSamples = [];       // [{ tick, count }] — rolling window for the plates/min readout
+    this.strokeBeltIds = null;   // conveyors laid during the current drag stroke
     this.beltsPlacedTotal = 0; // lifetime counters (Milestone 5 statistics) — never decremented on removal
     this.machinesPlacedTotal = 0;
     this.blueprints = []; // loaded from LocalStorage in boot()
@@ -100,6 +103,11 @@ class Game {
     this.grid = Grid.fromFactoryData(factoryData);
     this.camera.loadState(factoryData.camera);
     this.contract = factoryData.contract || null;
+    // One order would finish itself on the starter line in under a minute, so the
+    // contract escalates: each fulfilled order is replaced by a larger one.
+    this.contractTargets = this.contract
+      ? [this.contract.target, 60, 150, 400, 1000, 2500].filter((t, i, a) => i === 0 || t > a[0])
+      : [];
 
     const saved = this.save.load();
     if (saved) {
@@ -142,8 +150,11 @@ class Game {
     this.ui.setSpeed(this.simSpeed);
     this.ui.setPowerStats(this.powerStats);
     this.ui.setBlueprintList(this.blueprints);
-    this.refreshObjectiveUI();
+    // Orders already met in an earlier session are settled silently rather than re-announced.
+    this.refreshObjectiveUI(true);
     this.refreshHistoryUI();
+    this.bindKeyboard();
+    this.ui.showIntroOnce();
 
     this.input = new InputController(this.canvas, {
       onTap: (pt) => this.handleTap(pt),
@@ -161,7 +172,10 @@ class Game {
     this.canvas.addEventListener('pointermove', (e) => this.handleHover(e));
 
     this.save.startAutosave(() => this.serializeState());
-    window.addEventListener('beforeunload', () => this.save.save(this.serializeState()));
+    const persist = () => this.save.save(this.serializeState());
+    window.addEventListener('beforeunload', persist);
+    window.addEventListener('pagehide', persist); // beforeunload is unreliable on mobile
+    document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
 
     if ('serviceWorker' in navigator && !window.__MW_DISABLE_SW__) {
       navigator.serviceWorker.register('sw.js').catch((err) => console.warn('[SW] registration failed', err));
@@ -285,6 +299,7 @@ class Game {
   }
 
   applyRemove(obj) {
+    if (!obj) return;
     this.grid.clearOccupant(obj.x, obj.y, obj.rotatedFootprint);
     this.objects.delete(obj.id);
   }
@@ -295,6 +310,7 @@ class Game {
   }
 
   applyRemoveConveyor(conveyor) {
+    if (!conveyor) return;
     // Drop any in-flight items riding this segment rather than leaving them stranded.
     for (const itemId of conveyor.itemIds) this.items.delete(itemId);
     this.grid.clearConveyor(conveyor.x, conveyor.y);
@@ -307,6 +323,7 @@ class Game {
   }
 
   applyRemoveMachine(machine) {
+    if (!machine) return;
     this.grid.clearMachine(machine.x, machine.y);
     this.machines.delete(machine.id);
   }
@@ -349,21 +366,55 @@ class Game {
     this.ui.setHistoryState({ canUndo: this.history.canUndo(), canRedo: this.history.canRedo() });
   }
 
-  refreshObjectiveUI() {
+  exportedCount(resource) {
+    let total = 0;
+    for (const obj of this.objects.values()) {
+      if (obj.type === 'sink' && obj.exportedCounts) total += obj.exportedCounts[resource] || 0;
+    }
+    return total;
+  }
+
+  refreshObjectiveUI(silent = false) {
     if (!this.contract) return;
-    const sink = Array.from(this.objects.values()).find((o) => o.type === 'sink');
-    const current = sink?.exportedCounts?.[this.contract.resource] || 0;
-    const complete = current >= this.contract.target;
+    const current = this.exportedCount(this.contract.resource);
+    const targets = this.contractTargets;
+    let advanced = false;
+    while (this.contractTier < targets.length - 1 && current >= targets[this.contractTier]) {
+      this.contractTier++;
+      advanced = true;
+    }
+    const target = targets[this.contractTier];
+    const complete = current >= target;
     this.ui.setObjective({
       label: this.contract.description,
       current,
-      target: this.contract.target,
+      target,
       complete,
+      rate: this.exportRatePerMinute(current),
     });
-    if (complete && !this.objectiveCompleteAnnounced) {
-      this.objectiveCompleteAnnounced = true;
-      this.ui.showToast('Contract complete. Keep optimizing the line for throughput.', 'success');
+    if (silent) {
+      this.objectiveCompleteAnnounced = complete;
+      return;
     }
+    if (advanced) {
+      this.ui.showToast(`Order filled. Next contract: ${target} plates — widen the line.`, 'success');
+    } else if (complete && !this.objectiveCompleteAnnounced) {
+      this.objectiveCompleteAnnounced = true;
+      this.ui.showToast('Every contract filled. The line is yours to perfect.', 'success');
+    }
+  }
+
+  // Plates per minute of simulated time over the last 30 seconds of ticks.
+  exportRatePerMinute(current) {
+    const samples = this.rateSamples;
+    const last = samples[samples.length - 1];
+    if (!last || this.currentTick - last.tick >= 10) samples.push({ tick: this.currentTick, count: current });
+    const windowTicks = Math.round(30000 / SIM_TICK_MS);
+    while (samples.length > 2 && this.currentTick - samples[0].tick > windowTicks) samples.shift();
+    const first = samples[0];
+    const spanMs = (this.currentTick - first.tick) * SIM_TICK_MS;
+    if (spanMs < 4000) return null;
+    return ((current - first.count) / spanMs) * 60000;
   }
 
   selectTool(toolId) {
@@ -463,7 +514,39 @@ class Game {
     if (!entity) return;
     const idx = ROTATIONS.indexOf(entity.rotation);
     entity.rotation = ROTATIONS[(idx + 1) % ROTATIONS.length];
+    this.syncHistoryRotation(entity);
     this.refreshInspector();
+  }
+
+  // Undo/redo replays stored snapshots, so a later rotation has to be written back
+  // into them or redo would bring the piece back facing its old direction.
+  syncHistoryRotation(entity) {
+    for (const list of [this.history.past, this.history.future]) {
+      for (const action of list) {
+        if (action.obj.id === entity.id) action.obj.rotation = entity.rotation;
+      }
+    }
+  }
+
+  bindKeyboard() {
+    const tools = ['none', 'conveyor', 'mining_drill', 'smelter', 'coal_generator', 'storage_bin', 'sink'];
+    window.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      const mod = e.metaKey || e.ctrlKey;
+      const key = e.key.toLowerCase();
+      if (mod && key === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); return; }
+      if (mod && key === 'y') { e.preventDefault(); this.redo(); return; }
+      if (mod || e.altKey) return;
+      if (key === 'r') this.rotateActive();
+      else if (key === 'delete' || key === 'backspace') { e.preventDefault(); this.deleteSelected(); }
+      else if (key === ' ') { e.preventDefault(); this.togglePause(); }
+      else if (key === 'escape') { this.ui.setBlueprintPanelOpen(false); this.ui.hideIntro(); this.selectTool('none'); this.clearSelection(); }
+      else if (key === '+' || key === '=') this.zoomFromCenter(1.18);
+      else if (key === '-' || key === '_') this.zoomFromCenter(1 / 1.18);
+      else if (key === 'c') this.centerFactory();
+      else if (key >= '1' && key <= '7') this.selectTool(tools[Number(key) - 1]);
+    });
   }
 
   deleteSelected() {
@@ -535,19 +618,41 @@ class Game {
     return dy > 0 ? 180 : 0;
   }
 
+  // Lays belts along the drag. Each new tile also re-aims the belt before it, so a
+  // stroke always forms one connected run — including round corners — and a fast drag
+  // that skips tiles is filled in step by step instead of leaving gaps.
   paintAt(pt) {
     const { x, y } = this.tileFromScreen(pt);
     const tx = Math.floor(x), ty = Math.floor(y);
-    if (this.lastPaintTile && this.lastPaintTile.x === tx && this.lastPaintTile.y === ty) return;
-
-    let rotation = this.previewRotation;
-    if (this.lastPaintTile) {
-      const dir = this.directionFromDelta(tx - this.lastPaintTile.x, ty - this.lastPaintTile.y);
-      if (dir !== null) rotation = dir;
+    if (!this.lastPaintTile) {
+      this.paintStep(tx, ty, this.previewRotation);
+      this.lastPaintTile = { x: tx, y: ty };
+      return;
     }
+    let guard = 0;
+    while ((this.lastPaintTile.x !== tx || this.lastPaintTile.y !== ty) && guard++ < 80) {
+      const ddx = tx - this.lastPaintTile.x, ddy = ty - this.lastPaintTile.y;
+      const stepX = Math.abs(ddx) >= Math.abs(ddy) ? Math.sign(ddx) : 0;
+      const stepY = stepX === 0 ? Math.sign(ddy) : 0;
+      const dir = this.directionFromDelta(stepX, stepY);
+      const prevTile = this.grid.getTile(this.lastPaintTile.x, this.lastPaintTile.y);
+      const prevBelt = prevTile?.conveyor ? this.conveyors.get(prevTile.conveyor) : null;
+      if (prevBelt && this.strokeBeltIds?.has(prevBelt.id) && prevBelt.rotation !== dir) {
+        prevBelt.rotation = dir;
+        this.syncHistoryRotation(prevBelt);
+      }
+      this.previewRotation = dir;
+      const nx = this.lastPaintTile.x + stepX, ny = this.lastPaintTile.y + stepY;
+      this.paintStep(nx, ny, dir);
+      this.lastPaintTile = { x: nx, y: ny };
+    }
+  }
+
+  paintStep(tx, ty, rotation) {
     this.updatePreview(tx, ty, rotation);
-    if (this.preview.valid) this.placeAt(tx, ty, this.activeTool, rotation);
-    this.lastPaintTile = { x: tx, y: ty };
+    if (!this.preview.valid) return;
+    const placed = this.placeAt(tx, ty, this.activeTool, rotation);
+    if (this.strokeBeltIds && placed instanceof Conveyor) this.strokeBeltIds.add(placed.id);
   }
 
   // --- input handlers -------------------------------------------------
@@ -573,9 +678,16 @@ class Game {
     const { x, y } = this.tileFromScreen(pt);
     const tile = this.grid.getTile(Math.floor(x), Math.floor(y));
     if (!tile) return;
+    let removed = true;
     if (tile.occupied) this.removeObject(tile.occupant);
     else if (tile.machine) this.removeMachine(tile.machine);
     else if (tile.conveyor) this.removeConveyor(tile.conveyor);
+    else removed = false;
+    if (removed) {
+      // A long press is easy to trigger by accident, so always say what happened.
+      this.ui.showToast('Removed. Undo brings it back.', 'warning');
+      navigator.vibrate?.(12);
+    }
   }
 
   handleDragStart(pt) {
@@ -583,6 +695,7 @@ class Game {
     if (def?.draggable) {
       this.dragMode = 'paint';
       this.lastPaintTile = null;
+      this.strokeBeltIds = new Set();
       this.paintAt(pt);
     } else {
       this.dragMode = 'pan';
@@ -602,6 +715,7 @@ class Game {
     if (this.dragMode === 'pan') this.camera.startCoast();
     this.dragMode = null;
     this.lastPaintTile = null;
+    this.strokeBeltIds = null;
   }
 
   handleHover(e) {
@@ -644,9 +758,15 @@ class Game {
         this.tick();
         this.tickAccumulator -= SIM_TICK_MS;
       }
+    }
+    // The HUD reads the same for many frames in a row; refresh it ten times a second.
+    this.hudTimer = (this.hudTimer || 0) + dt;
+    if (this.hudTimer >= 100) {
+      this.hudTimer = 0;
       this.ui.setPowerStats(this.powerStats);
       this.refreshObjectiveUI();
       this.refreshSessionStatsUI();
+      this.refreshInspector();
     }
 
     this.renderer.render({
@@ -662,8 +782,6 @@ class Game {
       selected: this.selected,
       analysisMode: this.analysisMode,
     });
-
-    this.refreshInspector();
 
     requestAnimationFrame(this.frame);
   }

@@ -44,7 +44,16 @@ export class UI {
       onHudUpdate: (hud) => this.updateHud(hud),
       onPlanningChange: (overlay) => this.updatePlanningUi(overlay),
       onMessage: (message) => this.showToast(message.text, message.tone),
+      onPauseKey: () => this.togglePause(),
+      onUndoKey: () => { if (this._onBoard()) { this.overlays.failed.hidden = true; this.game.undoMove(); } },
+      onRestartKey: () => { if (this._onBoard()) { this.overlays.failed.hidden = true; this.game.restart(); } },
     });
+
+    // Leaving the tab mid-mission pauses it and banks the play time.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && !this.screens.playing.hidden && this.game.status === 'playing') this.togglePause(true);
+    });
+    window.addEventListener('pagehide', () => this._recordPlayTime());
 
     this._wireButtons();
     window.addEventListener('resize', () => this.game.handleResize());
@@ -75,6 +84,24 @@ export class UI {
     for (const key of Object.keys(this.overlays)) this.overlays[key].hidden = true;
   }
 
+  // True while the board is the thing on screen (no menu, no pause / complete panel).
+  _onBoard() {
+    return !this.screens.playing.hidden && this.overlays.pause.hidden && this.overlays.complete.hidden;
+  }
+
+  togglePause(forcePause = false) {
+    if (this.screens.playing.hidden) return;
+    if (!this.overlays.pause.hidden) {
+      if (forcePause) return;
+      this.overlays.pause.hidden = true;
+      this.game.resume();
+    } else if (this.game.status === 'playing') {
+      this.game.pause();
+      this.overlays.pause.hidden = false;
+      document.getElementById('btn-resume')?.focus({ preventScroll: true });
+    }
+  }
+
   _wireButtons() {
     $('btn-play').addEventListener('click', () => this.playCurrentOrFirst());
     $('btn-mission-select').addEventListener('click', () => this.openMissionSelect());
@@ -98,7 +125,7 @@ export class UI {
       }
     });
 
-    $('btn-pause').addEventListener('click', () => { this.game.pause(); this.overlays.pause.hidden = false; });
+    $('btn-pause').addEventListener('click', () => this.togglePause());
     $('btn-resume').addEventListener('click', () => { this.overlays.pause.hidden = true; this.game.resume(); });
     $('btn-pause-restart').addEventListener('click', () => { this.overlays.pause.hidden = true; this.game.restart(); this.game.resume(); });
     $('btn-pause-menu').addEventListener('click', () => { this.hideOverlays(); this.game.pause(); this._recordPlayTime(); this.showScreen('menu'); });
@@ -285,11 +312,19 @@ export class UI {
   showToast(text, tone = 'info') {
     const stack = $('toast-stack');
     if (!stack || !text) return;
+    // Repeating the same notice (bumping a wall, say) refreshes it instead of stacking copies.
+    const last = stack.lastElementChild;
+    if (last && last.textContent === text) {
+      window.clearTimeout(last._timer);
+      last._timer = window.setTimeout(() => last.remove(), 2650);
+      return;
+    }
+    while (stack.children.length >= 3) stack.firstElementChild.remove();
     const toast = document.createElement('div');
     toast.className = `toast ${tone}`;
     toast.textContent = text;
     stack.appendChild(toast);
-    window.setTimeout(() => toast.remove(), 2650);
+    toast._timer = window.setTimeout(() => toast.remove(), 2650);
   }
 }
 

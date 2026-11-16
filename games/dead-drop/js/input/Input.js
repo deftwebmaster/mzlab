@@ -121,10 +121,25 @@ export class Input {
   }
 
   onKeyDown(e) {
-    if (e.repeat) return;
-    if (e.key === 'Escape') { this.cb.onCancelPlanning?.(); return; }
-    if (e.key === 'Enter') { this.cb.onExecutePlanning?.(); return; }
-    const dir = KEY_TO_DIR[e.key];
+    if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'Escape') {
+      // Escape backs out of a plan first; otherwise it is the pause key.
+      if (this.cb.isPlanning?.()) this.cb.onCancelPlanning?.();
+      else this.cb.onPauseToggle?.();
+      return;
+    }
+    if (e.key === 'p' || e.key === 'P') { this.cb.onPauseToggle?.(); return; }
+    // Everything below is a board command: leave the keys alone on menus and overlays
+    // so Enter/Space still press the focused button and arrows still scroll lists.
+    if (!this.cb.isLive?.()) return;
+    if (e.key === 'Enter' && this.cb.isPlanning?.()) { e.preventDefault(); this.cb.onExecutePlanning?.(); return; }
+    if (e.key === 'z' || e.key === 'Z' || e.key === 'u' || e.key === 'U' || e.key === 'Backspace') {
+      e.preventDefault();
+      this.cb.onUndo?.();
+      return;
+    }
+    if (e.key === 'r' || e.key === 'R') { this.cb.onRestart?.(); return; }
+    const dir = KEY_TO_DIR[e.key] || KEY_TO_DIR[e.key.toLowerCase?.()];
     if (dir) {
       e.preventDefault();
       this.cb.onMove?.(dir);

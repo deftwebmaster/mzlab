@@ -149,7 +149,7 @@ textarea:focus-visible {
   padding: 1rem;
   background:
     linear-gradient(180deg, rgba(8, 16, 23, 0.2), rgba(8, 16, 23, 0.96)),
-    url("./xeno-interior-key-art.png") center / cover;
+    url("./xeno-interior-key-art.webp") center / cover;
 }
 
 .hero-inner {
@@ -831,7 +831,7 @@ textarea:focus-visible {
   padding: 1rem;
   background:
     linear-gradient(180deg, rgba(8, 16, 23, 0.24), rgba(8, 16, 23, 0.9)),
-    url("./xeno-world-map-concept.png") center / cover;
+    url("./xeno-world-map-concept.webp") center / cover;
 }
 
 .location-grid {

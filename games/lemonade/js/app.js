@@ -1,6 +1,6 @@
 import { initStore, getState, subscribe } from './state/game-store.js';
 import { createDefaultState } from './state/default-state.js';
-import { getActiveSlot, loadFromSlot, saveToSlot, scheduleAutosave } from './state/save-manager.js';
+import { getActiveSlot, loadFromSlot, saveToSlot, scheduleAutosave, flushAutosave } from './state/save-manager.js';
 import { initRouter, registerRoute } from './router.js';
 import { mountBottomNav } from './components/bottom-nav.js';
 import { initToasts, showToast } from './components/toast.js';
@@ -32,10 +32,16 @@ import { renderSettingsScreen } from './screens/settings-screen.js';
 
 const appRoot = document.getElementById('app');
 
-document.addEventListener('DOMContentLoaded', boot);
-if (document.readyState !== 'loading') boot();
+// A module script runs while the document is still "interactive", i.e. before
+// DOMContentLoaded — so the old "run now AND on DOMContentLoaded" pair booted the
+// game twice (two splash screens, two service-worker registrations, two loads).
+let booted = false;
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+else boot();
 
 async function boot() {
+  if (booted) return;
+  booted = true;
   initToasts();
   initAudio(() => getState()?.settings?.soundEnabled ?? true);
   registerServiceWorker();
@@ -93,6 +99,12 @@ function startGameShell() {
     scheduleAutosave(getState, getActiveSlot());
   });
 
+  // The autosave waits 1.5 s after a change; don't lose that window when the tab is
+  // closed or the phone switches apps.
+  const saveNow = () => flushAutosave(getState, getActiveSlot());
+  window.addEventListener('pagehide', saveNow);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) saveNow(); });
+
   registerAllRoutes();
   initRouter(document.getElementById('screen-root'), '/stand');
 }
@@ -144,7 +156,11 @@ function registerAllRoutes() {
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
+  // Was a worker already in charge when this page loaded? If not, the first
+  // "controllerchange" is just the brand-new worker claiming the page, and reloading
+  // then would yank a first-time visitor out of onboarding a second after arriving.
+  const hadController = !!navigator.serviceWorker.controller;
+  const start = () => {
     navigator.serviceWorker.register('./service-worker.js').then((registration) => {
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
@@ -159,11 +175,13 @@ function registerServiceWorker() {
 
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
+      if (refreshing || !hadController) return;
       refreshing = true;
       window.location.reload();
     });
-  });
+  };
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start, { once: true });
 }
 
 function promptUpdate(registration) {

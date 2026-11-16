@@ -38,8 +38,11 @@
 
   <!-- MAIN MENU -->
   <section id="screen-menu" class="screen">
+    <div class="menu-backdrop" aria-hidden="true"></div>
+    <a class="lab-link" href="../" aria-label="Back to all games">&larr; All games</a>
     <div class="menu-panel">
-      <div class="logo-mark small">SALVAGE<span>ZERO</span></div>
+      <div class="menu-eyebrow">Orbital Recovery Contract</div>
+      <h1 class="logo-mark">SALVAGE<span>ZERO</span></h1>
       <div class="tagline">Break the wreckage. Recover the core. Escape alive.</div>
       <nav class="menu-list">
         <button class="menu-btn primary" data-action="continue">Continue</button>
@@ -57,7 +60,7 @@
   <!-- MISSION SELECT -->
   <section id="screen-mission-select" class="screen">
     <header class="subscreen-header">
-      <button class="icon-btn" data-action="back-to-menu">&larr;</button>
+      <button class="icon-btn" data-action="back-to-menu" aria-label="Back to menu">&larr;</button>
       <h1>Mission Select</h1>
     </header>
     <div class="mission-grid" id="missionGrid"></div>
@@ -66,7 +69,7 @@
   <!-- UPGRADES -->
   <section id="screen-upgrades" class="screen">
     <header class="subscreen-header">
-      <button class="icon-btn" data-action="back-to-menu">&larr;</button>
+      <button class="icon-btn" data-action="back-to-menu" aria-label="Back to menu">&larr;</button>
       <h1>Upgrades</h1>
       <div class="credits-readout" id="upgradesCredits">0 CR</div>
     </header>
@@ -76,7 +79,7 @@
   <!-- STATISTICS -->
   <section id="screen-statistics" class="screen">
     <header class="subscreen-header">
-      <button class="icon-btn" data-action="back-to-menu">&larr;</button>
+      <button class="icon-btn" data-action="back-to-menu" aria-label="Back to menu">&larr;</button>
       <h1>Statistics</h1>
     </header>
     <div class="stats-list" id="statsList"></div>
@@ -85,7 +88,7 @@
   <!-- SETTINGS -->
   <section id="screen-settings" class="screen">
     <header class="subscreen-header">
-      <button class="icon-btn" data-action="back-to-menu">&larr;</button>
+      <button class="icon-btn" data-action="back-to-menu" aria-label="Back to menu">&larr;</button>
       <h1>Settings</h1>
     </header>
     <div class="settings-list">
@@ -156,20 +159,30 @@
       </div>
 
       <div class="hud-top-right">
-        <button class="icon-btn" data-action="pause">II</button>
+        <button class="icon-btn pause-btn" data-action="pause" aria-label="Pause"><span></span><span></span></button>
       </div>
 
       <div class="hud-top-center">
         <div class="objective-text" id="objectiveText">Destroy wreckage. Collect salvage.</div>
         <div class="cargo-readout"><span id="cargoCount">0</span> / <span id="cargoQuota">0</span> CARGO</div>
         <div class="timer-readout" id="timerReadout" hidden>00:00</div>
+        <div class="extraction-banner" id="extractionBanner" hidden>EXTRACTION GATE ACTIVE — HEAD TO THE BEACON</div>
+        <div class="combo-readout" id="comboReadout" hidden></div>
       </div>
 
       <canvas class="radar" id="radarCanvas" width="140" height="140"></canvas>
 
-      <div class="combo-readout" id="comboReadout" hidden></div>
-
-      <div class="extraction-banner" id="extractionBanner" hidden>EXTRACTION GATE ACTIVE — HEAD TO THE BEACON</div>
+      <div class="control-hint" id="controlHint" aria-hidden="true">
+        <div class="hint-keys">
+          <span><kbd>A</kbd><kbd>D</kbd> turn</span>
+          <span><kbd>W</kbd> thrust</span>
+          <span><kbd>S</kbd> brake</span>
+          <span><kbd>Space</kbd> fire</span>
+          <span><kbd>Shift</kbd> tractor beam</span>
+          <span><kbd>Esc</kbd> pause</span>
+        </div>
+        <div class="hint-touch">Stick steers · THRUST to fly · FIRE to break wrecks · hold TRACTOR to pull salvage in</div>
+      </div>
     </div>
 
     <!-- Mobile controls -->
@@ -187,6 +200,7 @@
     <div class="overlay" id="pauseOverlay" hidden>
       <div class="overlay-panel">
         <h2>Paused</h2>
+        <p class="brief-text pause-help"><b>Turn</b> A / D &nbsp;·&nbsp; <b>Thrust</b> W &nbsp;·&nbsp; <b>Brake</b> S<br><b>Fire</b> Space &nbsp;·&nbsp; <b>Tractor</b> Shift &nbsp;·&nbsp; <b>Pause</b> Esc</p>
         <button class="menu-btn primary" data-action="resume">Resume</button>
         <button class="menu-btn" data-action="restart-mission">Restart</button>
         <button class="menu-btn" data-action="quit-to-menu">Quit to Menu</button>
@@ -198,6 +212,7 @@
       <div class="overlay-panel">
         <div class="rank-badge" id="rankBadge">S</div>
         <h2>Contract Complete</h2>
+        <div class="new-best" id="newBest" hidden>New best score</div>
         <div class="result-list" id="resultList"></div>
         <button class="menu-btn primary" data-action="next-mission">Next Contract</button>
         <button class="menu-btn" data-action="quit-to-menu">Mission Select</button>
