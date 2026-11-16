@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sci-Fi Worldbuilder | Procedural Worldbuilding Tool</title>
+  <meta name="description" content="Build science-fiction settings in your browser with procedural stellar systems, settlements, organizations, conflicts, technology, and connected characters.">
+  <link rel="canonical" href="https://lab.maniczone.com/projects/worldbuilder/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/projects/worldbuilder/">
+  <meta property="og:title" content="Sci-Fi Worldbuilder | Procedural Worldbuilding Tool">
+  <meta property="og:description" content="Build science-fiction settings in your browser with procedural stellar systems, settlements, organizations, conflicts, technology, and connected characters.">
+  <meta property="og:image" content="https://lab.maniczone.com/assets/lab-card.png">
+  <meta property="og:image:alt" content="Sci-Fi Worldbuilder | Procedural Worldbuilding Tool preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/projects/worldbuilder/">
+  <meta name="twitter:title" content="Sci-Fi Worldbuilder | Procedural Worldbuilding Tool">
+  <meta name="twitter:description" content="Build science-fiction settings in your browser with procedural stellar systems, settlements, organizations, conflicts, technology, and connected characters.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/assets/lab-card.png">
+<meta name="theme-color" content="#101316">
+
+<link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+  <body>
+    <a class="skip-link" href="#app">Skip to archive</a>
+    <header class="shell-header">
+      <button class="brand" id="homeButton" type="button" aria-label="Open Sci-Fi Worldbuilder home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="img">
+            <path d="M24 4 41 14v20L24 44 7 34V14L24 4Z"></path>
+            <path d="M15 17h18M15 24h18M15 31h18"></path>
+            <path d="M24 10v28"></path>
+          </svg>
+        </span>
+        <span>
+          <strong>Sci-Fi Worldbuilder</strong>
+          <small>Procedural Science-Fiction Worldbuilding System</small>
+        </span>
+      </button>
+      <div class="header-actions">
+        <button class="palette-trigger" id="paletteButton" type="button" aria-label="Search the archive">
+          <span aria-hidden="true">Search</span>
+          <kbd>&#8984;K</kbd>
+        </button>
+        <button class="storage-pill" id="storagePill" type="button" data-level="ok">
+          <span class="storage-track" aria-hidden="true"></span>
+          <span class="storage-label">&mdash;</span>
+        </button>
+        <button class="ghost-button" id="settingsButton" type="button">Settings</button>
+        <button class="ghost-button" id="aboutButton" type="button">About</button>
+      </div>
+    </header>
+    <nav class="module-nav" id="moduleNav" aria-label="Modules"></nav>
+
+    <main id="app" class="app-shell" tabindex="-1"></main>
+
+    <footer class="suite-footer">
+      <p>Created by <a href="https://lab.maniczone.com">Matt Livingston</a>.</p>
+      <p>Static, local-first worldbuilding for science-fiction settings.</p>
+    </footer>
+
+    <div class="modal-backdrop" id="modalBackdrop" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header class="modal-header">
+          <div>
+            <p class="eyebrow" id="modalEyebrow">Document</p>
+            <h2 id="modalTitle">Registry File</h2>
+          </div>
+          <button class="icon-button" id="modalClose" type="button" aria-label="Close dialog">x</button>
+        </header>
+        <div class="modal-body" id="modalBody"></div>
+      </section>
+    </div>
+
+    <div class="palette-backdrop" id="paletteBackdrop" hidden>
+      <div class="palette" role="dialog" aria-modal="true" aria-labelledby="paletteLabel">
+        <label class="palette-field">
+          <span class="visually-hidden" id="paletteLabel">Search modules and saved entries</span>
+          <input
+            id="paletteInput"
+            type="text"
+            role="combobox"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Jump to a module or saved entry&hellip;"
+            aria-expanded="true"
+            aria-controls="paletteResults"
+            aria-activedescendant="">
+        </label>
+        <ul class="palette-results" id="paletteResults" role="listbox" aria-labelledby="paletteLabel"></ul>
+        <p class="palette-hint">
+          <kbd>&uarr;</kbd><kbd>&darr;</kbd> navigate &middot; <kbd>Enter</kbd> open &middot; <kbd>Esc</kbd> close
+        </p>
+      </div>
+    </div>
+
+    <div class="toast-region" id="toastRegion" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

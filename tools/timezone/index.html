@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Zone Call Planner | Meeting Overlap Scheduler</title>
+  <meta name="description" content="Find business-hour meeting windows across international time zones, compare local times, and copy a clean call proposal for distributed teams.">
+  <link rel="canonical" href="https://lab.maniczone.com/tools/timezone/">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/tools/timezone/">
+  <meta property="og:title" content="Time Zone Call Planner | Meeting Overlap Scheduler">
+  <meta property="og:description" content="Find business-hour meeting windows across international time zones, compare local times, and copy a clean call proposal for distributed teams.">
+  <meta property="og:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Time Zone Call Planner | Meeting Overlap Scheduler preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/tools/timezone/">
+  <meta name="twitter:title" content="Time Zone Call Planner | Meeting Overlap Scheduler">
+  <meta name="twitter:description" content="Find business-hour meeting windows across international time zones, compare local times, and copy a clean call proposal for distributed teams.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta name="twitter:image:alt" content="Time Zone Call Planner | Meeting Overlap Scheduler preview image">
+<link rel="stylesheet" href="../tool-modern.css">
+  <script defer src="../tool-credit.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07090e;
+      --panel: #121721;
+      --panel-2: #192231;
+      --panel-3: #223044;
+      --line: rgba(247, 250, 255, 0.14);
+      --line-strong: rgba(247, 250, 255, 0.24);
+      --text: #f7faff;
+      --muted: #b8c2d2;
+      --faint: #7f8b9c;
+      --cyan: #2ef6e2;
+      --violet: #b36cff;
+      --green: #55e996;
+      --amber: #f4c95d;
+      --rose: #ff647f;
+      --blue: #66a6ff;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      --radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(247, 250, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(247, 250, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 12% 4%, rgba(179, 108, 255, 0.18), transparent 30rem),
+        radial-gradient(circle at 88% 8%, rgba(46, 246, 226, 0.14), transparent 28rem),
+        linear-gradient(135deg, #07090e 0%, #0c121a 52%, #061214 100%);
+      background-size: 44px 44px, 44px 44px, auto, auto, auto;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .app {
+      width: min(1120px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 72px;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 34px;
+    }
+
+    .back-link,
+    .creator-link {
+      color: var(--faint);
+      font-size: 0.9rem;
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .back-link::before {
+      content: "<-";
+      margin-right: 8px;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--violet);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(3.2rem, 16vw, 6.4rem);
+      line-height: 0.9;
+      letter-spacing: 0;
+    }
+
+    .hero-text {
+      max-width: 860px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 3.8vw, 1.35rem);
+      line-height: 1.45;
+    }
+
+    .hero-actions,
+    .row-actions,
+    .result-actions,
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hero-actions {
+      margin-top: 22px;
+    }
+
+    .btn {
+      min-height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      padding: 0.72rem 1rem;
+      background: var(--panel-2);
+      color: var(--text);
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(46, 246, 226, 0.58);
+    }
+
+    .btn.primary {
+      color: #06100f;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+    }
+
+    .btn.secondary {
+      background: linear-gradient(135deg, rgba(46, 246, 226, 0.15), rgba(179, 108, 255, 0.18));
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .btn.danger {
+      color: #ffc0cc;
+    }
+
+    .btn.full {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .card,
+    .call-card,
+    .planner-panel,
+    .person-card,
+    .timezone-card,
+    .window-card,
+    .timeline-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(18, 23, 33, 0.78);
+      box-shadow: var(--shadow);
+    }
+
+    .call-card {
+      padding: 18px;
+      margin: 20px 0 16px;
+      background:
+        linear-gradient(135deg, rgba(46, 246, 226, 0.12), rgba(179, 108, 255, 0.12)),
+        rgba(18, 23, 33, 0.82);
+    }
+
+    .call-card.empty {
+      border-color: rgba(244, 201, 93, 0.44);
+      background: rgba(244, 201, 93, 0.08);
+    }
+
+    .call-kicker {
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .call-time {
+      display: block;
+      margin-top: 10px;
+      font-size: clamp(2rem, 9vw, 4.3rem);
+      font-weight: 950;
+      line-height: 0.95;
+    }
+
+    .call-subtitle {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .planner-panel {
+      padding: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1.45rem;
+      line-height: 1.05;
+    }
+
+    .panel-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .settings-grid,
+    .add-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 850;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 0.72rem 0.82rem;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #070a0f;
+    }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid rgba(46, 246, 226, 0.25);
+      border-color: rgba(46, 246, 226, 0.7);
+    }
+
+    .preset-row {
+      margin: 14px 0 4px;
+    }
+
+    .preset-chip {
+      min-height: 38px;
+      padding: 0.5rem 0.72rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .preset-chip:hover {
+      color: var(--text);
+      border-color: var(--cyan);
+    }
+
+    .people-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .person-card {
+      padding: 12px;
+      box-shadow: none;
+    }
+
+    .person-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .person-name {
+      font-size: 1.06rem;
+      font-weight: 950;
+    }
+
+    .person-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .person-local {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .local-pill {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .local-pill span {
+      display: block;
+      color: var(--faint);
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .local-pill strong {
+      display: block;
+      margin-top: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1rem;
+    }
+
+    .timezone-grid,
+    .windows-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timezone-card,
+    .window-card,
+    .timeline-card {
+      padding: 14px;
+      box-shadow: none;
+    }
+
+    .window-card.best {
+      border-color: rgba(85, 233, 150, 0.62);
+      background: linear-gradient(135deg, rgba(85, 233, 150, 0.12), rgba(46, 246, 226, 0.08));
+    }
+
+    .window-card h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .time-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .time-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .time-line:last-child {
+      border-bottom: 0;
+    }
+
+    .time-line span {
+      color: var(--muted);
+    }
+
+    .time-line strong {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .status-good { color: var(--green); }
+    .status-warn { color: var(--amber); }
+    .status-bad { color: var(--rose); }
+
+    .timeline-card {
+      overflow: hidden;
+    }
+
+    .timeline-scroll {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .timeline {
+      min-width: 760px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .timeline-hours,
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 132px repeat(24, 1fr);
+      gap: 2px;
+      align-items: center;
+    }
+
+    .timeline-hours span {
+      color: var(--faint);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.68rem;
+      text-align: center;
+    }
+
+    .timeline-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hour-cell {
+      height: 22px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .hour-cell.work {
+      background: linear-gradient(135deg, rgba(102, 166, 255, 0.6), rgba(179, 108, 255, 0.48));
+    }
+
+    .hour-cell.overlap {
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+    }
+
+    .copy-box {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.18);
+      color: var(--muted);
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .footer {
+      margin-top: 40px;
+      padding: 18px 0;
+      color: var(--faint);
+      text-align: center;
+      font-size: 0.86rem;
+    }
+
+    .footer a {
+      color: var(--violet);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (min-width: 820px) {
+      .app {
+        width: min(1120px, calc(100% - 40px));
+        padding-top: 28px;
+      }
+
+      .top-nav {
+        margin-bottom: 56px;
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1fr) 340px;
+        align-items: end;
+        gap: 34px;
+      }
+
+      .call-card {
+        padding: 22px;
+      }
+
+      .dashboard {
+        grid-template-columns: 390px minmax(0, 1fr);
+        align-items: start;
+      }
+
+      .planner-stack {
+        position: sticky;
+        top: 20px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .settings-grid,
+      .add-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .add-grid .wide {
+        grid-column: 1 / -1;
+      }
+
+      .timezone-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .windows-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .window-card.best {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .hero-actions .btn,
+      .result-actions .btn,
+      .row-actions .btn {
+        width: 100%;
+      }
+
+      .person-local {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="app">
+    <nav class="top-nav" aria-label="Tool navigation">
+      <a class="back-link" href="../">Tools</a>
+      <a class="creator-link" href="https://lab.maniczone.com">Matt Livingston</a>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Conference Call Planner</p>
+        <h1>Time Zone Call Planner</h1>
+        <p class="hero-text">Find the cleanest business-hour overlap for people around the world, then copy a polished call proposal with everyone’s local time.</p>
+        <div class="hero-actions">
+          <button class="btn primary" type="button" data-scroll="#best-call">Find Best Time</button>
+          <button class="btn secondary" type="button" id="copyPlanTop">Copy Call Plan</button>
+        </div>
+      </div>
+      <aside class="card call-card" aria-label="Tool promise">
+        <span class="call-kicker">Built for real calls</span>
+        <p class="call-subtitle">Fast on a phone, readable in a cab, and clear enough to send directly to clients, vendors, or regional teams.</p>
+      </aside>
+    </header>
+
+    <section class="call-card" id="best-call" aria-live="polite"></section>
+
+    <main class="dashboard">
+      <div class="planner-stack">
+        <section class="planner-panel" aria-label="Call settings">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Call Details</p>
+              <h2>Set the meeting</h2>
+              <p>Choose a date, duration, and time format.</p>
+            </div>
+          </div>
+          <div class="settings-grid">
+            <div class="field">
+              <label for="meetingTitle">Meeting Name</label>
+              <input id="meetingTitle" type="text" value="International conference call">
+            </div>
+            <div class="field">
+              <label for="meetingDate">Call Date</label>
+              <input id="meetingDate" type="date">
+            </div>
+            <div class="field">
+              <label for="meetingDuration">Duration</label>
+              <select id="meetingDuration">
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60" selected>60 minutes</option>
+                <option value="90">90 minutes</option>
+                <option value="120">2 hours</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="timeFormat">Time Format</label>
+              <select id="timeFormat">
+                <option value="12" selected>12-hour</option>
+                <option value="24">24-hour</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="planner-panel" aria-label="Add contact">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">People</p>
+              <h2>Add a caller</h2>
+              <p>Business hours are local to each person.</p>
+            </div>
+          </div>
+          <div class="add-grid">
+            <div class="field">
+              <label for="personName">Name</label>
+              <input id="personName" type="text" placeholder="Client, vendor, office">
+            </div>
+            <div class="field">
+              <label for="personZone">Location</label>
+              <select id="personZone"></select>
+            </div>
+            <div class="field">
+              <label for="workStart">Starts Work</label>
+              <input id="workStart" type="time" value="09:00">
+            </div>
+            <div class="field">
+              <label for="workEnd">Ends Work</label>
+              <input id="workEnd" type="time" value="17:00">
+            </div>
+            <button class="btn primary full wide" type="button" id="addPerson">Add Person</button>
+          </div>
+
+          <div class="preset-row" aria-label="Quick add presets">
+            <button class="preset-chip" type="button" data-preset="New York">New York</button>
+            <button class="preset-chip" type="button" data-preset="London">London</button>
+            <button class="preset-chip" type="button" data-preset="Berlin">Berlin</button>
+            <button class="preset-chip" type="button" data-preset="Dubai">Dubai</button>
+            <button class="preset-chip" type="button" data-preset="Singapore">Singapore</button>
+            <button class="preset-chip" type="button" data-preset="Tokyo">Tokyo</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="results-stack">
+        <section class="planner-panel" aria-label="Callers">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Roster</p>
+              <h2>Callers and local times</h2>
+              <p>Current local time and business-day status for each person.</p>
+            </div>
+            <div class="row-actions">
+              <button class="btn secondary" type="button" id="saveGroup">Save Group</button>
+              <button class="btn ghost" type="button" id="copyLink">Copy Link</button>
+            </div>
+          </div>
+          <div id="peopleList" class="people-list"></div>
+        </section>
+
+        <section class="planner-panel" aria-label="Suggested times">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Best Windows</p>
+              <h2>Suggested call times</h2>
+              <p>Ranked by overlap length and how close the call is to the middle of everyone’s workday.</p>
+            </div>
+          </div>
+          <div id="windows" class="windows-grid"></div>
+        </section>
+
+        <section class="planner-panel" aria-label="Time zone board">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Board View</p>
+              <h2>At-a-glance time zones</h2>
+              <p>Useful when someone proposes a time and you need to sanity-check it quickly.</p>
+            </div>
+          </div>
+          <div id="zoneBoard" class="timezone-grid"></div>
+        </section>
+
+        <section class="timeline-card" aria-label="Business-hour timeline">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Timeline</p>
+              <h2>Working-hour overlap</h2>
+              <p>Timeline shown in your local time. Green blocks are shared call windows.</p>
+            </div>
+          </div>
+          <div class="timeline-scroll">
+            <div id="timeline" class="timeline"></div>
+          </div>
+        </section>
+
+        <section class="planner-panel" aria-label="Saved groups">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Frequent Calls</p>
+              <h2>Saved groups</h2>
+              <p>Stored only in this browser for regular conference calls.</p>
+            </div>
+            <button class="btn ghost danger" type="button" id="clearSaved">Clear</button>
+          </div>
+          <div id="savedGroups" class="people-list"></div>
+        </section>
+
+        <section class="planner-panel" aria-label="Copyable plan">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Send It</p>
+              <h2>Copy-ready call proposal</h2>
+              <p>Paste this into email, text, Slack, or a calendar invite.</p>
+            </div>
+            <div class="result-actions">
+              <button class="btn primary" type="button" id="copyPlan">Copy Plan</button>
+              <button class="btn secondary" type="button" id="downloadIcs">Download .ics</button>
+            </div>
+          </div>
+          <div id="copyBox" class="copy-box"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      Built by <a href="https://lab.maniczone.com">Matt Livingston</a> · Local-only timezone planning · Uses your browser's timezone database.
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'timezone-call-planner-groups';
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    const zones = [
+      ['America/Los_Angeles', 'Los Angeles', 'Pacific Time'],
+      ['America/Denver', 'Denver', 'Mountain Time'],
+      ['America/Phoenix', 'Phoenix', 'Arizona'],
+      ['America/Chicago', 'Chicago', 'Central Time'],
+      ['America/New_York', 'New York', 'Eastern Time'],
+      ['America/Toronto', 'Toronto', 'Eastern Time'],
+      ['America/Mexico_City', 'Mexico City', 'Central Mexico'],
+      ['America/Sao_Paulo', 'Sao Paulo', 'Brazil'],
+      ['UTC', 'UTC', 'Coordinated Universal Time'],
+      ['Europe/London', 'London', 'United Kingdom'],
+      ['Europe/Dublin', 'Dublin', 'Ireland'],
+      ['Europe/Paris', 'Paris', 'Central Europe'],
+      ['Europe/Berlin', 'Berlin', 'Central Europe'],
+      ['Europe/Amsterdam', 'Amsterdam', 'Central Europe'],
+      ['Europe/Madrid', 'Madrid', 'Central Europe'],
+      ['Europe/Zurich', 'Zurich', 'Central Europe'],
+      ['Europe/Istanbul', 'Istanbul', 'Turkey'],
+      ['Asia/Dubai', 'Dubai', 'United Arab Emirates'],
+      ['Asia/Kolkata', 'Mumbai / Delhi', 'India'],
+      ['Asia/Bangkok', 'Bangkok', 'Thailand'],
+      ['Asia/Singapore', 'Singapore', 'Singapore'],
+      ['Asia/Shanghai', 'Shanghai', 'China'],
+      ['Asia/Hong_Kong', 'Hong Kong', 'Hong Kong'],
+      ['Asia/Tokyo', 'Tokyo', 'Japan'],
+      ['Asia/Seoul', 'Seoul', 'South Korea'],
+      ['Australia/Sydney', 'Sydney', 'Australia'],
+      ['Pacific/Auckland', 'Auckland', 'New Zealand'],
+    ];
+
+    const state = {
+      title: 'International conference call',
+      date: isoDate(addDays(new Date(), 1)),
+      duration: 60,
+      format: '12',
+      people: [],
+      saved: loadSavedGroups(),
+    };
+
+    let nextId = 1;
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    function init() {
+      populateZoneSelect();
+      loadFromUrl();
+      if (!state.people.length) seedDefaultCallers();
+      bindEvents();
+      hydrateInputs();
+      render();
+      setInterval(renderClocksOnly, 30000);
+    }
+
+    function populateZoneSelect() {
+      $('#personZone').innerHTML = zones.map(([id, city, label]) => `<option value="${id}">${city} - ${label}</option>`).join('');
+    }
+
+    function bindEvents() {
+      $('#meetingTitle').addEventListener('input', (event) => {
+        state.title = event.target.value || 'International conference call';
+        render();
+      });
+      $('#meetingDate').addEventListener('change', (event) => {
+        state.date = event.target.value || isoDate(new Date());
+        render();
+      });
+      $('#meetingDuration').addEventListener('change', (event) => {
+        state.duration = Number(event.target.value);
+        render();
+      });
+      $('#timeFormat').addEventListener('change', (event) => {
+        state.format = event.target.value;
+        render();
+      });
+      $('#addPerson').addEventListener('click', addPersonFromForm);
+      $('#saveGroup').addEventListener('click', saveCurrentGroup);
+      $('#copyLink').addEventListener('click', copyShareLink);
+      $('#copyPlan').addEventListener('click', copyPlan);
+      $('#copyPlanTop').addEventListener('click', copyPlan);
+      $('#downloadIcs').addEventListener('click', downloadIcs);
+      $('#clearSaved').addEventListener('click', clearSavedGroups);
+
+      $$('[data-scroll]').forEach((button) => {
+        button.addEventListener('click', () => $(button.dataset.scroll)?.scrollIntoView({ behavior: 'smooth' }));
+      });
+
+      $$('[data-preset]').forEach((button) => {
+        button.addEventListener('click', () => addPreset(button.dataset.preset));
+      });
+    }
+
+    function hydrateInputs() {
+      $('#meetingTitle').value = state.title;
+      $('#meetingDate').value = state.date;
+      $('#meetingDuration').value = String(state.duration);
+      $('#timeFormat').value = state.format;
+      const userZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      $('#personZone').value = zones.some(([id]) => id === userZone) ? userZone : 'America/New_York';
+    }
+
+    function seedDefaultCallers() {
+      const userZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      addPerson('You', zones.some(([id]) => id === userZone) ? userZone : 'America/Chicago', 8 * 60, 17 * 60);
+      addPerson('London Office', 'Europe/London', 9 * 60, 17 * 60);
+      addPerson('New York Client', 'America/New_York', 9 * 60, 17 * 60);
+    }
+
+    function addPreset(city) {
+      const found = zones.find(([, zoneCity]) => zoneCity === city);
+      if (!found) return;
+      addPerson(city, found[0], 9 * 60, 17 * 60);
+      render();
+    }
+
+    function addPersonFromForm() {
+      const zone = $('#personZone').value;
+      const city = zoneLabel(zone).city;
+      const name = $('#personName').value.trim() || city;
+      const start = timeToMinutes($('#workStart').value);
+      const end = timeToMinutes($('#workEnd').value);
+      addPerson(name, zone, start, end);
+      $('#personName').value = '';
+      render();
+    }
+
+    function addPerson(name, zone, start, end) {
+      state.people.push({
+        id: `p${nextId++}`,
+        name,
+        zone,
+        start,
+        end,
+      });
+    }
+
+    function render() {
+      renderHeroCall();
+      renderPeople();
+      renderWindows();
+      renderZoneBoard();
+      renderTimeline();
+      renderCopyBox();
+      renderSavedGroups();
+    }
+
+    function renderClocksOnly() {
+      renderHeroCall();
+      renderPeople();
+      renderZoneBoard();
+      renderCopyBox();
+    }
+
+    function renderHeroCall() {
+      const best = meetingWindows()[0];
+      const card = $('#best-call');
+      if (!best) {
+        card.className = 'call-card empty';
+        card.innerHTML = `
+          <span class="call-kicker">No clean overlap yet</span>
+          <span class="call-time">Split the call</span>
+          <p class="call-subtitle">The current roster does not share a ${state.duration}-minute business-hour window. Try shortening the call, changing work hours, or splitting into regional calls.</p>
+        `;
+        return;
+      }
+
+      const hostZone = state.people[0]?.zone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+      card.className = 'call-card';
+      card.innerHTML = `
+        <span class="call-kicker">Best call window</span>
+        <span class="call-time">${formatInZone(best.start, hostZone)}-${formatInZone(best.end, hostZone)}</span>
+        <p class="call-subtitle">${dateInZone(best.start, hostZone)} for ${state.people[0]?.name || 'you'} · ${best.duration} minute shared window · ${state.people.length} callers</p>
+      `;
+    }
+
+    function renderPeople() {
+      const list = $('#peopleList');
+      if (!state.people.length) {
+        list.innerHTML = '<div class="person-card">Add callers to find overlap.</div>';
+        return;
+      }
+
+      list.innerHTML = state.people.map((person) => {
+        const now = new Date();
+        const localNow = localMinutes(now, person.zone);
+        const isWorking = isMinuteInRange(localNow, person.start, person.end);
+        return `
+          <article class="person-card" data-person-id="${person.id}">
+            <div class="person-main">
+              <div>
+                <div class="person-name">${escapeHtml(person.name)}</div>
+                <div class="person-meta">${escapeHtml(zoneLabel(person.zone).city)} · ${escapeHtml(zoneAbbr(now, person.zone))} · <span class="${isWorking ? 'status-good' : 'status-warn'}">${isWorking ? 'Working now' : 'Outside hours'}</span></div>
+              </div>
+              <button class="btn ghost danger" type="button" data-remove="${person.id}">Remove</button>
+            </div>
+            <div class="person-local">
+              <div class="local-pill"><span>Local time</span><strong>${formatInZone(now, person.zone)}</strong></div>
+              <div class="local-pill"><span>Work hours</span><strong>${formatMinutes(person.start)}-${formatMinutes(person.end)}</strong></div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      $$('[data-remove]', list).forEach((button) => {
+        button.addEventListener('click', () => {
+          state.people = state.people.filter((person) => person.id !== button.dataset.remove);
+          render();
+        });
+      });
+    }
+
+    function renderWindows() {
+      const container = $('#windows');
+      const windows = meetingWindows();
+      if (!windows.length) {
+        container.innerHTML = '<div class="window-card">No shared call window at the selected duration. Try 30 minutes or adjust work hours.</div>';
+        return;
+      }
+
+      container.innerHTML = windows.slice(0, 4).map((window, index) => `
+        <article class="window-card ${index === 0 ? 'best' : ''}">
+          <h3>${index === 0 ? 'Best option' : `Option ${index + 1}`} · ${window.duration} min window</h3>
+          <div class="time-list">
+            ${state.people.map((person) => `
+              <div class="time-line">
+                <span>${escapeHtml(person.name)}</span>
+                <strong>${formatInZone(window.start, person.zone)}-${formatInZone(window.end, person.zone)}</strong>
+              </div>
+            `).join('')}
+          </div>
+          <div class="result-actions" style="margin-top:12px">
+            <button class="btn secondary" type="button" data-copy-window="${index}">Copy This Option</button>
+          </div>
+        </article>
+      `).join('');
+
+      $$('[data-copy-window]', container).forEach((button) => {
+        button.addEventListener('click', () => copyText(callPlan(Number(button.dataset.copyWindow)), button));
+      });
+    }
+
+    function renderZoneBoard() {
+      const best = meetingWindows()[0];
+      const instant = best?.start || new Date();
+      $('#zoneBoard').innerHTML = state.people.map((person) => `
+        <article class="timezone-card">
+          <div class="call-kicker">${escapeHtml(person.name)}</div>
+          <div class="call-time" style="font-size:2rem">${formatInZone(instant, person.zone)}</div>
+          <p class="call-subtitle">${dateInZone(instant, person.zone)} · ${escapeHtml(zoneLabel(person.zone).city)} · ${escapeHtml(zoneAbbr(instant, person.zone))}</p>
+        </article>
+      `).join('');
+    }
+
+    function renderTimeline() {
+      const windows = meetingWindows();
+      const dayStart = new Date(`${state.date}T00:00:00`);
+      const hours = Array.from({ length: 24 }, (_, hour) => hour);
+
+      let html = '<div class="timeline-hours"><span></span>' + hours.map((hour) => `<span>${String(hour).padStart(2, '0')}</span>`).join('') + '</div>';
+      state.people.forEach((person) => {
+        html += `<div class="timeline-row"><div class="timeline-label">${escapeHtml(person.name)}</div>`;
+        hours.forEach((hour) => {
+          const instant = addMinutes(dayStart, hour * 60);
+          const minute = localMinutes(instant, person.zone);
+          html += `<span class="hour-cell ${isMinuteInRange(minute, person.start, person.end) ? 'work' : ''}"></span>`;
+        });
+        html += '</div>';
+      });
+
+      html += '<div class="timeline-row"><div class="timeline-label">Shared windows</div>';
+      hours.forEach((hour) => {
+        const instant = addMinutes(dayStart, hour * 60);
+        const overlaps = windows.some((window) => instant >= window.start && instant < window.end);
+        html += `<span class="hour-cell ${overlaps ? 'overlap' : ''}"></span>`;
+      });
+      html += '</div>';
+
+      $('#timeline').innerHTML = html;
+    }
+
+    function renderCopyBox() {
+      $('#copyBox').textContent = callPlan(0);
+    }
+
+    function renderSavedGroups() {
+      const container = $('#savedGroups');
+      if (!state.saved.length) {
+        container.innerHTML = '<div class="person-card">No saved groups yet. Save your regular international calls here.</div>';
+        return;
+      }
+      container.innerHTML = state.saved.map((group, index) => `
+        <article class="person-card">
+          <div class="person-main">
+            <div>
+              <div class="person-name">${escapeHtml(group.name)}</div>
+              <div class="person-meta">${group.people.length} callers · saved ${new Date(group.savedAt).toLocaleDateString()}</div>
+            </div>
+            <div class="row-actions">
+              <button class="btn secondary" type="button" data-load-group="${index}">Load</button>
+              <button class="btn ghost danger" type="button" data-delete-group="${index}">Delete</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+
+      $$('[data-load-group]', container).forEach((button) => {
+        button.addEventListener('click', () => {
+          const group = state.saved[Number(button.dataset.loadGroup)];
+          state.people = group.people.map((person) => ({ ...person, id: `p${nextId++}` }));
+          state.title = group.name;
+          hydrateInputs();
+          render();
+        });
+      });
+
+      $$('[data-delete-group]', container).forEach((button) => {
+        button.addEventListener('click', () => {
+          state.saved.splice(Number(button.dataset.deleteGroup), 1);
+          persistSavedGroups();
+          renderSavedGroups();
+        });
+      });
+    }
+
+    function meetingWindows() {
+      if (!state.people.length) return [];
+      const scanStart = new Date(`${state.date}T00:00:00`);
+      const step = 15;
+      const options = [];
+
+      for (let min = 0; min <= 1440 - state.duration; min += step) {
+        const start = addMinutes(scanStart, min);
+        const end = addMinutes(start, state.duration);
+        const everyAvailable = state.people.every((person) => {
+          const startLocal = localMinutes(start, person.zone);
+          const endLocal = localMinutes(addMinutes(end, -1), person.zone);
+          return isMinuteInRange(startLocal, person.start, person.end) && isMinuteInRange(endLocal, person.start, person.end);
+        });
+        if (!everyAvailable) continue;
+
+        const score = state.people.reduce((sum, person) => {
+          const mid = localMinutes(addMinutes(start, state.duration / 2), person.zone);
+          const workMid = midpoint(person.start, person.end);
+          return sum + Math.abs(mid - workMid);
+        }, 0);
+        options.push({ start, end, duration: state.duration, score });
+      }
+
+      return mergeOptions(options).sort((a, b) => a.score - b.score || a.start - b.start);
+    }
+
+    function mergeOptions(options) {
+      if (!options.length) return [];
+      const groups = [];
+      let current = { ...options[0] };
+      for (let i = 1; i < options.length; i++) {
+        const option = options[i];
+        if (option.start <= current.end) {
+          current.end = option.end;
+          current.duration = Math.round((current.end - current.start) / 60000);
+          current.score = Math.min(current.score, option.score);
+        } else {
+          groups.push(current);
+          current = { ...option };
+        }
+      }
+      groups.push(current);
+      return groups;
+    }
+
+    function callPlan(index) {
+      const window = meetingWindows()[index];
+      if (!window) {
+        return [
+          `${state.title}`,
+          '',
+          `No shared ${state.duration}-minute business-hour window was found for ${state.date}.`,
+          '',
+          'Consider shortening the call, adjusting business hours, or splitting into regional calls.',
+          '',
+          `Planned with Time Zone Call Planner: https://lab.maniczone.com/tools/timezone/`,
+        ].join('\n');
+      }
+      return [
+        `${state.title}`,
+        '',
+        `Suggested time: ${formatInZone(window.start, state.people[0].zone)}-${formatInZone(window.end, state.people[0].zone)} (${dateInZone(window.start, state.people[0].zone)})`,
+        '',
+        'Local times:',
+        ...state.people.map((person) => `- ${person.name}: ${formatInZone(window.start, person.zone)}-${formatInZone(window.end, person.zone)} ${zoneAbbr(window.start, person.zone)} (${dateInZone(window.start, person.zone)})`),
+        '',
+        `Planned with Time Zone Call Planner: https://lab.maniczone.com/tools/timezone/`,
+      ].join('\n');
+    }
+
+    function copyPlan() {
+      copyText(callPlan(0), $('#copyPlan'));
+    }
+
+    function copyShareLink() {
+      const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+        title: state.title,
+        date: state.date,
+        duration: state.duration,
+        format: state.format,
+        people: state.people.map(({ name, zone, start, end }) => ({ name, zone, start, end })),
+      }))));
+      const url = `${window.location.origin}${window.location.pathname}?call=${payload}`;
+      copyText(url, $('#copyLink'));
+    }
+
+    function loadFromUrl() {
+      const payload = new URLSearchParams(window.location.search).get('call');
+      if (!payload) return;
+      try {
+        const parsed = JSON.parse(decodeURIComponent(escape(atob(payload))));
+        state.title = parsed.title || state.title;
+        state.date = parsed.date || state.date;
+        state.duration = Number(parsed.duration) || state.duration;
+        state.format = parsed.format || state.format;
+        state.people = (parsed.people || []).map((person) => ({ ...person, id: `p${nextId++}` }));
+      } catch (error) {
+        console.warn('Could not load shared call plan', error);
+      }
+    }
+
+    function saveCurrentGroup() {
+      if (!state.people.length) return;
+      const name = window.prompt('Save this call group as:', state.title || 'International call group');
+      if (!name) return;
+      state.saved.unshift({
+        name,
+        savedAt: new Date().toISOString(),
+        people: state.people.map(({ name, zone, start, end }) => ({ name, zone, start, end })),
+      });
+      state.saved = state.saved.slice(0, 12);
+      persistSavedGroups();
+      renderSavedGroups();
+    }
+
+    function clearSavedGroups() {
+      if (!state.saved.length) return;
+      if (!window.confirm('Clear saved call groups from this browser?')) return;
+      state.saved = [];
+      persistSavedGroups();
+      renderSavedGroups();
+    }
+
+    function downloadIcs() {
+      const window = meetingWindows()[0];
+      if (!window) return;
+      const stamp = compactUtc(new Date());
+      const start = compactUtc(window.start);
+      const end = compactUtc(window.end);
+      const description = callPlan(0).replace(/\n/g, '\\n');
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Matt Livingston//Time Zone Call Planner//EN',
+        'BEGIN:VEVENT',
+        `UID:${Date.now()}@lab.maniczone.com`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART:${start}`,
+        `DTEND:${end}`,
+        `SUMMARY:${escapeIcs(state.title)}`,
+        `DESCRIPTION:${escapeIcs(description)}`,
+        'END:VEVENT',
+        'END:VCALENDAR',
+      ].join('\r\n');
+      downloadText(ics, 'timezone-call-plan.ics', 'text/calendar');
+    }
+
+    function loadSavedGroups() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function persistSavedGroups() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.saved));
+    }
+
+    function copyText(text, button) {
+      navigator.clipboard?.writeText(text).then(() => flashButton(button, 'Copied')).catch(() => {
+        const area = document.createElement('textarea');
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+        flashButton(button, 'Copied');
+      });
+    }
+
+    function flashButton(button, label) {
+      if (!button) return;
+      const original = button.textContent;
+      button.textContent = label;
+      setTimeout(() => { button.textContent = original; }, 1400);
+    }
+
+    function formatInZone(date, zone) {
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: zone,
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: state.format !== '24',
+      }).format(date);
+    }
+
+    function dateInZone(date, zone) {
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: zone,
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      }).format(date);
+    }
+
+    function zoneAbbr(date, zone) {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: zone,
+        timeZoneName: 'short',
+      }).formatToParts(date);
+      return parts.find((part) => part.type === 'timeZoneName')?.value || zone;
+    }
+
+    function localMinutes(date, zone) {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: zone,
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+      }).formatToParts(date);
+      const hour = Number(parts.find((part) => part.type === 'hour')?.value || 0) % 24;
+      const minute = Number(parts.find((part) => part.type === 'minute')?.value || 0);
+      return hour * 60 + minute;
+    }
+
+    function isMinuteInRange(minute, start, end) {
+      if (start === end) return true;
+      if (end > start) return minute >= start && minute < end;
+      return minute >= start || minute < end;
+    }
+
+    function midpoint(start, end) {
+      const adjustedEnd = end > start ? end : end + 1440;
+      return (start + adjustedEnd) / 2 % 1440;
+    }
+
+    function timeToMinutes(value) {
+      const [hour, minute] = value.split(':').map(Number);
+      return hour * 60 + minute;
+    }
+
+    function formatMinutes(minutes) {
+      const h = Math.floor(minutes / 60) % 24;
+      const m = minutes % 60;
+      if (state.format === '24') return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      const suffix = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 || 12;
+      return `${h12}:${String(m).padStart(2, '0')} ${suffix}`;
+    }
+
+    function zoneLabel(zone) {
+      const found = zones.find(([id]) => id === zone);
+      return found ? { city: found[1], label: found[2] } : { city: zone.split('/').pop().replace(/_/g, ' '), label: zone };
+    }
+
+    function addDays(date, days) {
+      const copy = new Date(date);
+      copy.setDate(copy.getDate() + days);
+      return copy;
+    }
+
+    function addMinutes(date, minutes) {
+      return new Date(date.getTime() + minutes * 60000);
+    }
+
+    function isoDate(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function compactUtc(date) {
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement('div');
+      div.textContent = value == null ? '' : String(value);
+      return div.innerHTML;
+    }
+
+    function escapeIcs(value) {
+      return String(value).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+    }
+
+    function downloadText(text, filename, mime) {
+      const blob = new Blob([text], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+  </script>
+</body>
+</html>

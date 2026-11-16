@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser Fingerprint Viewer | Canvas, WebGL & Privacy Scan</title>
+  <meta name="description" content="See what your browser reveals through canvas, WebGL, audio, fonts, storage, permissions, screen, timezone, network, and other fingerprinting signals.">
+  <link rel="canonical" href="https://lab.maniczone.com/tools/fingerprint/">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/tools/fingerprint/">
+  <meta property="og:title" content="Browser Fingerprint Viewer | Canvas, WebGL & Privacy Scan">
+  <meta property="og:description" content="See what your browser reveals through canvas, WebGL, audio, fonts, storage, permissions, screen, timezone, network, and other fingerprinting signals.">
+  <meta property="og:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Browser Fingerprint Viewer | Canvas, WebGL & Privacy Scan preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/tools/fingerprint/">
+  <meta name="twitter:title" content="Browser Fingerprint Viewer | Canvas, WebGL & Privacy Scan">
+  <meta name="twitter:description" content="See what your browser reveals through canvas, WebGL, audio, fonts, storage, permissions, screen, timezone, network, and other fingerprinting signals.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta name="twitter:image:alt" content="Browser Fingerprint Viewer | Canvas, WebGL & Privacy Scan preview image">
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      color-scheme: dark;
+      --bg: #050812;
+      --panel: rgba(13, 20, 34, 0.86);
+      --panel-strong: rgba(17, 27, 47, 0.94);
+      --panel-soft: rgba(26, 38, 63, 0.68);
+      --line: rgba(116, 198, 255, 0.2);
+      --line-strong: rgba(118, 255, 191, 0.4);
+      --text: #f8fbff;
+      --muted: #aeb9cc;
+      --faint: #7f8aa1;
+      --cyan: #74dfff;
+      --violet: #a993ff;
+      --green: #76ffbf;
+      --rose: #ff7aa8;
+      --amber: #f4d35e;
+      --ink: #06101b;
+      --radius: 8px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 14% 0%, rgba(116, 223, 255, 0.22), transparent 32rem),
+        radial-gradient(circle at 88% 8%, rgba(118, 255, 191, 0.16), transparent 30rem),
+        radial-gradient(circle at 52% 102%, rgba(169, 147, 255, 0.2), transparent 34rem),
+        linear-gradient(180deg, #07101e 0%, #050812 46%, #06110f 100%);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(248, 251, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(248, 251, 255, 0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.94), rgba(0, 0, 0, 0.2));
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 42px;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .back-link,
+    .site-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .back-link {
+      color: var(--cyan);
+    }
+
+    .back-link span {
+      font-size: 1.55rem;
+      line-height: 0;
+      transform: translateY(-1px);
+    }
+
+    .back-link:hover,
+    .site-link:hover {
+      color: var(--text);
+    }
+
+    header {
+      margin-bottom: 18px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.64fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    h1 {
+      max-width: 14ch;
+      margin: 0;
+      font-size: clamp(3.2rem, 6.9vw, 5.75rem);
+      font-weight: 900;
+      line-height: 0.92;
+      letter-spacing: 0;
+    }
+
+    h1 .dot {
+      color: var(--green);
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--green);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      margin: 16px 0 0;
+      color: #d8e1ef;
+      font-size: clamp(1rem, 1.5vw, 1.16rem);
+      line-height: 1.5;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .hero-panel {
+      position: relative;
+      min-height: 290px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(145deg, rgba(116, 223, 255, 0.11), rgba(169, 147, 255, 0.13)),
+        var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0 49%, rgba(116, 223, 255, 0.1) 50%, transparent 51% 100%),
+        linear-gradient(rgba(248, 251, 255, 0.055) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 38px;
+      pointer-events: none;
+    }
+
+    .signal-stack {
+      position: relative;
+      display: grid;
+      gap: 9px;
+    }
+
+    .signal-row {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border: 1px solid rgba(248, 251, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(5, 8, 18, 0.56);
+    }
+
+    .signal-row:nth-child(-n+5) {
+      display: flex;
+    }
+
+    .signal-row span {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .signal-row strong {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      color: var(--green);
+    }
+
+    .hero-note {
+      position: relative;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid rgba(118, 255, 191, 0.2);
+      border-radius: var(--radius);
+      background: rgba(5, 8, 18, 0.72);
+      color: var(--muted);
+    }
+
+    .hero-note strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .sponsor-slot {
+      display: none;
+      margin: 0 0 18px;
+      padding: 14px 16px;
+      border: 1px solid rgba(116, 223, 255, 0.22);
+      border-radius: var(--radius);
+      background: rgba(5, 8, 18, 0.72);
+      color: var(--muted);
+    }
+
+    .notice-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .warning-banner,
+    .incognito-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      grid-column: 1 / -1;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: rgba(244, 211, 94, 0.08);
+      border: 1px solid rgba(244, 211, 94, 0.24);
+      color: #f8e9a7;
+    }
+
+    .warning-banner strong,
+    .incognito-alert .alert-title {
+      color: var(--amber);
+    }
+
+    .warning-icon,
+    .alert-icon {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      color: var(--ink);
+      background: linear-gradient(135deg, var(--amber), var(--green));
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .warning-text,
+    .alert-desc {
+      color: inherit;
+      font-size: 0.94rem;
+    }
+
+    .incognito-alert {
+      display: none;
+      border-color: rgba(255, 122, 168, 0.42);
+      background: rgba(255, 122, 168, 0.09);
+      color: #ffd0dd;
+    }
+
+    .incognito-alert.detected {
+      display: flex;
+    }
+
+    .incognito-alert .alert-icon {
+      background: linear-gradient(135deg, var(--rose), var(--violet));
+    }
+
+    .status-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 18px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .status-title {
+      margin: 0;
+      font-size: clamp(1.5rem, 3.4vw, 2.4rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .status-subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .scan-btn,
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border: none;
+      border-radius: var(--radius);
+      color: var(--ink);
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      font-weight: 900;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    }
+
+    .btn {
+      color: var(--text);
+      border: 1px solid rgba(248, 251, 255, 0.14);
+      background: rgba(248, 251, 255, 0.06);
+    }
+
+    .scan-btn:hover,
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 54px rgba(116, 223, 255, 0.16);
+    }
+
+    .scan-btn:disabled {
+      opacity: 0.58;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .fingerprint-display {
+      position: relative;
+      margin-bottom: 14px;
+      padding: 36px 14px 14px;
+      border: 1px solid rgba(116, 223, 255, 0.28);
+      border-radius: var(--radius);
+      color: var(--green);
+      background: linear-gradient(180deg, rgba(116, 223, 255, 0.08), rgba(5, 8, 18, 0.72));
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.9rem;
+      word-break: break-all;
+      overflow: hidden;
+    }
+
+    .fingerprint-display::before {
+      content: 'FINGERPRINT HASH';
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      color: var(--faint);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+    }
+
+    .uniqueness-score {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .score-item {
+      padding: 14px;
+      border: 1px solid rgba(248, 251, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(248, 251, 255, 0.045);
+    }
+
+    .score-value {
+      margin-bottom: 4px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 1.8rem;
+      font-weight: 900;
+    }
+
+    .score-value.high { color: var(--rose); }
+    .score-value.medium { color: var(--amber); }
+    .score-value.low { color: var(--green); }
+
+    .score-label {
+      color: var(--faint);
+      font-size: 0.74rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .scanning-progress {
+      display: none;
+      margin: 14px 0 0;
+      padding: 12px;
+      border: 1px solid rgba(116, 223, 255, 0.22);
+      border-radius: var(--radius);
+      background: rgba(5, 8, 18, 0.62);
+    }
+
+    .scanning-progress.active {
+      display: block;
+    }
+
+    .progress-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(248, 251, 255, 0.08);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan), var(--violet));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .current-scan {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .scan-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--green);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .insight-card {
+      padding: 14px;
+      border: 1px solid rgba(248, 251, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(248, 251, 255, 0.045);
+    }
+
+    .insight-card span {
+      display: block;
+      color: var(--faint);
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .insight-card strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--text);
+      font-size: 1.02rem;
+    }
+
+    .insight-card p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .result-category {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(248, 251, 255, 0.1);
+    }
+
+    .category-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+
+    .risk-badge {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .risk-high {
+      background: rgba(255, 122, 168, 0.12);
+      color: var(--rose);
+      border: 1px solid rgba(255, 122, 168, 0.42);
+    }
+
+    .risk-medium {
+      background: rgba(244, 211, 94, 0.12);
+      color: var(--amber);
+      border: 1px solid rgba(244, 211, 94, 0.4);
+    }
+
+    .risk-low {
+      background: rgba(118, 255, 191, 0.11);
+      color: var(--green);
+      border: 1px solid rgba(118, 255, 191, 0.34);
+    }
+
+    .risk-critical {
+      background: rgba(255, 122, 168, 0.16);
+      color: #ffd4df;
+      border: 1px solid rgba(255, 122, 168, 0.6);
+    }
+
+    .data-point {
+      margin-bottom: 10px;
+    }
+
+    .data-label {
+      margin-bottom: 5px;
+      color: var(--faint);
+      font-size: 0.74rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .data-value {
+      padding: 9px 10px;
+      border: 1px solid rgba(248, 251, 255, 0.1);
+      border-radius: 6px;
+      color: var(--text);
+      background: rgba(5, 8, 18, 0.62);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    .data-value.danger {
+      border-color: rgba(255, 122, 168, 0.54);
+      color: #ffc9d8;
+    }
+
+    .data-explanation {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .tips-section {
+      padding: 18px;
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .tips-title {
+      margin-bottom: 14px;
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      line-height: 1;
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .tip-item {
+      padding: 14px;
+      border: 1px solid rgba(248, 251, 255, 0.1);
+      border-left: 3px solid var(--green);
+      border-radius: var(--radius);
+      background: rgba(248, 251, 255, 0.045);
+    }
+
+    .tip-title {
+      margin-bottom: 6px;
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .tip-description {
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+
+    .footer {
+      display: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .notice-row,
+      .tips-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        width: min(100% - 22px, 1180px);
+        padding-top: 14px;
+      }
+
+      .topbar {
+        margin-bottom: 22px;
+      }
+
+      h1 {
+        font-size: clamp(2.55rem, 11.8vw, 3.4rem);
+      }
+
+      .eyebrow {
+        margin-bottom: 8px;
+        font-size: 0.68rem;
+      }
+
+      .subtitle {
+        margin-top: 12px;
+        font-size: 0.95rem;
+        line-height: 1.45;
+      }
+
+      .hero-actions {
+        margin-top: 14px;
+      }
+
+      .hero-panel {
+        padding: 12px;
+      }
+
+      .signal-row {
+        padding: 9px;
+      }
+
+      .hero-note {
+        font-size: 0.88rem;
+      }
+
+      .hero-actions,
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .scan-btn,
+      .btn {
+        width: 100%;
+      }
+
+      .status-header {
+        display: grid;
+      }
+
+      .uniqueness-score,
+      .insight-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .warning-banner,
+      .incognito-alert {
+        display: grid;
+        grid-template-columns: auto 1fr;
+      }
+
+      .incognito-alert:not(.detected) {
+        display: none;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../tool-modern.css">
+  <script defer src="../tool-credit.js"></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="container">
+    <nav class="topbar" aria-label="Page navigation">
+      <a class="back-link" href="../"><span aria-hidden="true">&larr;</span> Tools</a>
+      <a class="site-link" href="https://lab.maniczone.com">ManicZone Lab</a>
+    </nav>
+
+    <header>
+      <div class="sponsor-slot" data-sponsor-slot="privacy-top">
+        Future privacy sponsor placement.
+      </div>
+
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Privacy exposure lab</p>
+          <h1>Browser Fingerprint Viewer<span class="dot">.</span></h1>
+          <p class="subtitle">See the signals websites can read before you log in, accept cookies, or click anything. Scan canvas, WebGL, audio, fonts, storage, screen, timezone, permissions, media devices, and browser hints locally in your own browser.</p>
+          <div class="hero-actions">
+            <button id="scan-btn" class="scan-btn" type="button">Scan My Browser</button>
+            <a class="btn" href="#tips-section">Reduce My Fingerprint</a>
+          </div>
+          <div id="scanning-progress" class="scanning-progress">
+            <div class="progress-bar">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="current-scan">
+              <div class="scan-spinner"></div>
+              <span id="current-scan-text">Initializing scan...</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="Fingerprint signal preview">
+          <div class="signal-stack">
+            <div class="signal-row"><span>Canvas</span><strong id="hero-canvas">waiting</strong></div>
+            <div class="signal-row"><span>WebGL</span><strong id="hero-webgl">waiting</strong></div>
+            <div class="signal-row"><span>Fonts</span><strong id="hero-fonts">waiting</strong></div>
+            <div class="signal-row"><span>Timezone</span><strong id="hero-timezone">waiting</strong></div>
+            <div class="signal-row"><span>Privacy mode</span><strong id="hero-private">unknown</strong></div>
+          </div>
+          <div class="hero-note">
+            <strong>A VPN helps, but it is not the whole story.</strong>
+            Your IP address is only one signal. Fingerprinting can still correlate browser, device, graphics, audio, locale, and permission surfaces.
+          </div>
+        </aside>
+      </section>
+
+      <div class="notice-row">
+      <div class="warning-banner">
+        <span class="warning-icon" aria-hidden="true">!</span>
+        <div class="warning-text">
+          <strong>Privacy alert:</strong> Your browser can leak a reusable fingerprint that tracks you across the web, even without cookies. This tool shows what is exposed and why each signal matters.
+        </div>
+      </div>
+
+      <div id="incognito-alert" class="incognito-alert">
+        <span class="alert-icon" aria-hidden="true">P</span>
+        <div class="alert-text">
+          <div class="alert-title">Private/Incognito Mode Detected</div>
+          <div class="alert-desc">This browser appears to be in private mode. Sites may be able to infer that state, which can become another identifying signal.</div>
+        </div>
+      </div>
+      </div>
+    </header>
+
+    <div class="status-card">
+      <div class="status-header">
+        <div>
+          <p class="eyebrow">Live report</p>
+          <h2 class="status-title">Your browser exposure summary</h2>
+          <p class="status-subtitle">Run the scan to generate a local fingerprint hash, risk score, tracker-facing insights, and exportable evidence.</p>
+        </div>
+      </div>
+
+      <div id="results-summary" class="hidden">
+        <div class="fingerprint-display" id="fingerprint-hash">
+          <!-- Hash will be inserted here -->
+        </div>
+
+        <div class="uniqueness-score">
+          <div class="score-item">
+            <div class="score-value high" id="uniqueness-score">--</div>
+            <div class="score-label">Uniqueness</div>
+          </div>
+          <div class="score-item">
+            <div class="score-value medium" id="entropy-bits">--</div>
+            <div class="score-label">Entropy Bits</div>
+          </div>
+          <div class="score-item">
+            <div class="score-value low" id="data-points">--</div>
+            <div class="score-label">Data Points</div>
+          </div>
+          <div class="score-item">
+            <div class="score-value" id="fonts-detected">--</div>
+            <div class="score-label">Fonts Found</div>
+          </div>
+        </div>
+
+        <div class="insight-grid" id="insight-grid"></div>
+
+        <div class="actions">
+          <button class="btn" id="export-btn" type="button">Export JSON</button>
+          <button class="btn" id="copy-report-btn" type="button">Copy Privacy Report</button>
+          <button class="btn" id="copy-hash-btn" type="button">Copy Hash</button>
+          <button class="btn" id="rescan-btn" type="button">Scan Again</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="results-grid" class="results-grid hidden">
+    </div>
+
+    <div id="tips-section" class="tips-section hidden">
+      <p class="eyebrow">Mitigation playbook</p>
+      <h3 class="tips-title">How to reduce your fingerprint</h3>
+      <div class="tips-grid">
+        <div class="tip-item">
+          <div class="tip-title">Use fingerprint resistance, not only privacy mode</div>
+          <div class="tip-description">Private windows usually clear storage after the session, but they do not automatically normalize canvas, WebGL, fonts, timezone, or hardware signals.</div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-title">Be careful with canvas, WebGL, and audio</div>
+          <div class="tip-description">These APIs expose rendering and processing differences from your graphics stack, drivers, fonts, and audio pipeline. They are some of the strongest fingerprint inputs.</div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-title">Reduce permission surfaces</div>
+          <div class="tip-description">Camera, microphone, notification, and geolocation states can all add context. Keep defaults strict and grant access only when a site truly needs it.</div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-title">Limit extensions and custom fonts</div>
+          <div class="tip-description">Extensions, unusual installed fonts, and custom browser settings can make you stand out. A boring browser profile is often harder to separate from the crowd.</div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-title">Use a VPN for network privacy</div>
+          <div class="tip-description">A VPN can hide your IP address from sites, but it does not erase browser-level fingerprints. Pair it with browser protections for a more complete privacy posture.</div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-title">Separate identities by browser profile</div>
+          <div class="tip-description">For sensitive work, use separate browser profiles or browsers so logins, extensions, storage, and fingerprint surfaces do not all reinforce the same identity.</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+    </footer>
+  </div>
+
+  <script>
+    // Extended font list for detection (80+ fonts)
+    const FONT_LIST = [
+      // Windows System Fonts
+      'Arial', 'Arial Black', 'Arial Narrow', 'Arial Rounded MT Bold',
+      'Calibri', 'Cambria', 'Cambria Math', 'Candara', 'Century Gothic',
+      'Comic Sans MS', 'Consolas', 'Constantia', 'Corbel', 'Courier New',
+      'Ebrima', 'Franklin Gothic Medium', 'Gabriola', 'Gadugi', 'Georgia',
+      'Impact', 'Ink Free', 'Javanese Text', 'Leelawadee UI', 'Lucida Console',
+      'Lucida Sans Unicode', 'Malgun Gothic', 'Marlett', 'Microsoft Himalaya',
+      'Microsoft JhengHei', 'Microsoft New Tai Lue', 'Microsoft PhagsPa',
+      'Microsoft Sans Serif', 'Microsoft Tai Le', 'Microsoft YaHei',
+      'Microsoft Yi Baiti', 'MingLiU-ExtB', 'Mongolian Baiti', 'MS Gothic',
+      'MV Boli', 'Myanmar Text', 'Nirmala UI', 'Palatino Linotype',
+      'Segoe MDL2 Assets', 'Segoe Print', 'Segoe Script', 'Segoe UI',
+      'Segoe UI Emoji', 'Segoe UI Historic', 'Segoe UI Symbol', 'SimSun',
+      'Sitka Text', 'Sylfaen', 'Symbol', 'Tahoma', 'Times New Roman',
+      'Trebuchet MS', 'Verdana', 'Webdings', 'Wingdings', 'Yu Gothic',
+      
+      // macOS System Fonts
+      'American Typewriter', 'Andale Mono', 'Apple Braille', 'Apple Chancery',
+      'Apple Color Emoji', 'Apple SD Gothic Neo', 'Apple Symbols', 'AppleGothic',
+      'AppleMyungjo', 'Avenir', 'Avenir Next', 'Avenir Next Condensed',
+      'Baskerville', 'Big Caslon', 'Bodoni 72', 'Bradley Hand', 'Brush Script MT',
+      'Chalkboard', 'Chalkboard SE', 'Chalkduster', 'Charter', 'Cochin',
+      'Copperplate', 'Corsiva Hebrew', 'Courier', 'Damascus', 'DecoType Naskh',
+      'Devanagari MT', 'Didot', 'DIN Alternate', 'DIN Condensed', 'Euphemia UCAS',
+      'Futura', 'Geneva', 'Gill Sans', 'Gujarati MT', 'Gurmukhi MN',
+      'Heiti SC', 'Heiti TC', 'Helvetica', 'Helvetica Neue', 'Herculanum',
+      'Hiragino Kaku Gothic Pro', 'Hiragino Maru Gothic Pro', 'Hiragino Mincho Pro',
+      'Hiragino Sans', 'Hoefler Text', 'Impact', 'InaiMathi', 'Kailasa',
+      'Kannada MN', 'Kefa', 'Khmer MN', 'Kohinoor Bangla', 'Kohinoor Devanagari',
+      'Kohinoor Telugu', 'Kokonor', 'Krungthep', 'KufiStandardGK', 'Lao MN',
+      'Lucida Grande', 'Luminari', 'Malayalam MN', 'Marion', 'Marker Felt',
+      'Menlo', 'Microsoft Sans Serif', 'Mishafi', 'Monaco', 'Mshtakan',
+      'Mukta Mahee', 'Muna', 'Myanmar MN', 'Nadeem', 'New Peninim MT',
+      'Noteworthy', 'Noto Nastaliq Urdu', 'Optima', 'Oriya MN', 'Palatino',
+      'Papyrus', 'Party LET', 'Phosphate', 'PingFang HK', 'PingFang SC',
+      'PingFang TC', 'Plantagenet Cherokee', 'Raanana', 'Rockwell', 'Sana',
+      'Sathu', 'Savoye LET', 'SF Pro', 'Shree Devanagari 714', 'SignPainter',
+      'Silom', 'Sinhala MN', 'Skia', 'Snell Roundhand', 'Songti SC',
+      'STIXGeneral', 'Sukhumvit Set', 'Superclarendon', 'Symbol', 'Tahoma',
+      'Tamil MN', 'Telugu MN', 'Thonburi', 'Times', 'Trattatello',
+      'Waseem', 'Zapf Dingbats', 'Zapfino',
+      
+      // Linux Common Fonts
+      'Ubuntu', 'Ubuntu Mono', 'Ubuntu Condensed', 'DejaVu Sans', 'DejaVu Serif',
+      'DejaVu Sans Mono', 'Liberation Sans', 'Liberation Serif', 'Liberation Mono',
+      'Nimbus Sans', 'Nimbus Roman', 'Nimbus Mono', 'Noto Sans', 'Noto Serif',
+      'Noto Mono', 'Droid Sans', 'Droid Serif', 'Droid Sans Mono', 'Roboto',
+      'Open Sans', 'Lato', 'Source Sans Pro', 'Source Code Pro', 'Fira Sans',
+      'Fira Mono', 'Cantarell', 'FreeSans', 'FreeSerif', 'FreeMono',
+      
+      // Common Web/Google Fonts (if installed locally)
+      'Montserrat', 'Oswald', 'Raleway', 'Playfair Display', 'Merriweather',
+      'PT Sans', 'PT Serif', 'Nunito', 'Rubik', 'Work Sans', 'Poppins',
+      'Inter', 'Quicksand', 'Karla', 'Josefin Sans', 'Lora', 'Mukta',
+      'Titillium Web', 'Inconsolata', 'Crimson Text', 'Arimo', 'Tinos',
+      'Cousine', 'IBM Plex Sans', 'IBM Plex Mono', 'IBM Plex Serif'
+    ];
+
+    // Fingerprinting Engine
+    const FingerprintScanner = {
+      results: {},
+      fingerprint: '',
+      isIncognito: false,
+      
+      // Hash function
+      async hashString(str) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      },
+
+      // Incognito/Private Mode Detection
+      async detectIncognito() {
+        const start = performance.now();
+        const signals = {
+          detected: false,
+          methods: [],
+          confidence: 0
+        };
+
+        // Method 1: Storage Quota (Chrome/Edge)
+        try {
+          if (navigator.storage && navigator.storage.estimate) {
+            const estimate = await navigator.storage.estimate();
+            // Incognito typically has much lower quota (< 120MB)
+            if (estimate.quota && estimate.quota < 120000000) {
+              signals.methods.push('storage_quota');
+              signals.confidence += 30;
+            }
+          }
+        } catch (e) {}
+
+        // Method 2: FileSystem API (Chrome-specific)
+        try {
+          if (window.webkitRequestFileSystem) {
+            await new Promise((resolve, reject) => {
+              window.webkitRequestFileSystem(
+                window.TEMPORARY,
+                100,
+                () => resolve(),
+                () => {
+                  signals.methods.push('filesystem_api');
+                  signals.confidence += 40;
+                  reject();
+                }
+              );
+            });
+          }
+        } catch (e) {
+          if (e !== undefined) {
+            signals.methods.push('filesystem_api');
+            signals.confidence += 40;
+          }
+        }
+
+        // Method 3: IndexedDB behavior
+        try {
+          const db = await new Promise((resolve, reject) => {
+            const request = indexedDB.open('test_incognito');
+            request.onerror = () => {
+              signals.methods.push('indexeddb_error');
+              signals.confidence += 25;
+              reject();
+            };
+            request.onsuccess = () => {
+              resolve(request.result);
+              request.result.close();
+              indexedDB.deleteDatabase('test_incognito');
+            };
+          });
+        } catch (e) {}
+
+        // Method 4: Safari-specific
+        try {
+          if (typeof safari !== 'undefined' && safari.pushNotification) {
+            const permission = safari.pushNotification.permission('com.example.test');
+            if (permission.permission === 'denied') {
+              signals.methods.push('safari_push');
+              signals.confidence += 35;
+            }
+          }
+        } catch (e) {}
+
+        // Method 5: Performance memory (Chrome)
+        try {
+          if (performance.memory) {
+            // In incognito, jsHeapSizeLimit is typically lower
+            if (performance.memory.jsHeapSizeLimit < 500000000) {
+              signals.methods.push('memory_limit');
+              signals.confidence += 15;
+            }
+          }
+        } catch (e) {}
+
+        // Method 6: Service Worker availability
+        try {
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            // Can't access in some private modes
+          }
+        } catch (e) {
+          signals.methods.push('service_worker');
+          signals.confidence += 20;
+        }
+
+        signals.detected = signals.confidence >= 30;
+        signals.detectionTime = Math.round(performance.now() - start);
+        
+        this.isIncognito = signals.detected;
+        return signals;
+      },
+
+      // Basic browser info
+      async scanBasicInfo() {
+        return {
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          languages: navigator.languages.join(', '),
+          platform: navigator.platform,
+          hardwareConcurrency: navigator.hardwareConcurrency || 'Unknown',
+          deviceMemory: navigator.deviceMemory ? navigator.deviceMemory + ' GB' : 'Unknown',
+          cookieEnabled: navigator.cookieEnabled,
+          doNotTrack: navigator.doNotTrack || 'Not set',
+          maxTouchPoints: navigator.maxTouchPoints || 0,
+          pdfViewerEnabled: navigator.pdfViewerEnabled ?? 'Unknown'
+        };
+      },
+
+      async scanClientHints() {
+        const uaData = navigator.userAgentData;
+        if (!uaData) {
+          return { clientHintsSupported: false };
+        }
+
+        const hints = {
+          clientHintsSupported: true,
+          mobile: uaData.mobile,
+          brands: (uaData.brands || []).map(brand => `${brand.brand} ${brand.version}`).join(', '),
+          platform: uaData.platform || 'Unknown'
+        };
+
+        try {
+          if (uaData.getHighEntropyValues) {
+            const highEntropy = await uaData.getHighEntropyValues([
+              'architecture',
+              'bitness',
+              'model',
+              'platformVersion',
+              'uaFullVersion',
+              'fullVersionList',
+              'wow64'
+            ]);
+            hints.architecture = highEntropy.architecture || 'Unknown';
+            hints.bitness = highEntropy.bitness || 'Unknown';
+            hints.model = highEntropy.model || 'Unknown';
+            hints.platformVersion = highEntropy.platformVersion || 'Unknown';
+            hints.fullVersion = highEntropy.uaFullVersion || 'Unknown';
+            hints.fullVersionList = (highEntropy.fullVersionList || []).map(brand => `${brand.brand} ${brand.version}`).join(', ') || 'Unknown';
+            hints.wow64 = highEntropy.wow64 ?? 'Unknown';
+          }
+        } catch (error) {
+          hints.highEntropyError = error.message;
+        }
+
+        return hints;
+      },
+
+      // Screen & display info
+      async scanScreen() {
+        return {
+          screenResolution: `${screen.width}x${screen.height}`,
+          availableResolution: `${screen.availWidth}x${screen.availHeight}`,
+          colorDepth: screen.colorDepth,
+          pixelDepth: screen.pixelDepth,
+          devicePixelRatio: window.devicePixelRatio,
+          orientation: screen.orientation?.type || 'Unknown'
+        };
+      },
+
+      // Timezone detection
+      async scanTimezone() {
+        const offset = new Date().getTimezoneOffset();
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        return {
+          timezone: timezone,
+          timezoneOffset: `UTC${offset > 0 ? '-' : '+'}${Math.abs(offset / 60)}`,
+          locale: Intl.DateTimeFormat().resolvedOptions().locale
+        };
+      },
+
+      async scanPrivacyPreferences() {
+        return {
+          doNotTrack: navigator.doNotTrack || 'Not set',
+          globalPrivacyControl: navigator.globalPrivacyControl ?? 'Not exposed',
+          reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+          reducedTransparency: window.matchMedia('(prefers-reduced-transparency: reduce)').matches,
+          colorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+          contrast: window.matchMedia('(prefers-contrast: more)').matches ? 'more' : 'default',
+          cookiesEnabled: navigator.cookieEnabled
+        };
+      },
+
+      // Canvas fingerprinting
+      async scanCanvas() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 280;
+        canvas.height = 60;
+
+        // More complex drawing for better uniqueness
+        ctx.textBaseline = 'top';
+        ctx.font = '14px "Arial"';
+        ctx.fillStyle = '#f60';
+        ctx.fillRect(125, 1, 62, 20);
+        
+        // Gradient
+        const gradient = ctx.createLinearGradient(0, 0, 280, 0);
+        gradient.addColorStop(0, '#ff0000');
+        gradient.addColorStop(0.5, '#00ff00');
+        gradient.addColorStop(1, '#0000ff');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 30, 280, 20);
+        
+        // Text with shadows
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.fillStyle = '#069';
+        ctx.fillText('Browser Fingerprint Lab', 2, 15);
+        ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+        ctx.fillText('Canvas Test αβγ', 4, 35);
+
+        // Arc
+        ctx.beginPath();
+        ctx.arc(250, 30, 15, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff6600';
+        ctx.fill();
+
+        const dataURL = canvas.toDataURL();
+        const hash = await this.hashString(dataURL);
+        
+        return {
+          canvasHash: hash.substring(0, 16),
+          canvasDataLength: dataURL.length,
+          canvasSupported: true
+        };
+      },
+
+      // WebGL fingerprinting with render hash
+      async scanWebGL() {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        
+        if (!gl) {
+          return { webGLSupported: false };
+        }
+
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        
+        // Get extension list and hash it
+        const extensions = gl.getSupportedExtensions() || [];
+        const extensionHash = await this.hashString(extensions.join(','));
+        
+        // Render a scene and hash it
+        canvas.width = 100;
+        canvas.height = 100;
+        
+        // Simple render to create GPU-specific output
+        gl.clearColor(0.2, 0.4, 0.6, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        
+        const pixels = new Uint8Array(100 * 100 * 4);
+        gl.readPixels(0, 0, 100, 100, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+        const renderHash = await this.hashString(pixels.join(','));
+        
+        return {
+          webGLSupported: true,
+          vendor: gl.getParameter(gl.VENDOR),
+          renderer: debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unknown',
+          version: gl.getParameter(gl.VERSION),
+          shadingLanguage: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+          extensionCount: extensions.length,
+          extensionHash: extensionHash.substring(0, 12),
+          renderHash: renderHash.substring(0, 12)
+        };
+      },
+
+      // Audio fingerprinting
+      async scanAudio() {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return { audioSupported: false };
+          
+          const context = new AudioContext();
+          const oscillator = context.createOscillator();
+          const analyser = context.createAnalyser();
+          const gainNode = context.createGain();
+          const compressor = context.createDynamicsCompressor();
+
+          // Set specific values for fingerprinting
+          compressor.threshold.value = -50;
+          compressor.knee.value = 40;
+          compressor.ratio.value = 12;
+          compressor.attack.value = 0;
+          compressor.release.value = 0.25;
+
+          gainNode.gain.value = 0; // Mute
+          oscillator.type = 'triangle';
+          oscillator.frequency.value = 10000;
+
+          oscillator.connect(compressor);
+          compressor.connect(analyser);
+          analyser.connect(gainNode);
+          gainNode.connect(context.destination);
+
+          oscillator.start(0);
+          
+          // Get frequency data
+          await new Promise(r => setTimeout(r, 100));
+          const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+          analyser.getByteFrequencyData(frequencyData);
+          
+          oscillator.stop();
+          await context.close();
+
+          const hash = await this.hashString(frequencyData.join(','));
+
+          return {
+            audioHash: hash.substring(0, 16),
+            sampleRate: context.sampleRate,
+            channelCount: context.destination.maxChannelCount,
+            audioSupported: true
+          };
+        } catch (e) {
+          return { audioSupported: false, error: e.message };
+        }
+      },
+
+      // Extended Font detection
+      async scanFonts() {
+        const baseFonts = ['monospace', 'sans-serif', 'serif'];
+        const testString = 'mmmmmmmmmmlli';
+        const testSize = '72px';
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Get baseline widths
+        const baselines = {};
+        baseFonts.forEach(baseFont => {
+          ctx.font = testSize + ' ' + baseFont;
+          baselines[baseFont] = ctx.measureText(testString).width;
+        });
+
+        const detectedFonts = [];
+        const fontCategories = {
+          windows: [],
+          macos: [],
+          linux: [],
+          web: []
+        };
+
+        for (const font of FONT_LIST) {
+          let detected = false;
+          for (const baseFont of baseFonts) {
+            ctx.font = `${testSize} "${font}", ${baseFont}`;
+            const width = ctx.measureText(testString).width;
+            if (width !== baselines[baseFont]) {
+              detected = true;
+              break;
+            }
+          }
+          if (detected) {
+            detectedFonts.push(font);
+          }
+        }
+
+        // Categorize detected fonts
+        const windowsFonts = ['Calibri', 'Segoe UI', 'Consolas', 'Cambria'];
+        const macosFonts = ['Helvetica Neue', 'SF Pro', 'Menlo', 'Monaco'];
+        const linuxFonts = ['Ubuntu', 'DejaVu Sans', 'Liberation Sans'];
+
+        let osHint = 'Unknown';
+        if (detectedFonts.some(f => windowsFonts.includes(f))) osHint = 'Windows';
+        else if (detectedFonts.some(f => macosFonts.includes(f))) osHint = 'macOS';
+        else if (detectedFonts.some(f => linuxFonts.includes(f))) osHint = 'Linux';
+
+        const fontHash = await this.hashString(detectedFonts.join(','));
+
+        return {
+          fontsDetected: detectedFonts.length,
+          fontsTested: FONT_LIST.length,
+          fontHash: fontHash.substring(0, 16),
+          osHint: osHint,
+          sampleFonts: detectedFonts.slice(0, 8).join(', ') + (detectedFonts.length > 8 ? '...' : '')
+        };
+      },
+
+      // Hardware fingerprint
+      async scanHardware() {
+        const results = {
+          hardwareSupported: true
+        };
+
+        // CPU Benchmark - measure time for known operations
+        const cpuStart = performance.now();
+        let sum = 0;
+        for (let i = 0; i < 1000000; i++) {
+          sum += Math.sqrt(i) * Math.sin(i);
+        }
+        results.cpuBenchmark = Math.round(performance.now() - cpuStart);
+        results.cpuScore = sum.toFixed(2).slice(-8); // Last 8 chars as fingerprint
+
+        // Math precision fingerprint
+        const mathResults = [
+          Math.tan(-1e300),
+          Math.sin(1e20),
+          Math.cos(1e20),
+          Math.pow(2, 1024 - 1),
+          Math.log(1e-10),
+          Math.exp(1),
+          Math.sinh(1),
+          Math.atanh(0.5),
+          Math.expm1(1),
+          Math.log1p(1e-10)
+        ];
+        results.mathFingerprint = await this.hashString(mathResults.map(x => x.toString()).join('|'));
+        results.mathFingerprint = results.mathFingerprint.substring(0, 12);
+
+        // Memory pattern (if available)
+        if (performance.memory) {
+          results.jsHeapLimit = Math.round(performance.memory.jsHeapSizeLimit / 1048576) + ' MB';
+        }
+
+        // GPU Benchmark via WebGL
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = 256;
+          canvas.height = 256;
+          const gl = canvas.getContext('webgl');
+          
+          if (gl) {
+            const gpuStart = performance.now();
+            
+            // Render multiple frames
+            for (let i = 0; i < 100; i++) {
+              gl.clearColor((i % 7) / 7, (i % 11) / 11, (i % 13) / 13, 1);
+              gl.clear(gl.COLOR_BUFFER_BIT);
+            }
+            gl.finish(); // Force GPU sync
+            
+            results.gpuBenchmark = Math.round(performance.now() - gpuStart);
+          }
+        } catch (e) {
+          results.gpuBenchmark = 'N/A';
+        }
+
+        // Timing precision (fingerprints timer resolution)
+        const timings = [];
+        for (let i = 0; i < 20; i++) {
+          const t1 = performance.now();
+          const t2 = performance.now();
+          timings.push(t2 - t1);
+        }
+        const minTiming = Math.min(...timings.filter(t => t > 0));
+        results.timerResolution = minTiming > 0 ? minTiming.toFixed(4) + ' ms' : '< 0.001 ms';
+
+        return results;
+      },
+
+      // Storage & Permissions
+      async scanStorage() {
+        let quota = 'Unknown';
+        try {
+          if (navigator.storage && navigator.storage.estimate) {
+            const estimate = await navigator.storage.estimate();
+            quota = Math.round(estimate.quota / 1048576) + ' MB';
+          }
+        } catch (e) {}
+
+        return {
+          localStorage: typeof localStorage !== 'undefined',
+          sessionStorage: typeof sessionStorage !== 'undefined',
+          indexedDB: typeof indexedDB !== 'undefined',
+          cookiesEnabled: navigator.cookieEnabled,
+          storageQuota: quota
+        };
+      },
+
+      // Network info
+      async scanNetwork() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        
+        return {
+          effectiveType: connection?.effectiveType || 'Unknown',
+          downlink: connection?.downlink ? connection.downlink + ' Mbps' : 'Unknown',
+          rtt: connection?.rtt ? connection.rtt + ' ms' : 'Unknown',
+          saveData: connection?.saveData || false
+        };
+      },
+
+      async scanPermissions() {
+        const permissionNames = ['geolocation', 'notifications', 'camera', 'microphone', 'persistent-storage'];
+        const results = {};
+
+        if (!navigator.permissions || !navigator.permissions.query) {
+          return { permissionsSupported: false };
+        }
+
+        for (const name of permissionNames) {
+          try {
+            const status = await navigator.permissions.query({ name });
+            results[name] = status.state;
+          } catch (error) {
+            results[name] = 'not queryable';
+          }
+        }
+
+        return results;
+      },
+
+      // Battery API
+      async scanBattery() {
+        try {
+          if (navigator.getBattery) {
+            const battery = await navigator.getBattery();
+            return {
+              charging: battery.charging ? 'Yes' : 'No',
+              level: Math.round(battery.level * 100) + '%',
+              chargingTime: battery.chargingTime === Infinity ? 'N/A' : battery.chargingTime + 's',
+              dischargingTime: battery.dischargingTime === Infinity ? 'N/A' : battery.dischargingTime + 's'
+            };
+          }
+        } catch (e) {}
+        return { batterySupported: false };
+      },
+
+      // Media devices
+      async scanMediaDevices() {
+        try {
+          if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            return {
+              totalDevices: devices.length,
+              videoInputs: devices.filter(d => d.kind === 'videoinput').length,
+              audioInputs: devices.filter(d => d.kind === 'audioinput').length,
+              audioOutputs: devices.filter(d => d.kind === 'audiooutput').length
+            };
+          }
+        } catch (e) {}
+        return { mediaDevicesSupported: false };
+      },
+
+      // Generate overall fingerprint hash
+      async generateFingerprint() {
+        const fingerprintString = JSON.stringify(this.results);
+        this.fingerprint = await this.hashString(fingerprintString);
+        return this.fingerprint;
+      },
+
+      // Calculate entropy (uniqueness bits)
+      calculateEntropy() {
+        let bits = 0;
+        
+        // Weight by actual uniqueness contribution
+        if (this.results.basicInfo) bits += 10; // User agent varies widely
+        if (this.results.clientHints?.clientHintsSupported) bits += 4;
+        if (this.results.screen) bits += 6; // Screen resolution
+        if (this.results.canvas) bits += 12; // Canvas is highly unique
+        if (this.results.webgl) bits += 10; // WebGL renderer + extensions
+        if (this.results.audio) bits += 8; // Audio fingerprint
+        if (this.results.fonts) {
+          // More fonts = more entropy
+          const fontCount = this.results.fonts.fontsDetected || 0;
+          bits += Math.min(12, Math.round(fontCount / 5)); // Up to 12 bits
+        }
+        if (this.results.hardware) bits += 8; // Hardware timing
+        if (this.results.timezone) bits += 4; // Timezone
+        if (this.results.incognito?.detected) bits += 2; // Incognito detection
+        if (this.results.battery?.batterySupported !== false) bits += 2;
+        if (this.results.mediaDevices?.mediaDevicesSupported !== false) bits += 3;
+        if (this.results.permissions?.permissionsSupported !== false) bits += 2;
+        
+        return bits;
+      }
+    };
+
+    // UI Controller
+    const UI = {
+      scanBtn: document.getElementById('scan-btn'),
+      scanProgress: document.getElementById('scanning-progress'),
+      progressFill: document.getElementById('progress-fill'),
+      currentScanText: document.getElementById('current-scan-text'),
+      resultsSummary: document.getElementById('results-summary'),
+      resultsGrid: document.getElementById('results-grid'),
+      tipsSection: document.getElementById('tips-section'),
+      fingerprintHash: document.getElementById('fingerprint-hash'),
+      uniquenessScore: document.getElementById('uniqueness-score'),
+      entropyBits: document.getElementById('entropy-bits'),
+      dataPoints: document.getElementById('data-points'),
+      fontsDetected: document.getElementById('fonts-detected'),
+      insightGrid: document.getElementById('insight-grid'),
+      incognitoAlert: document.getElementById('incognito-alert'),
+
+      init() {
+        this.scanBtn.addEventListener('click', () => this.startScan());
+        document.getElementById('export-btn')?.addEventListener('click', () => this.exportResults());
+        document.getElementById('rescan-btn')?.addEventListener('click', () => this.startScan());
+        document.getElementById('copy-hash-btn')?.addEventListener('click', () => this.copyHash());
+        document.getElementById('copy-report-btn')?.addEventListener('click', () => this.copyReport());
+      },
+
+      async startScan() {
+        this.scanBtn.disabled = true;
+        this.scanProgress.classList.add('active');
+        this.resultsSummary.classList.add('hidden');
+        this.resultsGrid.classList.add('hidden');
+        this.tipsSection.classList.add('hidden');
+        this.incognitoAlert.classList.remove('detected');
+        this.resultsGrid.innerHTML = '';
+
+        const scans = [
+          { name: 'Private Browsing Detection', fn: 'detectIncognito', key: 'incognito' },
+          { name: 'Basic Browser Info', fn: 'scanBasicInfo', key: 'basicInfo' },
+          { name: 'Client Hints', fn: 'scanClientHints', key: 'clientHints' },
+          { name: 'Screen & Display', fn: 'scanScreen', key: 'screen' },
+          { name: 'Timezone Data', fn: 'scanTimezone', key: 'timezone' },
+          { name: 'Privacy Preferences', fn: 'scanPrivacyPreferences', key: 'privacyPreferences' },
+          { name: 'Canvas Fingerprint', fn: 'scanCanvas', key: 'canvas' },
+          { name: 'WebGL Capabilities', fn: 'scanWebGL', key: 'webgl' },
+          { name: 'Audio Fingerprint', fn: 'scanAudio', key: 'audio' },
+          { name: 'Font Detection (80+ fonts)', fn: 'scanFonts', key: 'fonts' },
+          { name: 'Hardware Fingerprint', fn: 'scanHardware', key: 'hardware' },
+          { name: 'Storage APIs', fn: 'scanStorage', key: 'storage' },
+          { name: 'Network Info', fn: 'scanNetwork', key: 'network' },
+          { name: 'Permission States', fn: 'scanPermissions', key: 'permissions' },
+          { name: 'Battery Status', fn: 'scanBattery', key: 'battery' },
+          { name: 'Media Devices', fn: 'scanMediaDevices', key: 'mediaDevices' }
+        ];
+
+        for (let i = 0; i < scans.length; i++) {
+          const scan = scans[i];
+          this.currentScanText.textContent = `Scanning: ${scan.name}...`;
+          this.progressFill.style.width = `${((i + 1) / scans.length) * 100}%`;
+          
+          try {
+            FingerprintScanner.results[scan.key] = await this.withTimeout(
+              FingerprintScanner[scan.fn](),
+              3500,
+              `${scan.name} timed out`
+            );
+          } catch (error) {
+            FingerprintScanner.results[scan.key] = {
+              supported: false,
+              error: error.message || 'Scan failed'
+            };
+          }
+          
+          // Check incognito immediately
+          if (scan.key === 'incognito' && FingerprintScanner.results.incognito.detected) {
+            this.incognitoAlert.classList.add('detected');
+          }
+          
+          await this.delay(150); // Faster but still visible
+        }
+
+        this.currentScanText.textContent = 'Generating fingerprint hash...';
+        await FingerprintScanner.generateFingerprint();
+        await this.delay(300);
+
+        this.displayResults();
+      },
+
+      delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      },
+
+      withTimeout(promise, ms, message) {
+        return Promise.race([
+          promise,
+          new Promise((resolve) => {
+            setTimeout(() => resolve({ supported: false, error: message }), ms);
+          })
+        ]);
+      },
+
+      displayResults() {
+        this.scanProgress.classList.remove('active');
+        this.resultsSummary.classList.remove('hidden');
+        this.resultsGrid.classList.remove('hidden');
+        this.tipsSection.classList.remove('hidden');
+        this.scanBtn.disabled = false;
+
+        // Display hash
+        this.fingerprintHash.textContent = FingerprintScanner.fingerprint;
+
+        // Calculate scores
+        const entropy = FingerprintScanner.calculateEntropy();
+        const uniqueness = Math.min(99.9, (entropy / 70) * 100).toFixed(1);
+        const fontCount = FingerprintScanner.results.fonts?.fontsDetected || 0;
+
+        this.uniquenessScore.textContent = uniqueness + '%';
+        this.uniquenessScore.className = 'score-value ' + (uniqueness > 80 ? 'high' : uniqueness > 50 ? 'medium' : 'low');
+        this.entropyBits.textContent = entropy;
+        this.dataPoints.textContent = Object.keys(FingerprintScanner.results).length;
+        this.fontsDetected.textContent = fontCount;
+        this.fontsDetected.className = 'score-value ' + (fontCount > 40 ? 'high' : fontCount > 20 ? 'medium' : 'low');
+        this.renderInsights(entropy, uniqueness, fontCount);
+        this.updateHeroSignals();
+
+        // Render categories
+        if (FingerprintScanner.results.incognito?.detected) {
+          this.renderCategory('Private Browsing', {
+            detected: 'YES - You are detected!',
+            confidence: FingerprintScanner.results.incognito.confidence + '%',
+            methods: FingerprintScanner.results.incognito.methods.join(', ') || 'Multiple signals',
+            detectionTime: FingerprintScanner.results.incognito.detectionTime + 'ms'
+          }, 'critical', 
+          'Your private/incognito mode was detected! Websites can tell you\'re trying to hide, which itself is identifying information.');
+        }
+
+        this.renderCategory('Basic Info', FingerprintScanner.results.basicInfo, 'medium', 
+          'User agent and platform info can identify your browser, OS, and device type. Combined with other data, this creates a unique profile.');
+
+        this.renderCategory('Client Hints', FingerprintScanner.results.clientHints, FingerprintScanner.results.clientHints?.clientHintsSupported ? 'medium' : 'low',
+          'Client hints can expose browser brand, platform, architecture, device model, and version details when supported.');
+        
+        this.renderCategory('Screen & Display', FingerprintScanner.results.screen, 'medium',
+          'Screen resolution and pixel ratio are highly identifying, especially on less common displays or multi-monitor setups.');
+        
+        this.renderCategory('Timezone', FingerprintScanner.results.timezone, 'low',
+          'Timezone narrows down your geographic location and adds to fingerprint uniqueness.');
+
+        this.renderCategory('Privacy Preferences', FingerprintScanner.results.privacyPreferences, 'low',
+          'Privacy preference headers and OS accessibility settings can be useful protections, but they can also add more observable state.');
+        
+        this.renderCategory('Canvas Fingerprint', FingerprintScanner.results.canvas, 'high',
+          'Canvas rendering is highly unique due to GPU, driver, and font rendering differences. This is a major tracking vector.');
+        
+        this.renderCategory('WebGL', FingerprintScanner.results.webgl, 'high',
+          'WebGL exposes your GPU model, driver version, and supported extensions, creating a highly unique identifier.');
+        
+        this.renderCategory('Audio', FingerprintScanner.results.audio, 'high',
+          'Audio processing creates unique signatures based on your hardware and drivers.');
+        
+        this.renderCategory('Fonts (' + fontCount + ' detected)', FingerprintScanner.results.fonts, 'high',
+          'We tested ' + (FingerprintScanner.results.fonts?.fontsTested || 0) + ' fonts. Your installed fonts are highly identifying because different OS and software installs create unique font sets.');
+
+        this.renderCategory('Hardware', FingerprintScanner.results.hardware, 'high',
+          'CPU and GPU benchmarks, math precision, and timer resolution vary by hardware. Even identical models show subtle differences.');
+        
+        this.renderCategory('Storage', FingerprintScanner.results.storage, 'low',
+          'Storage API availability and quota can indicate browser settings and private browsing mode.');
+        
+        this.renderCategory('Network', FingerprintScanner.results.network, 'low',
+          'Connection type and speed provide additional tracking data points.');
+
+        this.renderCategory('Permissions', FingerprintScanner.results.permissions, 'medium',
+          'Permission states can reveal whether you have interacted with certain APIs before, even without asking for access during this scan.');
+        
+        if (FingerprintScanner.results.battery?.batterySupported !== false) {
+          this.renderCategory('Battery', FingerprintScanner.results.battery, 'medium',
+            'Battery status can track you across sites and sessions. Exact charge level + charging state is surprisingly unique.');
+        }
+        
+        if (FingerprintScanner.results.mediaDevices?.mediaDevicesSupported !== false) {
+          this.renderCategory('Media Devices', FingerprintScanner.results.mediaDevices, 'low',
+            'Number and type of cameras/microphones adds to your fingerprint.');
+        }
+      },
+
+      renderInsights(entropy, uniqueness, fontCount) {
+        const webglRenderer = FingerprintScanner.results.webgl?.renderer || 'Unknown';
+        const canvasHash = FingerprintScanner.results.canvas?.canvasHash || 'Unavailable';
+        const trackerRead = Number(uniqueness) > 80
+          ? 'Highly distinctive'
+          : Number(uniqueness) > 50
+            ? 'Moderately distinctive'
+            : 'Less distinctive';
+        const vpnRead = 'A VPN can hide your IP, but canvas, WebGL, fonts, timezone, and browser hints can still correlate sessions.';
+        const nextMove = Number(uniqueness) > 70
+          ? 'Try a fingerprint-resistant browser profile and compare this report again.'
+          : 'Keep permissions strict and avoid adding unusual extensions or fonts.';
+
+        this.insightGrid.innerHTML = [
+          ['Tracker read', trackerRead, `${entropy} entropy bits across ${Object.keys(FingerprintScanner.results).length} signal groups.`],
+          ['Strongest clues', 'Canvas, WebGL, fonts', `${canvasHash} / ${webglRenderer} / ${fontCount} fonts.`],
+          ['VPN note', 'Network privacy is separate', vpnRead],
+          ['Next move', Number(uniqueness) > 70 ? 'Harden browser' : 'Maintain defaults', nextMove]
+        ].map(([label, value, detail]) => `
+          <article class="insight-card">
+            <span>${this.escapeHtml(label)}</span>
+            <strong>${this.escapeHtml(value)}</strong>
+            <p>${this.escapeHtml(detail)}</p>
+          </article>
+        `).join('');
+      },
+
+      updateHeroSignals() {
+        document.getElementById('hero-canvas').textContent = FingerprintScanner.results.canvas?.canvasHash || 'blocked';
+        document.getElementById('hero-webgl').textContent = FingerprintScanner.results.webgl?.renderer || 'blocked';
+        document.getElementById('hero-fonts').textContent = String(FingerprintScanner.results.fonts?.fontsDetected || 0);
+        document.getElementById('hero-timezone').textContent = FingerprintScanner.results.timezone?.timezone || 'unknown';
+        document.getElementById('hero-private').textContent = FingerprintScanner.results.incognito?.detected ? 'detected' : 'not detected';
+      },
+
+      renderCategory(title, data, risk, explanation) {
+        const card = document.createElement('div');
+        card.className = 'result-category';
+
+        let dataHTML = '';
+        for (const [key, value] of Object.entries(data)) {
+          const isDanger = key === 'detected' && value.toString().includes('YES');
+          dataHTML += `
+            <div class="data-point">
+              <div class="data-label">${this.escapeHtml(this.formatLabel(key))}</div>
+              <div class="data-value ${isDanger ? 'danger' : ''}">${this.escapeHtml(this.formatValue(value))}</div>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="category-header">
+            <div class="category-title">${this.escapeHtml(title)}</div>
+            <span class="risk-badge risk-${risk}">${risk} risk</span>
+          </div>
+          ${dataHTML}
+          <div class="data-explanation">${this.escapeHtml(explanation)}</div>
+        `;
+
+        this.resultsGrid.appendChild(card);
+      },
+
+      formatLabel(key) {
+        return key
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase())
+          .trim();
+      },
+
+      formatValue(value) {
+        if (typeof value === 'boolean') {
+          return value ? '✓ Yes' : '✗ No';
+        }
+        if (value === 'Unknown' || value === null || value === undefined) {
+          return 'N/A';
+        }
+        return String(value);
+      },
+
+      escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, char => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[char]));
+      },
+
+      exportResults() {
+        const data = {
+          fingerprint: FingerprintScanner.fingerprint,
+          timestamp: new Date().toISOString(),
+          entropy: FingerprintScanner.calculateEntropy(),
+          isIncognito: FingerprintScanner.isIncognito,
+          results: FingerprintScanner.results
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fingerprint-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+
+      async copyHash() {
+        try {
+          await navigator.clipboard.writeText(FingerprintScanner.fingerprint);
+          const btn = document.getElementById('copy-hash-btn');
+          const originalText = btn.textContent;
+          btn.textContent = '✓ Copied!';
+          setTimeout(() => {
+            btn.textContent = originalText;
+          }, 2000);
+        } catch (e) {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = FingerprintScanner.fingerprint;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          
+          const btn = document.getElementById('copy-hash-btn');
+          btn.textContent = '✓ Copied!';
+          setTimeout(() => {
+            btn.textContent = 'Copy Hash';
+          }, 2000);
+        }
+      },
+
+      buildReport() {
+        const entropy = FingerprintScanner.calculateEntropy();
+        const uniqueness = Math.min(99.9, (entropy / 70) * 100).toFixed(1);
+        const lines = [
+          '# Browser Fingerprint Report',
+          '',
+          `Fingerprint hash: ${FingerprintScanner.fingerprint}`,
+          `Uniqueness estimate: ${uniqueness}%`,
+          `Entropy bits: ${entropy}`,
+          `Signal groups: ${Object.keys(FingerprintScanner.results).length}`,
+          `Fonts detected: ${FingerprintScanner.results.fonts?.fontsDetected || 0}`,
+          `Private mode detected: ${FingerprintScanner.results.incognito?.detected ? 'Yes' : 'No'}`,
+          '',
+          'Strong signals:',
+          `- Canvas: ${FingerprintScanner.results.canvas?.canvasHash || 'Unavailable'}`,
+          `- WebGL renderer: ${FingerprintScanner.results.webgl?.renderer || 'Unavailable'}`,
+          `- Audio: ${FingerprintScanner.results.audio?.audioHash || 'Unavailable'}`,
+          `- Timezone: ${FingerprintScanner.results.timezone?.timezone || 'Unavailable'}`,
+          '',
+          'VPN note: a VPN can hide your network address, but browser-level signals can still correlate sessions.',
+          '',
+          'Generated locally with Browser Fingerprint Viewer: https://lab.maniczone.com/tools/fingerprint/'
+        ];
+
+        return lines.join('\n');
+      },
+
+      async copyReport() {
+        const button = document.getElementById('copy-report-btn');
+        const originalText = button.textContent;
+        await navigator.clipboard.writeText(this.buildReport());
+        button.textContent = 'Copied Report';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 1600);
+      }
+    };
+
+    // Initialize
+    UI.init();
+    if (new URLSearchParams(window.location.search).get('scan') === '1') {
+      setTimeout(() => UI.startScan(), 100);
+    }
+  </script>
+</body>
+</html>

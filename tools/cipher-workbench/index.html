@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cipher Workbench | Cipher Encoder, Decoder & Reference</title>
+  <meta name="description" content="Encode, decode, analyze, and learn classical ciphers including Caesar, ROT13, Atbash, Vigenere, Rail Fence, Playfair, substitution, and Morse code.">
+  <link rel="canonical" href="https://lab.maniczone.com/tools/cipher-workbench/">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/tools/cipher-workbench/">
+  <meta property="og:title" content="Cipher Workbench | Cipher Encoder, Decoder & Reference">
+  <meta property="og:description" content="Encode, decode, analyze, and learn classical ciphers including Caesar, ROT13, Atbash, Vigenere, Rail Fence, Playfair, substitution, and Morse code.">
+  <meta property="og:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Cipher Workbench | Cipher Encoder, Decoder & Reference preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/tools/cipher-workbench/">
+  <meta name="twitter:title" content="Cipher Workbench | Cipher Encoder, Decoder & Reference">
+  <meta name="twitter:description" content="Encode, decode, analyze, and learn classical ciphers including Caesar, ROT13, Atbash, Vigenere, Rail Fence, Playfair, substitution, and Morse code.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta name="twitter:image:alt" content="Cipher Workbench | Cipher Encoder, Decoder & Reference preview image">
+<link rel="stylesheet" href="../tool-modern.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #05070d;
+      --panel: rgba(13, 19, 31, 0.86);
+      --panel-strong: rgba(17, 25, 42, 0.94);
+      --panel-soft: rgba(20, 31, 51, 0.72);
+      --line: rgba(155, 140, 255, 0.24);
+      --line-strong: rgba(110, 231, 255, 0.34);
+      --text: #f7f8ff;
+      --muted: #aeb9cf;
+      --faint: #7f8aa3;
+      --cyan: #6ee7ff;
+      --violet: #9b8cff;
+      --green: #7cf7bd;
+      --ink: #071019;
+      --danger: #ff8fb3;
+      --warning: #f4d35e;
+      --radius: 8px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(155, 140, 255, 0.28), transparent 34rem),
+        radial-gradient(circle at 88% 8%, rgba(124, 247, 189, 0.18), transparent 30rem),
+        radial-gradient(circle at 50% 100%, rgba(110, 231, 255, 0.18), transparent 32rem),
+        linear-gradient(180deg, #070915 0%, #05070d 42%, #06100f 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.22));
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(5, 7, 13, 0.08), rgba(5, 7, 13, 0.54) 72%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 42px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 46px;
+    }
+
+    .back-link,
+    .site-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .back-link {
+      color: var(--cyan);
+    }
+
+    .back-link span {
+      font-size: 1.55rem;
+      line-height: 0;
+      transform: translateY(-1px);
+    }
+
+    .site-link:hover,
+    .back-link:hover {
+      color: var(--text);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.72fr);
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .hero-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--green);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 11ch;
+      margin: 0;
+      font-size: clamp(4.1rem, 8.4vw, 7.45rem);
+      line-height: 0.88;
+      letter-spacing: 0;
+    }
+
+    h1 .dot {
+      color: var(--cyan);
+    }
+
+    .hero-intro {
+      max-width: 780px;
+      margin: 28px 0 0;
+      color: #d7def0;
+      font-size: clamp(1.1rem, 2.1vw, 1.45rem);
+      line-height: 1.56;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.07);
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(110, 231, 255, 0.45);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .button.primary {
+      color: var(--ink);
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      box-shadow: 0 18px 54px rgba(110, 231, 255, 0.18);
+    }
+
+    .hero-board {
+      position: relative;
+      min-height: 410px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(155deg, rgba(155, 140, 255, 0.16), rgba(10, 16, 28, 0.8)),
+        rgba(12, 18, 30, 0.86);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-board::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0 48%, rgba(110, 231, 255, 0.08) 50%, transparent 52% 100%),
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 38px;
+      opacity: 0.76;
+      pointer-events: none;
+    }
+
+    .board-row {
+      position: relative;
+      display: grid;
+      grid-template-columns: 58px 1fr 58px;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .board-row:last-child {
+      border-bottom: 0;
+    }
+
+    .token {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius);
+      color: var(--ink);
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+
+    .token.alt {
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+    }
+
+    .wire {
+      height: 2px;
+      background: linear-gradient(90deg, rgba(124, 247, 189, 0.12), rgba(110, 231, 255, 0.88), rgba(155, 140, 255, 0.16));
+      box-shadow: 0 0 18px rgba(110, 231, 255, 0.3);
+    }
+
+    .board-caption {
+      position: relative;
+      padding: 14px;
+      margin-top: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: rgba(5, 7, 13, 0.68);
+      backdrop-filter: blur(16px);
+    }
+
+    .board-caption strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .board-caption p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .notice {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      margin: 0 0 26px;
+      padding: 14px;
+      border: 1px solid rgba(244, 211, 94, 0.25);
+      border-radius: var(--radius);
+      color: #f6e8a8;
+      background: rgba(244, 211, 94, 0.08);
+    }
+
+    .notice strong {
+      color: var(--warning);
+    }
+
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(5, 7, 13, 0.86);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .tab {
+      min-height: 44px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .tab.is-active {
+      color: var(--ink);
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+    }
+
+    .panel {
+      display: none;
+      margin-top: 18px;
+    }
+
+    .panel.is-active {
+      display: block;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.72fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .card-inner {
+      padding: 18px;
+    }
+
+    .card h2,
+    .card h3 {
+      margin: 0;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .card h2 {
+      font-size: clamp(1.55rem, 4vw, 2.35rem);
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+    }
+
+    .lede {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label,
+    .label {
+      color: #dbe3f5;
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: var(--radius);
+      color: var(--text);
+      background: rgba(3, 7, 13, 0.78);
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    input,
+    select {
+      min-height: 48px;
+      padding: 0 13px;
+    }
+
+    textarea {
+      min-height: 188px;
+      padding: 13px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(110, 231, 255, 0.58);
+      box-shadow: 0 0 0 3px rgba(110, 231, 255, 0.12);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: var(--radius);
+      background: rgba(3, 7, 13, 0.46);
+    }
+
+    .toggle-row input {
+      width: 18px;
+      min-height: 18px;
+      accent-color: var(--green);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .output-box {
+      min-height: 190px;
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid rgba(110, 231, 255, 0.24);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(110, 231, 255, 0.08), rgba(5, 7, 13, 0.65));
+    }
+
+    .output-box pre,
+    .mono {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    .output-box pre {
+      min-height: 116px;
+      margin: 0;
+      color: #ecf8ff;
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .explain {
+      margin: 14px 0 0;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .facts {
+      display: grid;
+      gap: 10px;
+    }
+
+    .fact {
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .fact span {
+      display: block;
+      color: var(--faint);
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .fact strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--text);
+      font-size: 1.02rem;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(320px, 1fr);
+      gap: 18px;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .metric {
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--faint);
+      font-size: 0.74rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 6px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 1.5rem;
+    }
+
+    .bars {
+      display: grid;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 28px 1fr 58px;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.86rem;
+    }
+
+    .bar {
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--cyan), var(--violet));
+    }
+
+    .brute-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 16px;
+      max-height: 560px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .brute-item {
+      display: grid;
+      grid-template-columns: 76px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .brute-item code {
+      color: var(--green);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-weight: 900;
+    }
+
+    .brute-text {
+      min-width: 0;
+      overflow: hidden;
+      color: #dde8fa;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mini-button {
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 0.82rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .reference-toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .reference-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .ref-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 280px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .ref-card[hidden] {
+      display: none;
+    }
+
+    .ref-card h3 {
+      font-size: 1.24rem;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      color: #dbe3f5;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .ref-line {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .ref-line strong {
+      color: var(--text);
+    }
+
+    .alphabet-map {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .map-row {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .map-row span:first-child {
+      color: var(--faint);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .map-cells {
+      display: grid;
+      grid-template-columns: repeat(13, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .map-cells span {
+      display: grid;
+      place-items: center;
+      min-height: 34px;
+      border-radius: 6px;
+      color: var(--ink);
+      background: linear-gradient(135deg, rgba(124, 247, 189, 0.92), rgba(110, 231, 255, 0.92));
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-weight: 900;
+    }
+
+    .map-cells.output span {
+      background: linear-gradient(135deg, rgba(155, 140, 255, 0.95), rgba(110, 231, 255, 0.9));
+    }
+
+    .keyword-preview {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.045);
+      line-height: 1.55;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      .hero,
+      .section-grid,
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-board {
+        min-height: 340px;
+      }
+
+      .reference-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .shell {
+        width: min(100% - 22px, 1180px);
+        padding-top: 14px;
+      }
+
+      .topbar {
+        margin-bottom: 34px;
+      }
+
+      .site-link {
+        font-size: 0.92rem;
+      }
+
+      h1 {
+        font-size: clamp(3.35rem, 15.5vw, 5.2rem);
+      }
+
+      .hero-intro {
+        margin-top: 22px;
+      }
+
+      .hero-actions,
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .tabs {
+        position: static;
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .notice {
+        grid-template-columns: 1fr;
+      }
+
+      .control-grid,
+      .metric-row,
+      .reference-toolbar,
+      .reference-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .brute-item {
+        grid-template-columns: 1fr auto;
+      }
+
+      .brute-item code {
+        grid-column: 1 / -1;
+      }
+
+      .map-row {
+        grid-template-columns: 1fr;
+      }
+
+      .map-cells {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+      }
+    }
+  </style>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar" aria-label="Page navigation">
+      <a class="back-link" href="../"><span aria-hidden="true">&larr;</span> Tools</a>
+      <a class="site-link" href="https://lab.maniczone.com">ManicZone Lab</a>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Classical ciphers, explained</p>
+        <h1>Cipher Workbench<span class="dot">.</span></h1>
+        <p class="hero-intro">Encode, decode, compare, and break approachable ciphers in one local browser lab. Use it as a puzzle helper, classroom reference, quick cryptogram desk, or plain-English guide to how Caesar, Atbash, Vigenere, Rail Fence, Playfair, substitution, and Morse systems actually move text around.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#workbench">Start Encoding</a>
+          <a class="button" href="#reference">Browse Reference</a>
+        </div>
+      </div>
+
+      <aside class="hero-board" aria-label="Cipher mapping preview">
+        <div class="board-row">
+          <span class="token">A</span>
+          <span class="wire" aria-hidden="true"></span>
+          <span class="token alt">D</span>
+        </div>
+        <div class="board-row">
+          <span class="token">T</span>
+          <span class="wire" aria-hidden="true"></span>
+          <span class="token alt">W</span>
+        </div>
+        <div class="board-row">
+          <span class="token">B</span>
+          <span class="wire" aria-hidden="true"></span>
+          <span class="token alt">Y</span>
+        </div>
+        <div class="board-row">
+          <span class="token">S</span>
+          <span class="wire" aria-hidden="true"></span>
+          <span class="token alt">...</span>
+        </div>
+        <div class="board-caption">
+          <strong>Reference plus playground.</strong>
+          <p>Every cipher includes working transforms, fast context, weakness notes, and copy-friendly output.</p>
+        </div>
+      </aside>
+    </section>
+
+    <div class="notice" role="note">
+      <strong>Security note</strong>
+      <span>Classical ciphers are useful for learning, games, and puzzles. They are not encryption for private data, passwords, financial records, or anything that needs real security.</span>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Cipher Workbench sections">
+      <button class="tab is-active" type="button" role="tab" aria-selected="true" aria-controls="workbench" data-tab="workbench">Workbench</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="analyzer" data-tab="analyzer">Analyzer</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="reference" data-tab="reference">Reference</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="alphabet" data-tab="alphabet">Alphabet</button>
+    </div>
+
+    <section class="panel is-active" id="workbench" role="tabpanel">
+      <div class="section-grid">
+        <article class="card">
+          <div class="card-inner">
+            <p class="eyebrow">Encode and decode</p>
+            <h2>Transform text without leaving your browser.</h2>
+            <p class="lede">Pick a cipher, tune the key, paste your message, then copy the result. Punctuation can be preserved for readability or stripped when you want cleaner puzzle text.</p>
+
+            <div class="control-grid">
+              <div class="field">
+                <label for="cipherSelect">Cipher</label>
+                <select id="cipherSelect">
+                  <option value="caesar">Caesar shift</option>
+                  <option value="rot13">ROT13</option>
+                  <option value="atbash">Atbash</option>
+                  <option value="vigenere">Vigenere</option>
+                  <option value="rail">Rail Fence</option>
+                  <option value="playfair">Playfair</option>
+                  <option value="substitution">Simple substitution</option>
+                  <option value="morse">Morse code</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="directionSelect">Mode</label>
+                <select id="directionSelect">
+                  <option value="encode">Encode</option>
+                  <option value="decode">Decode</option>
+                </select>
+              </div>
+
+              <div class="field option option-shift">
+                <label for="shiftInput">Shift</label>
+                <input id="shiftInput" type="number" min="-25" max="25" value="3">
+              </div>
+
+              <div class="field option option-keyword hidden">
+                <label for="keywordInput">Keyword</label>
+                <input id="keywordInput" value="LEMON" autocomplete="off" spellcheck="false">
+              </div>
+
+              <div class="field option option-rails hidden">
+                <label for="railsInput">Rails</label>
+                <input id="railsInput" type="number" min="2" max="12" value="3">
+              </div>
+
+              <div class="field option option-substitution hidden">
+                <label for="substitutionInput">Cipher alphabet</label>
+                <input id="substitutionInput" value="QWERTYUIOPASDFGHJKLZXCVBNM" autocomplete="off" spellcheck="false">
+              </div>
+
+              <label class="toggle-row field">
+                <input id="spacingInput" type="checkbox" checked>
+                <span>Keep spaces and punctuation</span>
+              </label>
+
+              <div class="field full">
+                <label for="inputText">Input</label>
+                <textarea id="inputText" spellcheck="false">Attack at dawn.</textarea>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="button primary" type="button" id="transformButton">Transform</button>
+              <button class="button" type="button" id="swapButton">Use Output as Input</button>
+              <button class="button" type="button" id="copyButton">Copy Output</button>
+            </div>
+
+            <div class="output-box" aria-live="polite">
+              <pre id="outputText"></pre>
+              <p class="explain" id="explanationText"></p>
+            </div>
+          </div>
+        </article>
+
+        <aside class="card">
+          <div class="card-inner">
+            <p class="eyebrow">Quick read</p>
+            <h2 id="cipherTitle">Caesar shift</h2>
+            <p class="lede" id="cipherSummary"></p>
+            <div class="facts" id="cipherFacts"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel" id="analyzer" role="tabpanel">
+      <div class="analysis-grid">
+        <article class="card">
+          <div class="card-inner">
+            <p class="eyebrow">Frequency analysis</p>
+            <h2>Look for patterns before guessing keys.</h2>
+            <p class="lede">Classical ciphers leak structure. Frequency, repeated letters, and short brute-force lists often reveal where to start.</p>
+
+            <div class="field" style="margin-top: 18px;">
+              <label for="analysisText">Ciphertext or sample text</label>
+              <textarea id="analysisText" spellcheck="false">KHOOR ZRUOG</textarea>
+            </div>
+
+            <div class="actions">
+              <button class="button primary" type="button" id="analyzeButton">Analyze Text</button>
+              <button class="button" type="button" id="copyAnalysisButton">Copy Summary</button>
+            </div>
+
+            <div class="metric-row">
+              <div class="metric"><span>Letters</span><strong id="lettersMetric">0</strong></div>
+              <div class="metric"><span>Unique</span><strong id="uniqueMetric">0</strong></div>
+              <div class="metric"><span>IOC</span><strong id="iocMetric">0.000</strong></div>
+            </div>
+
+            <div class="bars" id="frequencyBars"></div>
+          </div>
+        </article>
+
+        <aside class="card">
+          <div class="card-inner">
+            <p class="eyebrow">Caesar brute force</p>
+            <h2>Try every shift instantly.</h2>
+            <p class="lede">A Caesar cipher has only 25 meaningful keys, so the fastest attack is simply reading every candidate.</p>
+            <div class="brute-list" id="bruteList"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel" id="reference" role="tabpanel">
+      <article class="card">
+        <div class="card-inner">
+          <p class="eyebrow">Reference desk</p>
+          <h2>Know what each cipher is good for.</h2>
+          <p class="lede">Use this as a quick field guide: how the cipher works, the key it needs, where it shines, and why it falls apart.</p>
+
+          <div class="reference-toolbar">
+            <div class="field">
+              <label for="referenceSearch">Filter the reference</label>
+              <input id="referenceSearch" placeholder="Try: keyword, substitution, puzzle, Morse">
+            </div>
+            <button class="button" type="button" id="clearReferenceButton">Clear</button>
+          </div>
+
+          <div class="reference-grid" id="referenceGrid"></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel" id="alphabet" role="tabpanel">
+      <div class="section-grid">
+        <article class="card">
+          <div class="card-inner">
+            <p class="eyebrow">Alphabet map</p>
+            <h2>See the active substitution at a glance.</h2>
+            <p class="lede">The map follows the cipher settings in the workbench. It is especially useful for Caesar, ROT13, Atbash, and simple substitution.</p>
+            <div class="alphabet-map" id="alphabetMap"></div>
+            <div class="keyword-preview mono" id="keywordPreview"></div>
+          </div>
+        </article>
+
+        <aside class="card">
+          <div class="card-inner">
+            <p class="eyebrow">Reading tip</p>
+            <h2>Separate the system from the key.</h2>
+            <p class="lede">The cipher is the rule. The key is the variable that changes the result. Caesar uses a number, Vigenere uses a word, Rail Fence uses a rail count, and substitution uses a custom alphabet.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="../tool-credit.js"></script>
+  <script>
+    const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const MORSE = {
+      A: ".-", B: "-...", C: "-.-.", D: "-..", E: ".", F: "..-.", G: "--.", H: "....", I: "..",
+      J: ".---", K: "-.-", L: ".-..", M: "--", N: "-.", O: "---", P: ".--.", Q: "--.-", R: ".-.",
+      S: "...", T: "-", U: "..-", V: "...-", W: ".--", X: "-..-", Y: "-.--", Z: "--..",
+      0: "-----", 1: ".----", 2: "..---", 3: "...--", 4: "....-", 5: ".....",
+      6: "-....", 7: "--...", 8: "---..", 9: "----."
+    };
+    const MORSE_REVERSE = Object.fromEntries(Object.entries(MORSE).map(([letter, code]) => [code, letter]));
+
+    const cipherData = {
+      caesar: {
+        title: "Caesar shift",
+        summary: "A monoalphabetic substitution where every letter moves by the same number of positions.",
+        key: "Number shift, usually 1 to 25",
+        best: "Warm-up puzzles, teaching modular arithmetic, simple geocache clues",
+        weakness: "Brute force is trivial because there are only 25 useful shifts."
+      },
+      rot13: {
+        title: "ROT13",
+        summary: "A Caesar shift of 13. Encoding and decoding are the same operation.",
+        key: "Fixed shift of 13",
+        best: "Spoiler hiding, casual forum text, examples where reversibility should be obvious",
+        weakness: "Anyone who recognizes ROT13 can read it immediately."
+      },
+      atbash: {
+        title: "Atbash",
+        summary: "A mirror substitution where A becomes Z, B becomes Y, and the alphabet folds back on itself.",
+        key: "No key",
+        best: "Cryptogram clues, wordplay, historical cipher examples",
+        weakness: "Letter frequency is preserved, so longer messages are easy to solve."
+      },
+      vigenere: {
+        title: "Vigenere",
+        summary: "A polyalphabetic cipher that changes the shift for each letter using a repeating keyword.",
+        key: "Keyword, repeated across the message",
+        best: "More interesting puzzle text and teaching why repeated-key ciphers leak patterns",
+        weakness: "Repeated keywords can be attacked with frequency analysis once the key length is guessed."
+      },
+      rail: {
+        title: "Rail Fence",
+        summary: "A transposition cipher that writes letters in a zigzag across rails, then reads rows.",
+        key: "Number of rails",
+        best: "Visual puzzles, route ciphers, showing the difference between substitution and transposition",
+        weakness: "Spacing patterns and short rail counts make it easy to test candidates."
+      },
+      playfair: {
+        title: "Playfair",
+        summary: "A digraph cipher that encrypts pairs of letters using a keyword-built 5 by 5 square.",
+        key: "Keyword, with I and J sharing one square",
+        best: "Historical context, puzzle hunts, and a step up from single-letter substitution",
+        weakness: "It hides single-letter frequency but still leaks pair patterns and can be attacked with enough text."
+      },
+      substitution: {
+        title: "Simple substitution",
+        summary: "A custom alphabet replaces the normal alphabet one letter at a time.",
+        key: "A 26-letter cipher alphabet",
+        best: "Classic newspaper cryptograms and custom puzzle alphabets",
+        weakness: "Letter frequency, common words, and repeated patterns survive the transform."
+      },
+      morse: {
+        title: "Morse code",
+        summary: "A timing code that represents letters and numbers with dots and dashes.",
+        key: "No key",
+        best: "Signal puzzles, radio history, escape-room clues, readable short messages",
+        weakness: "It is an encoding, not encryption. It only hides text from people who do not know Morse."
+      }
+    };
+
+    const referenceItems = [
+      {
+        name: "Caesar shift",
+        tags: ["Substitution", "Shift", "Beginner"],
+        key: "A number from 1 to 25.",
+        best: "Fast puzzle clues and explaining modular alphabets.",
+        weakness: "Try all shifts and one will read correctly.",
+        remember: "Same alphabet, same shift, every letter."
+      },
+      {
+        name: "ROT13",
+        tags: ["Substitution", "No setup", "Spoilers"],
+        key: "Always 13.",
+        best: "Hiding casual spoilers where security is not the point.",
+        weakness: "It is famous and instantly reversible.",
+        remember: "Encode twice and you get the original back."
+      },
+      {
+        name: "Atbash",
+        tags: ["Mirror", "No key", "Historical"],
+        key: "No key.",
+        best: "Short clues and alphabet mirror puzzles.",
+        weakness: "Frequency and word shape remain visible.",
+        remember: "A to Z, B to Y, C to X."
+      },
+      {
+        name: "Vigenere",
+        tags: ["Keyword", "Polyalphabetic", "Intermediate"],
+        key: "A word or phrase.",
+        best: "Puzzles that should feel more sophisticated than Caesar.",
+        weakness: "A repeated key creates repeating statistical traces.",
+        remember: "Each key letter chooses the shift for that message letter."
+      },
+      {
+        name: "Rail Fence",
+        tags: ["Transposition", "Rails", "Visual"],
+        key: "Rail count, often 2 to 5.",
+        best: "Teaching that ciphers can move positions without changing letters.",
+        weakness: "Small rail counts are quick to test.",
+        remember: "Write in a zigzag, read across rows."
+      },
+      {
+        name: "Simple substitution",
+        tags: ["Cryptogram", "Alphabet", "Classic"],
+        key: "A shuffled 26-letter alphabet.",
+        best: "Newspaper-style cryptograms and themed puzzle alphabets.",
+        weakness: "Common letters and common words still show through.",
+        remember: "Each plaintext letter always maps to the same ciphertext letter."
+      },
+      {
+        name: "Morse code",
+        tags: ["Encoding", "Signal", "Dots"],
+        key: "No secret key.",
+        best: "Short signal-style clues and readable audiovisual puzzles.",
+        weakness: "It is a public code, not a secret cipher.",
+        remember: "Letters are separated by spaces, words by slashes."
+      },
+      {
+        name: "Bacon cipher",
+        tags: ["Binary", "Steganography", "Reference"],
+        key: "A and B groups, sometimes hidden with fonts or styles.",
+        best: "Hiding letters inside formatting differences.",
+        weakness: "Once the binary pattern is found, decoding is mechanical.",
+        remember: "Five A/B symbols make one letter."
+      },
+      {
+        name: "Playfair",
+        tags: ["Digraph", "Grid", "Reference"],
+        key: "A keyword builds a 5 by 5 letter square.",
+        best: "Historical context and more elaborate pencil-and-paper puzzles.",
+        weakness: "Digraph patterns and known plaintext can expose the square.",
+        remember: "Encrypt letter pairs, not single letters."
+      }
+    ];
+
+    const elements = {
+      tabs: document.querySelectorAll(".tab"),
+      panels: document.querySelectorAll(".panel"),
+      cipherSelect: document.getElementById("cipherSelect"),
+      directionSelect: document.getElementById("directionSelect"),
+      shiftInput: document.getElementById("shiftInput"),
+      keywordInput: document.getElementById("keywordInput"),
+      railsInput: document.getElementById("railsInput"),
+      substitutionInput: document.getElementById("substitutionInput"),
+      spacingInput: document.getElementById("spacingInput"),
+      inputText: document.getElementById("inputText"),
+      outputText: document.getElementById("outputText"),
+      explanationText: document.getElementById("explanationText"),
+      transformButton: document.getElementById("transformButton"),
+      swapButton: document.getElementById("swapButton"),
+      copyButton: document.getElementById("copyButton"),
+      cipherTitle: document.getElementById("cipherTitle"),
+      cipherSummary: document.getElementById("cipherSummary"),
+      cipherFacts: document.getElementById("cipherFacts"),
+      analysisText: document.getElementById("analysisText"),
+      analyzeButton: document.getElementById("analyzeButton"),
+      copyAnalysisButton: document.getElementById("copyAnalysisButton"),
+      lettersMetric: document.getElementById("lettersMetric"),
+      uniqueMetric: document.getElementById("uniqueMetric"),
+      iocMetric: document.getElementById("iocMetric"),
+      frequencyBars: document.getElementById("frequencyBars"),
+      bruteList: document.getElementById("bruteList"),
+      referenceSearch: document.getElementById("referenceSearch"),
+      clearReferenceButton: document.getElementById("clearReferenceButton"),
+      referenceGrid: document.getElementById("referenceGrid"),
+      alphabetMap: document.getElementById("alphabetMap"),
+      keywordPreview: document.getElementById("keywordPreview")
+    };
+
+    function mod(value, divisor) {
+      return ((value % divisor) + divisor) % divisor;
+    }
+
+    function cleanLetters(value) {
+      return (value || "").toUpperCase().replace(/[^A-Z]/g, "");
+    }
+
+    function normalizeSubstitutionAlphabet(value) {
+      const seen = new Set();
+      const cleaned = cleanLetters(value);
+      let result = "";
+
+      for (const char of cleaned) {
+        if (!seen.has(char)) {
+          seen.add(char);
+          result += char;
+        }
+      }
+
+      for (const char of ALPHABET) {
+        if (!seen.has(char)) result += char;
+      }
+
+      return result.slice(0, 26);
+    }
+
+    function transformLetters(text, transformer, keepSpacing) {
+      let output = "";
+      for (const char of text) {
+        const upper = char.toUpperCase();
+        const index = ALPHABET.indexOf(upper);
+        if (index === -1) {
+          if (keepSpacing) output += char;
+          continue;
+        }
+        const transformed = transformer(upper, index);
+        output += char === upper ? transformed : transformed.toLowerCase();
+      }
+      return output;
+    }
+
+    function caesar(text, shift, keepSpacing) {
+      return transformLetters(text, (char, index) => ALPHABET[mod(index + shift, 26)], keepSpacing);
+    }
+
+    function atbash(text, keepSpacing) {
+      return transformLetters(text, (char, index) => ALPHABET[25 - index], keepSpacing);
+    }
+
+    function vigenere(text, keyword, decode, keepSpacing) {
+      const key = cleanLetters(keyword) || "A";
+      let keyIndex = 0;
+      return transformLetters(text, (char, index) => {
+        const shift = ALPHABET.indexOf(key[keyIndex % key.length]);
+        keyIndex += 1;
+        return ALPHABET[mod(index + (decode ? -shift : shift), 26)];
+      }, keepSpacing);
+    }
+
+    function railFenceEncode(text, rails, keepSpacing) {
+      const source = keepSpacing ? text : text.replace(/\s+/g, "");
+      if (rails <= 1 || source.length <= rails) return source;
+      const rows = Array.from({ length: rails }, () => []);
+      let row = 0;
+      let direction = 1;
+
+      for (const char of source) {
+        rows[row].push(char);
+        if (row === 0) direction = 1;
+        if (row === rails - 1) direction = -1;
+        row += direction;
+      }
+
+      return rows.map((line) => line.join("")).join("");
+    }
+
+    function railFenceDecode(text, rails) {
+      if (rails <= 1 || text.length <= rails) return text;
+      const pattern = [];
+      let row = 0;
+      let direction = 1;
+
+      for (let i = 0; i < text.length; i += 1) {
+        pattern.push(row);
+        if (row === 0) direction = 1;
+        if (row === rails - 1) direction = -1;
+        row += direction;
+      }
+
+      const railLengths = Array.from({ length: rails }, () => 0);
+      pattern.forEach((rail) => { railLengths[rail] += 1; });
+
+      const railsText = [];
+      let cursor = 0;
+      railLengths.forEach((length) => {
+        railsText.push(text.slice(cursor, cursor + length).split(""));
+        cursor += length;
+      });
+
+      return pattern.map((rail) => railsText[rail].shift()).join("");
+    }
+
+    function substitution(text, cipherAlphabet, decode, keepSpacing) {
+      const alphabet = normalizeSubstitutionAlphabet(cipherAlphabet);
+      const from = decode ? alphabet : ALPHABET;
+      const to = decode ? ALPHABET : alphabet;
+      return transformLetters(text, (char) => to[from.indexOf(char)], keepSpacing);
+    }
+
+    function buildPlayfairSquare(keyword) {
+      const source = cleanLetters(keyword).replace(/J/g, "I") + ALPHABET.replace("J", "");
+      const letters = [];
+      const seen = new Set();
+
+      for (const char of source) {
+        if (char === "J" || seen.has(char)) continue;
+        seen.add(char);
+        letters.push(char);
+      }
+
+      const positions = {};
+      letters.forEach((char, index) => {
+        positions[char] = { row: Math.floor(index / 5), col: index % 5 };
+      });
+
+      return { letters, positions };
+    }
+
+    function preparePlayfairPairs(text) {
+      const letters = cleanLetters(text).replace(/J/g, "I");
+      const pairs = [];
+      let index = 0;
+
+      while (index < letters.length) {
+        const first = letters[index];
+        let second = letters[index + 1];
+
+        if (!second) {
+          second = first === "X" ? "Q" : "X";
+          index += 1;
+        } else if (first === second) {
+          second = first === "X" ? "Q" : "X";
+          index += 1;
+        } else {
+          index += 2;
+        }
+
+        pairs.push([first, second]);
+      }
+
+      return pairs;
+    }
+
+    function playfairTransform(text, keyword, decode) {
+      const square = buildPlayfairSquare(keyword || "KEYWORD");
+      const source = decode
+        ? cleanLetters(text).replace(/J/g, "I").match(/.{1,2}/g) || []
+        : preparePlayfairPairs(text).map((pair) => pair.join(""));
+
+      return source.map((pair) => {
+        const first = pair[0];
+        const second = pair[1] || "X";
+        const a = square.positions[first];
+        const b = square.positions[second];
+        if (!a || !b) return "";
+
+        if (a.row === b.row) {
+          const direction = decode ? -1 : 1;
+          return square.letters[(a.row * 5) + mod(a.col + direction, 5)] + square.letters[(b.row * 5) + mod(b.col + direction, 5)];
+        }
+
+        if (a.col === b.col) {
+          const direction = decode ? -1 : 1;
+          return square.letters[(mod(a.row + direction, 5) * 5) + a.col] + square.letters[(mod(b.row + direction, 5) * 5) + b.col];
+        }
+
+        return square.letters[(a.row * 5) + b.col] + square.letters[(b.row * 5) + a.col];
+      }).join("");
+    }
+
+    function morseEncode(text) {
+      return text.trim().toUpperCase().split(/\s+/).map((word) => (
+        word.split("").map((char) => MORSE[char]).filter(Boolean).join(" ")
+      )).filter(Boolean).join(" / ");
+    }
+
+    function morseDecode(text) {
+      return text.trim().split(/\s*\/\s*/).map((word) => (
+        word.split(/\s+/).map((code) => MORSE_REVERSE[code] || "").join("")
+      )).join(" ");
+    }
+
+    function runTransform() {
+      const cipher = elements.cipherSelect.value;
+      const direction = elements.directionSelect.value;
+      const decode = direction === "decode";
+      const keepSpacing = elements.spacingInput.checked;
+      const input = elements.inputText.value;
+      let output = "";
+      let explanation = "";
+
+      if (cipher === "caesar") {
+        const shift = Number(elements.shiftInput.value || 0);
+        output = caesar(input, decode ? -shift : shift, keepSpacing);
+        explanation = `${decode ? "Decoded" : "Encoded"} with a Caesar shift of ${shift}. Each letter moved ${decode ? "backward" : "forward"} through the alphabet.`;
+      } else if (cipher === "rot13") {
+        output = caesar(input, 13, keepSpacing);
+        explanation = "ROT13 always shifts by 13. The same transform both encodes and decodes the message.";
+      } else if (cipher === "atbash") {
+        output = atbash(input, keepSpacing);
+        explanation = "Atbash mirrors the alphabet, so A maps to Z, B maps to Y, and the same transform reverses it.";
+      } else if (cipher === "vigenere") {
+        const keyword = cleanLetters(elements.keywordInput.value) || "A";
+        output = vigenere(input, keyword, decode, keepSpacing);
+        explanation = `${decode ? "Decoded" : "Encoded"} with the keyword ${keyword}. Each key letter picks a Caesar shift for the matching message letter.`;
+      } else if (cipher === "rail") {
+        const rails = Math.max(2, Math.min(12, Number(elements.railsInput.value || 3)));
+        output = decode ? railFenceDecode(input, rails) : railFenceEncode(input, rails, keepSpacing);
+        explanation = `${decode ? "Decoded" : "Encoded"} using ${rails} rails. Rail Fence is a transposition cipher, so it changes letter positions instead of replacing letters.`;
+      } else if (cipher === "playfair") {
+        const keyword = cleanLetters(elements.keywordInput.value) || "KEYWORD";
+        output = playfairTransform(input, keyword, decode);
+        explanation = `${decode ? "Decoded" : "Encoded"} with a Playfair square built from ${keyword}. Playfair works in letter pairs, merges I/J, strips punctuation, and may insert filler letters.`;
+      } else if (cipher === "substitution") {
+        const alphabet = normalizeSubstitutionAlphabet(elements.substitutionInput.value);
+        output = substitution(input, alphabet, decode, keepSpacing);
+        explanation = `${decode ? "Decoded" : "Encoded"} with the cipher alphabet ${alphabet}. Each plaintext letter maps to one fixed replacement.`;
+      } else if (cipher === "morse") {
+        output = decode ? morseDecode(input) : morseEncode(input);
+        explanation = decode ? "Decoded Morse symbols into text. Spaces separate letters and slashes separate words." : "Encoded text into Morse. Letters are separated by spaces and words by slashes.";
+      }
+
+      elements.outputText.textContent = output;
+      elements.explanationText.textContent = explanation;
+      updateCipherContext();
+      updateAlphabetMap();
+    }
+
+    function updateCipherContext() {
+      const data = cipherData[elements.cipherSelect.value];
+      elements.cipherTitle.textContent = data.title;
+      elements.cipherSummary.textContent = data.summary;
+      elements.cipherFacts.innerHTML = [
+        ["Key", data.key],
+        ["Best for", data.best],
+        ["Weakness", data.weakness]
+      ].map(([label, value]) => (
+        `<div class="fact"><span>${label}</span><strong>${value}</strong></div>`
+      )).join("");
+
+      document.querySelectorAll(".option").forEach((option) => option.classList.add("hidden"));
+      if (elements.cipherSelect.value === "caesar") document.querySelector(".option-shift").classList.remove("hidden");
+      if (elements.cipherSelect.value === "vigenere" || elements.cipherSelect.value === "playfair") document.querySelector(".option-keyword").classList.remove("hidden");
+      if (elements.cipherSelect.value === "rail") document.querySelector(".option-rails").classList.remove("hidden");
+      if (elements.cipherSelect.value === "substitution") document.querySelector(".option-substitution").classList.remove("hidden");
+    }
+
+    function analyzeText() {
+      const text = elements.analysisText.value;
+      const letters = cleanLetters(text);
+      const counts = Object.fromEntries(ALPHABET.split("").map((letter) => [letter, 0]));
+      for (const letter of letters) counts[letter] += 1;
+
+      const total = letters.length;
+      const unique = Object.values(counts).filter(Boolean).length;
+      const ioc = total > 1
+        ? Object.values(counts).reduce((sum, count) => sum + (count * (count - 1)), 0) / (total * (total - 1))
+        : 0;
+      const max = Math.max(1, ...Object.values(counts));
+
+      elements.lettersMetric.textContent = String(total);
+      elements.uniqueMetric.textContent = String(unique);
+      elements.iocMetric.textContent = ioc.toFixed(3);
+      elements.frequencyBars.innerHTML = ALPHABET.split("").map((letter) => {
+        const percent = total ? ((counts[letter] / total) * 100) : 0;
+        const width = (counts[letter] / max) * 100;
+        return `<div class="bar-row"><span>${letter}</span><div class="bar"><span style="width:${width.toFixed(2)}%"></span></div><span>${percent.toFixed(1)}%</span></div>`;
+      }).join("");
+
+      elements.bruteList.innerHTML = ALPHABET.split("").map((_, shift) => {
+        const candidate = caesar(text, -shift, true);
+        return `<div class="brute-item"><code>Shift ${shift}</code><span class="brute-text">${escapeHtml(candidate)}</span><button class="mini-button" type="button" data-copy="${escapeAttribute(candidate)}">Copy</button></div>`;
+      }).join("");
+    }
+
+    function renderReference() {
+      const term = elements.referenceSearch.value.trim().toLowerCase();
+      elements.referenceGrid.innerHTML = referenceItems.map((item) => {
+        const haystack = [item.name, ...item.tags, item.key, item.best, item.weakness, item.remember].join(" ").toLowerCase();
+        const hidden = term && !haystack.includes(term) ? " hidden" : "";
+        return `
+          <article class="ref-card"${hidden}>
+            <div>
+              <h3>${item.name}</h3>
+              <div class="badge-row">${item.tags.map((tag) => `<span class="badge">${tag}</span>`).join("")}</div>
+            </div>
+            <p class="ref-line"><strong>Key:</strong> ${item.key}</p>
+            <p class="ref-line"><strong>Best for:</strong> ${item.best}</p>
+            <p class="ref-line"><strong>Weakness:</strong> ${item.weakness}</p>
+            <p class="ref-line"><strong>Remember:</strong> ${item.remember}</p>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function updateAlphabetMap() {
+      const cipher = elements.cipherSelect.value;
+      let outputAlphabet = ALPHABET;
+      let note = "This cipher does not use a direct A-to-Z substitution map.";
+
+      if (cipher === "caesar") {
+        const shift = Number(elements.shiftInput.value || 0);
+        outputAlphabet = ALPHABET.split("").map((_, index) => ALPHABET[mod(index + shift, 26)]).join("");
+        note = `Caesar map using shift ${shift}. Decoding uses the same map in reverse.`;
+      } else if (cipher === "rot13") {
+        outputAlphabet = ALPHABET.split("").map((_, index) => ALPHABET[mod(index + 13, 26)]).join("");
+        note = "ROT13 is a Caesar shift of 13, so applying the same map again returns the original text.";
+      } else if (cipher === "atbash") {
+        outputAlphabet = ALPHABET.split("").reverse().join("");
+        note = "Atbash mirrors the alphabet from both ends.";
+      } else if (cipher === "substitution") {
+        outputAlphabet = normalizeSubstitutionAlphabet(elements.substitutionInput.value);
+        note = "Simple substitution uses your custom cipher alphabet.";
+      } else if (cipher === "vigenere") {
+        const key = cleanLetters(elements.keywordInput.value) || "A";
+        note = `Vigenere changes the map for every letter. Current keyword stream starts: ${key.repeat(8).slice(0, 32)}.`;
+      } else if (cipher === "playfair") {
+        const key = cleanLetters(elements.keywordInput.value) || "KEYWORD";
+        const square = buildPlayfairSquare(key).letters.join("");
+        outputAlphabet = square + "J";
+        note = `Playfair square built from ${key}: ${square.match(/.{1,5}/g).join(" / ")}. I and J share a cell.`;
+      } else if (cipher === "rail") {
+        const rails = Math.max(2, Math.min(12, Number(elements.railsInput.value || 3)));
+        note = `Rail Fence uses ${rails} rails and changes positions instead of replacing letters.`;
+      } else if (cipher === "morse") {
+        note = "Morse translates characters into dot and dash signals rather than substituting alphabet letters.";
+      }
+
+      elements.alphabetMap.innerHTML = [
+        mapRow("Plain", ALPHABET, ""),
+        mapRow("Cipher", outputAlphabet, "output")
+      ].join("");
+      elements.keywordPreview.textContent = note;
+    }
+
+    function mapRow(label, letters, className) {
+      return `<div class="map-row"><span>${label}</span><div class="map-cells ${className}">${letters.split("").map((letter) => `<span>${letter}</span>`).join("")}</div></div>`;
+    }
+
+    function switchTab(tabId) {
+      elements.tabs.forEach((tab) => {
+        const isActive = tab.dataset.tab === tabId;
+        tab.classList.toggle("is-active", isActive);
+        tab.setAttribute("aria-selected", String(isActive));
+      });
+      elements.panels.forEach((panel) => panel.classList.toggle("is-active", panel.id === tabId));
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/\n/g, "&#10;");
+    }
+
+    async function copyText(value, button) {
+      if (!value) return;
+      await navigator.clipboard.writeText(value);
+      if (!button) return;
+      const original = button.textContent;
+      button.textContent = "Copied";
+      window.setTimeout(() => {
+        button.textContent = original;
+      }, 1100);
+    }
+
+    elements.tabs.forEach((tab) => {
+      tab.addEventListener("click", () => switchTab(tab.dataset.tab));
+    });
+
+    elements.transformButton.addEventListener("click", runTransform);
+    elements.cipherSelect.addEventListener("change", runTransform);
+    elements.directionSelect.addEventListener("change", runTransform);
+    elements.shiftInput.addEventListener("input", runTransform);
+    elements.keywordInput.addEventListener("input", runTransform);
+    elements.railsInput.addEventListener("input", runTransform);
+    elements.substitutionInput.addEventListener("input", runTransform);
+    elements.spacingInput.addEventListener("change", runTransform);
+    elements.inputText.addEventListener("input", runTransform);
+
+    elements.swapButton.addEventListener("click", () => {
+      elements.inputText.value = elements.outputText.textContent;
+      runTransform();
+    });
+
+    elements.copyButton.addEventListener("click", () => copyText(elements.outputText.textContent, elements.copyButton));
+    elements.analyzeButton.addEventListener("click", analyzeText);
+    elements.analysisText.addEventListener("input", analyzeText);
+    elements.copyAnalysisButton.addEventListener("click", () => {
+      const summary = `Letters: ${elements.lettersMetric.textContent}\nUnique letters: ${elements.uniqueMetric.textContent}\nIndex of coincidence: ${elements.iocMetric.textContent}`;
+      copyText(summary, elements.copyAnalysisButton);
+    });
+
+    elements.bruteList.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-copy]");
+      if (button) copyText(button.dataset.copy, button);
+    });
+
+    elements.referenceSearch.addEventListener("input", renderReference);
+    elements.clearReferenceButton.addEventListener("click", () => {
+      elements.referenceSearch.value = "";
+      renderReference();
+      elements.referenceSearch.focus();
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const targetId = link.getAttribute("href").slice(1);
+        if (document.getElementById(targetId)?.classList.contains("panel")) {
+          event.preventDefault();
+          switchTab(targetId);
+          document.querySelector(".tabs").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+
+    renderReference();
+    runTransform();
+    analyzeText();
+  </script>
+</body>
+</html>

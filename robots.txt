@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lab.maniczone.com/sitemap.xml

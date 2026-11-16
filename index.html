@@ -3,58 +3,88 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f3f2e9">
-  <title>ManicZone Lab — Apps, games & experiments</title>
-  <meta name="description" content="A little space for useful tools, playful games, static PWAs, and experiments from ManicZone. Something new is taking shape.">
+  <meta name="theme-color" content="#080b12">
+  <meta name="color-scheme" content="dark">
+  <title>ManicZone Lab — Tools, games, apps & experiments</title>
+  <meta name="description" content="Useful tools. Strange worlds. Ideas worth clicking. Explore browser games, everyday apps, interactive projects, and free PHP scripts from ManicZone Lab.">
   <link rel="canonical" href="https://lab.maniczone.com/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ManicZone Lab">
-  <meta property="og:description" content="Useful things. Playful things. Things worth trying. A new corner of ManicZone is taking shape.">
+  <meta property="og:site_name" content="ManicZone Lab">
+  <meta property="og:title" content="ManicZone Lab — Useful tools. Strange worlds.">
+  <meta property="og:description" content="Browser games, useful tools, everyday apps, and experiments with a little personality. Find your next rabbit hole.">
   <meta property="og:url" content="https://lab.maniczone.com/">
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
+  <meta property="og:image" content="https://lab.maniczone.com/assets/lab-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ManicZone Lab — Useful tools. Strange worlds. Ideas worth clicking.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ManicZone Lab — Useful tools. Strange worlds.">
+  <meta name="twitter:description" content="Games, tools, apps, projects, and free scripts. Find your next rabbit hole.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/assets/lab-card.png">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="page-shell">
     <header class="site-header">
-      <a class="wordmark" href="./" aria-label="ManicZone Lab home"><span class="brand-mark" aria-hidden="true">m<span>z</span></span><span>ManicZone <span class="wordmark-lab">/ Lab</span></span></a>
-      <a class="home-link" href="https://maniczone.com/">Back to ManicZone <span aria-hidden="true">↗</span></a>
+      <a class="wordmark" href="/" aria-label="ManicZone Lab home"><span class="brand-mark" aria-hidden="true">MZ</span><span>ManicZone <span class="wordmark-lab">/ Lab</span></span></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/games/">Games</a><a href="/tools/">Tools</a><a href="#apps">Apps</a><a href="/projects/">Projects</a><a href="/shed/">Script Shed</a>
+      </nav>
+      <a class="parent-link" href="https://maniczone.com/">ManicZone <span aria-hidden="true">↗</span></a>
     </header>
 
     <main id="main">
       <section class="hero" aria-labelledby="page-title">
         <div class="hero-copy">
-          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> A space for what’s next</p>
-          <h1 id="page-title">A little curiosity.<br>A lot of <em>possibility.</em></h1>
-          <p class="intro">Welcome to ManicZone Lab. A home for useful tools, playful games, and experiments that start with “what if?”</p>
-          <p class="coming-soon"><span aria-hidden="true">↳</span> Something new is taking shape. Coming soon.</p>
+          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Independent builds. Open curiosity.</p>
+          <h1 id="page-title">Useful tools.<br><span class="cyan-text">Strange worlds.</span><br>A little <span class="violet-text">ManicZone.</span></h1>
+          <p class="intro">A collection of things built to solve a problem, spark an idea, or send you down a very good rabbit hole.</p>
+          <div class="hero-actions"><a class="button primary" href="#collections">Explore the Lab <span aria-hidden="true">↘</span></a><a class="button secondary" href="/tools/">Find a useful tool <span aria-hidden="true">→</span></a></div>
+          <p class="hero-note"><span aria-hidden="true">[</span> Built by Matt Livingston. Powered by “what if?” <span aria-hidden="true">]</span></p>
         </div>
-        <div class="lab-art" aria-hidden="true">
-          <div class="art-top"><span>MZ / EXPLORATION SPACE</span><span>001</span></div>
-          <div class="orbital-field">
-            <div class="orbit orbit-one"></div>
-            <div class="orbit orbit-two"></div>
-            <div class="orbit orbit-three"></div>
-            <span class="orbit-point point-one"></span>
-            <span class="orbit-point point-two"></span>
-            <span class="orbit-point point-three"></span>
-            <span class="lab-type">lab<span>✳</span></span>
-            <span class="cross cross-one">+</span><span class="cross cross-two">+</span>
+        <div class="hero-showcase">
+          <a class="showcase-game" href="/games/">
+            <img src="/games/img/games-card.png" alt="A collage of the Lab’s sci-fi, factory, and adventure game worlds" width="1672" height="941" fetchpriority="high">
+            <span class="showcase-top"><span class="small-label">THE PLAY SIDE</span><span class="round-arrow" aria-hidden="true">↗</span></span>
+            <span class="showcase-bottom"><span class="small-label">12 ORIGINAL BROWSER GAMES</span><strong>A dozen ways<br>to disappear for a bit.</strong></span>
+          </a>
+          <div class="showcase-pair">
+            <a class="mini-showcase tool-showcase" href="/tools/"><span class="small-label">THE USEFUL SIDE <span aria-hidden="true">↗</span></span><span class="code-art" aria-hidden="true">{<i>↗</i>}</span><strong>Small tools.<br>Real work.</strong><span class="mini-description">30 utilities, ready when you are.</span></a>
+            <a class="mini-showcase app-showcase" href="/apps/24/meetings/"><span class="small-label">THE EVERYDAY SIDE <span aria-hidden="true">↗</span></span><img class="app-icon" src="/apps/24/meetings/icons/icon-any-192.png" alt="" width="54" height="54"><strong>24 Meeting<br>Tracker</strong><span class="mini-description">A little clarity for the day ahead.</span></a>
           </div>
-          <div class="art-bottom"><span>IDEAS IN ORBIT</span><span>OPEN POSSIBILITIES ↗</span></div>
         </div>
       </section>
 
-      <section class="categories" aria-label="What’s coming to the Lab">
-        <div class="category"><span class="category-number">01 /</span><h2>Apps</h2><p>Small PWAs. Everyday possibilities.</p></div>
-        <div class="category"><span class="category-number">02 /</span><h2>Games</h2><p>A little play goes a long way.</p></div>
-        <div class="category"><span class="category-number">03 /</span><h2>Tools</h2><p>Useful things that keep it simple.</p></div>
-        <div class="category"><span class="category-number">04 /</span><h2>Experiments</h2><p>Room to try something different.</p></div>
+      <section id="collections" class="collections section" aria-labelledby="collections-title">
+        <div class="section-heading"><div><p class="eyebrow">FIVE WAYS IN</p><h2 id="collections-title">Pick your rabbit hole.</h2></div><p>Something to play. Something to use.<br>Something you didn’t know you needed.</p></div>
+        <div class="collection-grid">
+          <a class="collection-card games-card" href="/games/"><span class="collection-top"><span class="collection-symbol" aria-hidden="true">✳</span><span class="small-label">01 / PLAY</span></span><h3>Games <span aria-hidden="true">↗</span></h3><p>Arcade runs, strange creatures, factories, and worlds with their own rules.</p><span class="collection-count">12 browser games</span></a>
+          <a class="collection-card tools-card" href="/tools/"><span class="collection-top"><span class="collection-symbol" aria-hidden="true">&lt;/&gt;</span><span class="small-label">02 / SOLVE</span></span><h3>Tools <span aria-hidden="true">↗</span></h3><p>Handy utilities for web work, data, operations, and the jobs in between.</p><span class="collection-count">30 useful tools</span></a>
+          <a class="collection-card apps-card" href="#apps"><span class="collection-top"><span class="collection-symbol" aria-hidden="true">▦</span><span class="small-label">03 / EVERYDAY</span></span><h3>Apps <span aria-hidden="true">↘</span></h3><p>Focused little apps that make a regular part of life a little easier.</p><span class="collection-count">Meet the meeting tracker</span></a>
+          <a class="collection-card projects-card" href="/projects/"><span class="collection-top"><span class="collection-symbol" aria-hidden="true">⌘</span><span class="small-label">04 / EXPLORE</span></span><h3>Projects <span aria-hidden="true">↗</span></h3><p>Worldbuilding, fan archives, Minecraft companions, and curious experiments.</p><span class="collection-count">Ideas with room to roam</span></a>
+          <a class="collection-card shed-card" href="/shed/"><span class="collection-top"><span class="collection-symbol" aria-hidden="true">$_</span><span class="small-label">05 / BUILD</span></span><h3>Script Shed <span aria-hidden="true">↗</span></h3><p>Practical PHP scripts to download, host yourself, and make your own.</p><span class="collection-count">3 free scripts</span></a>
+        </div>
       </section>
-    </main>
 
-    <footer class="site-footer"><p>Part of the <a href="https://maniczone.com/">ManicZone</a> universe.</p><p>Stay curious. See what happens. <span aria-hidden="true">✳</span></p></footer>
+      <section class="section featured" aria-labelledby="featured-title">
+        <div class="section-heading"><div><p class="eyebrow">WORTH A CLICK</p><h2 id="featured-title">Start somewhere interesting.</h2></div><a class="text-link" href="/projects/">All projects <span aria-hidden="true">→</span></a></div>
+        <div class="featured-grid">
+          <a class="feature-card" href="/games/salvage-zero/"><div class="feature-media"><img src="/games/img/salvage-zero.webp" alt="A salvage ship recovering cargo in a shattered orbital wreck field" width="1672" height="941" loading="lazy"><span class="media-tag">GAME / PHYSICS ARCADE</span></div><div class="feature-body"><h3>Salvage Zero <span aria-hidden="true">↗</span></h3><p>Break apart orbital wreckage, recover cargo with your tractor beam, and make it out before the debris catches up.</p><span class="feature-link">Begin salvage <span aria-hidden="true">→</span></span></div></a>
+          <a class="feature-card" href="/tools/launch-kit/"><div class="feature-media launch-art" aria-hidden="true"><div class="launch-window"><div class="window-dots"><i></i><i></i><i></i><span>launch-kit / ready-check</span></div><div class="check-line"><span>✓</span> The metadata</div><div class="check-line"><span>✓</span> The little details</div><div class="check-line"><span>✓</span> The next big thing</div><div class="launch-ready">READY WHEN YOU ARE <span>↗</span></div></div><span class="media-tag">TOOL / WEBSITE LAUNCH KIT</span></div><div class="feature-body"><h3>Website Launch Kit <span aria-hidden="true">↗</span></h3><p>Get the launch essentials together: metadata, robots.txt, sitemaps, and the final checks.</p><span class="feature-link">Get ready to ship <span aria-hidden="true">→</span></span></div></a>
+          <a class="feature-card" href="/projects/worldbuilder/"><div class="feature-media worldbuilder-art"><svg class="worldbuilder-map" viewBox="0 0 420 230" aria-hidden="true"><defs><radialGradient id="stellar-glow"><stop stop-color="#36e4f0" stop-opacity=".3"/><stop offset="1" stop-color="#36e4f0" stop-opacity="0"/></radialGradient></defs><circle cx="230" cy="115" r="112" fill="url(#stellar-glow)"/><g fill="none" stroke="#36e4f0" stroke-opacity=".23"><ellipse cx="230" cy="115" rx="112" ry="80" transform="rotate(-25 230 115)"/><ellipse cx="230" cy="115" rx="76" ry="49" transform="rotate(30 230 115)"/><circle cx="230" cy="115" r="28"/><path d="M35 115h350M230 18v194" stroke-dasharray="3 7" stroke-opacity=".13"/></g><circle cx="230" cy="115" r="7" fill="#d3f7fc"/><circle cx="133" cy="109" r="5" fill="#36e4f0"/><circle cx="287" cy="102" r="4" fill="#b393ff"/><circle cx="279" cy="181" r="5" fill="#edb766"/><g font-family="monospace" font-size="7" letter-spacing="1.4" fill="#8095ae"><text x="26" y="28">STELLAR CARTOGRAPHY</text><text x="26" y="42">SYSTEM / 001</text><text x="292" y="177">UNEXPLORED</text></g></svg><span class="media-tag">PROJECT / PROCEDURAL WORLDBUILDING</span></div><div class="feature-body"><h3>Sci-Fi Worldbuilder <span aria-hidden="true">↗</span></h3><p>Build connected science-fiction settings: star systems, settlements, factions, characters, and the conflicts between them.</p><span class="feature-link">Build your universe <span aria-hidden="true">→</span></span></div></a>
+        </div>
+      </section>
+
+      <section id="apps" class="app-spotlight section" aria-labelledby="app-title">
+        <div class="app-intro"><p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> APPS / BUILT FOR THE EVERYDAY</p><h2 id="app-title">One day.<br>A little more <span class="violet-text">clarity.</span></h2><p>24 Meeting Tracker puts your meeting schedule, attendance, and progress in one place. A focused app for keeping up with the day ahead.</p><a class="button purple" href="/apps/24/meetings/">Open 24 Meeting Tracker <span aria-hidden="true">↗</span></a></div>
+        <div class="app-detail"><div class="app-detail-heading"><img src="/apps/24/meetings/icons/icon-any-192.png" alt="" width="76" height="76" loading="lazy"><div><span class="small-label">24 MEETING TRACKER</span><strong>One day at a time.</strong></div></div><ul class="app-benefits"><li><span aria-hidden="true">01</span><div><strong>Know what’s next.</strong><p>Find the meeting schedule for your phase.</p></div></li><li><span aria-hidden="true">02</span><div><strong>Keep track as you go.</strong><p>Log attendance and follow your progress.</p></div></li><li><span aria-hidden="true">03</span><div><strong>Keep it close.</strong><p>Install it on your device for easy access.</p></div></li></ul></div>
+      </section>
+
+      <aside class="closing-note"><span class="closing-mark" aria-hidden="true">✳</span><p>Some things start with a problem.<br>Others start with <strong>“I wonder if…”</strong></p><a class="text-link" href="https://maniczone.com/">More from ManicZone <span aria-hidden="true">↗</span></a></aside>
+    </main>
+    <footer class="site-footer"><a class="footer-brand" href="/">ManicZone <span>/ Lab</span></a><p>Built by Matt Livingston. Stay curious.</p><a href="#main">Back to top <span aria-hidden="true">↑</span></a></footer>
   </div>
 </body>
 </html>

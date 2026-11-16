@@ -130,3 +130,122 @@ export function weeklyCheckinCalendar({start=dallasNow().date, stamp=new Date()}
   ...alarm('PT9H','Turn in your weekly check-in sheet today'),
   'END:VEVENT']);
 }
+
+/* =====================================================================
+   Time helpers, next-meeting search, and Phase One daily essentials.
+   Every function takes an optional `now` (a Date) so it can be tested
+   with a simulated clock: node tools/test-cyanviolet-schedule.mjs
+   ===================================================================== */
+
+// The real instant (ms since epoch) of a Dallas wall-clock time. Handles daylight-saving changes:
+// a skipped time (2:30 AM on the spring-forward day) resolves to the following real instant.
+export function dallasInstant(iso, minutes) {
+ const [y,mo,d]=iso.split('-').map(Number);
+ const wall=Date.UTC(y,mo-1,d)+minutes*60000;
+ for(const offsetHours of [5,6]){const t=wall+offsetHours*3600000,n=dallasNow(new Date(t));if(n.date===iso&&n.minutes===minutes)return t;}
+ return wall+5*3600000;
+}
+// Whole minutes from `now` until a Dallas wall-clock time; never negative.
+export function minutesUntil(iso, minutes, now=new Date()) {return Math.max(0,Math.ceil((dallasInstant(iso,minutes)-now.getTime())/60000));}
+// "25 min", "2h", "2h 15m", "1d", "1d 2h".
+export function durationLabel(total) {
+ if(total<60)return `${total} min`;
+ if(total<1440){const m=total%60;return `${Math.floor(total/60)}h${m?` ${m}m`:''}`;}
+ const d=Math.floor(total/1440),h=Math.floor((total%1440)/60);return `${d}d${h?` ${h}h`:''}`;
+}
+export const isWeekendDate=iso=>[0,6].includes(dateFor(iso).getUTCDay());
+
+// First meeting (today or later) that matches `test`, including one already in progress.
+// Returns {meeting, date, live, startsIn, endsIn} using the shared 60-minute meeting length.
+export function nextMeetingWhere(test, now=new Date(), {searchDays=14}={}) {
+ const {date:today,minutes}=dallasNow(now);
+ for(let i=0;i<=searchDays;i++){
+  const date=shiftDate(today,i);
+  for(const meeting of meetingsFor(date).filter(test)){
+   const start=timeMinutes(meeting.time),live=i===0&&isInProgress(meeting,minutes);
+   if(i>0||start>minutes||live)return {meeting,date,live,startsIn:minutesUntil(date,start,now),endsIn:minutesUntil(date,start+MEETING_MINUTES,now)};
+  }
+ }
+ return null;
+}
+// Phase One: only meetings labelled Mandatory ("Attend or be off property" is not mandatory).
+export const isPhaseOneMandatory=m=>ruleFor(m,'one')==='mandatory';
+// Phase Two: the Monday Night House Meeting is the only weekly Mandatory meeting in the schedule.
+export const isPhaseTwoMandatory=m=>ruleFor(m,'two')==='mandatory';
+
+/* ---------- Phase One floor meals (from the Phase One schedule/rules sheet) ----------
+   Minutes after midnight, Dallas time. A window is open from `start` up to, not including, `end`.
+   Weekend dinner hours are not listed on the sheet, so they are null (unspecified), not "closed". */
+export const MEALS = {
+ breakfast: {label:'Breakfast & sack lunch pickup', weekday:{start:420,end:480}, weekend:{start:420,end:570}},
+ dinner: {label:'Dinner floor meals', weekday:{start:1020,end:1185}, weekend:null}
+};
+export const SACK_LUNCH_TIP='Ask for your sack lunch when you get breakfast.';
+export function mealWindow(meal, iso) {return MEALS[meal][isWeekendDate(iso)?'weekend':'weekday'];}
+export function minutesLabel(min) {return min>=1440?'Midnight':timeLabel(`${String(Math.floor(min/60)).padStart(2,'0')}:${String(min%60).padStart(2,'0')}`);}
+export function windowLabel(w) {return `${minutesLabel(w.start).replace(/ (AM|PM)$/,m=>minutesLabel(w.end).endsWith(m)?'':m)}–${minutesLabel(w.end)}`;}
+
+// Current floor-meal situation. `state` is one of:
+//  before-breakfast · breakfast · between-meals (weekday) · dinner · after-meals (weekday evening)
+//  · weekend-day (after breakfast; dinner hours not listed)
+export function mealStatus(now=new Date()) {
+ const {date,minutes}=dallasNow(now),weekend=isWeekendDate(date);
+ const bf=mealWindow('breakfast',date),dn=mealWindow('dinner',date);
+ const tomorrow=shiftDate(date,1),nextBreakfast={date:tomorrow,window:mealWindow('breakfast',tomorrow),startsIn:minutesUntil(tomorrow,mealWindow('breakfast',tomorrow).start,now)};
+ const base={date,minutes,weekend,breakfast:bf,dinner:dn,nextBreakfast};
+ if(minutes<bf.start)return {...base,state:'before-breakfast',opensIn:minutesUntil(date,bf.start,now)};
+ if(minutes<bf.end)return {...base,state:'breakfast',closesIn:minutesUntil(date,bf.end,now)};
+ if(!dn)return {...base,state:'weekend-day'};
+ if(minutes<dn.start)return {...base,state:'between-meals',opensIn:minutesUntil(date,dn.start,now)};
+ if(minutes<dn.end)return {...base,state:'dinner',closesIn:minutesUntil(date,dn.end,now)};
+ return {...base,state:'after-meals'};
+}
+
+/* ---------- Phase One daily rules (from the Phase One schedule/rules sheet) ----------
+   Informational only. `time`/`end` are minutes after midnight; 1440 = midnight at the end of the day. */
+export const CURFEW = {0:1320,1:1320,2:1320,3:1320,4:1320,5:1440,6:1440};   // Sun–Thu 10 PM · Fri–Sat midnight
+export function dailyRulesFor(iso) {
+ const day=dateFor(iso).getUTCDay(),weekend=day===0||day===6;
+ const rules=weekend
+  ?[{key:'wake',time:510,label:'Wake-up'},{key:'chores',time:540,label:'Chores completed'}]
+  :[{key:'wake',time:360,label:'Mandatory wake-up'},{key:'chores',time:420,label:'Chores done and signed off by staff'},{key:'offsite',time:540,end:840,label:'Off property for a productive activity (if unemployed)'}];
+ return [...rules,{key:'curfew',time:CURFEW[day],label:'Curfew'}];
+}
+// The sheet's rules as display text for the "Phase One daily rules" panel. Meeting times here are
+// the sheet's wording; the schedule above stays the source of truth for meeting countdowns.
+export const RULES_SHEET = {
+ weekday: {title:'Weekdays (Monday–Friday)', rows:[
+  ['Mandatory wake-up (you may get up earlier if you’re quiet)','6:00 AM'],
+  ['Chores done and signed off by staff','By 7:00 AM'],
+  ['Breakfast & sack lunch pickup','7:00–8:00 AM'],
+  ['Off property for a productive activity (if unemployed)','9:00 AM–2:00 PM'],
+  ['Dinner floor meals','5:00–7:45 PM'],
+  ['Mandatory recovery meeting','Mon–Thu 8:00 PM · Fri 10:00 PM'],
+  ['Curfew','Mon–Thu 10:00 PM · Fri midnight']]},
+ weekend: {title:'Weekends (Saturday–Sunday)', rows:[
+  ['Wake-up','8:30 AM'],
+  ['Chores completed','By 9:00 AM'],
+  ['Breakfast & sack lunch pickup','7:00–9:30 AM'],
+  ['Off property during the day','Not required'],
+  ['Dinner floor meals','Not listed on the sheet. Ask staff.'],
+  ['Mandatory recovery meeting','Sat 10:00 PM · Sun 6:00 PM'],
+  ['Curfew','Sat midnight · Sun 10:00 PM']]},
+ showers: [
+  ['Weekdays','Before 8:00 AM or after 5:00 PM, unless approved by staff.'],
+  ['Weekends','Any time, except during the mandatory meetings (Friday and Saturday 10:00 PM, Sunday 6:00 PM).']],
+ notes: [
+  'Missing curfew is zero tolerance and will result in immediate discharge.',
+  'On weekdays, a staff member must sign off that chores were done properly. This app does not record sign-off.',
+  'For reference only. Staff instructions and the official Phase One sheet take priority.']
+};
+// The next informational item still ahead today (or under way, for windows). Meetings and curfew are
+// shown elsewhere, so only wake-up, chores, and the off-property window are considered.
+export function upcomingRule(now=new Date()) {
+ const {date,minutes}=dallasNow(now);
+ for(const r of dailyRulesFor(date).filter(r=>['wake','chores','offsite'].includes(r.key))){
+  if(r.end&&minutes>=r.time&&minutes<r.end)return {...r,during:true,endsIn:minutesUntil(date,r.end,now)};
+  if(minutes<r.time)return {...r,during:false,startsIn:minutesUntil(date,r.time,now)};
+ }
+ return null;
+}
+export function curfewFor(iso) {return CURFEW[dateFor(iso).getUTCDay()];}

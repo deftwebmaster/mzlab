@@ -278,3 +278,66 @@ footer .developer-credit a{color:var(--text-2)}
 }
 }
 @media screen and (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.primary:active,a.button:active,.actions button:active,.day-nav button:active,.attend-button:active{transform:none}}
+
+/* ---------- Daily companion: next required meeting, Today at the 24, weekly progress ---------- */
+@media screen{
+/* Phase One: next required (Mandatory) meeting, inside the next-meeting card */
+.next-required{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 12px;margin-top:16px;padding:12px 14px;border-radius:var(--r-ctl);background:rgba(8,9,19,.4);border:1px solid var(--violet-line);border-left:3px solid var(--mandatory-line)}
+.nr-text{min-width:0;flex:1 1 180px}
+.nr-label{margin:0;font-size:11px;font-weight:700;letter-spacing:1.3px;color:var(--violet-text)}
+.nr-title{margin:3px 0 0;font-size:16px;font-weight:650;line-height:1.3;color:#fff}
+.nr-detail{margin:2px 0 0;font-size:13px;color:#D3DBF0}
+.nr-countdown{flex:0 0 auto;padding:5px 10px;border-radius:var(--r-pill);background:rgba(124,58,237,.45);border:1px solid var(--mandatory-line);color:#fff;font-size:12.5px;font-weight:650;white-space:nowrap}
+
+/* Phase One: Today at the 24 */
+.essentials{margin:0 0 22px;padding:16px 18px 4px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card)}
+.ess-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.essentials h2{font-size:17px}
+.ess-day{font-size:12px;color:var(--text-3);white-space:nowrap}
+.ess-meal{display:flex;gap:12px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:var(--r-ctl);background:var(--surface-2);border:1px solid var(--line)}
+.ess-dot{flex:0 0 auto;width:10px;height:10px;margin-top:6px;border-radius:50%;background:var(--text-3)}
+.ess-text{min-width:0}
+.ess-title{margin:0;font-size:15.5px;font-weight:700;line-height:1.35;color:var(--text)}
+.ess-detail{margin:2px 0 0;font-size:13.5px;line-height:1.5;color:var(--text-2)}
+.ess-status{font-weight:700}
+.ess-sep{color:var(--text-3)}
+.ess-extra{margin:4px 0 0;font-size:12.5px;line-height:1.5;color:var(--text-3)}
+.ess-meal.open{background:linear-gradient(var(--cyan-soft),var(--cyan-soft)),var(--surface-2);border-color:var(--cyan-line)}
+.ess-meal.open .ess-dot{background:var(--cyan);box-shadow:0 0 0 3px var(--cyan-soft)}
+.ess-meal.open .ess-status{color:var(--cyan)}
+.ess-meal.soon{background:linear-gradient(var(--amber-soft),var(--amber-soft)),var(--surface-2);border-color:var(--amber-line)}
+.ess-meal.soon .ess-dot{background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
+.ess-meal.soon .ess-status{color:var(--amber)}
+.ess-meal.soon .ess-extra{color:var(--amber-text)}
+.ess-meal.quiet{padding:10px 14px}
+.ess-meal.quiet .ess-title{font-size:14.5px;font-weight:650}
+.ess-list{list-style:none;margin:10px 0 0;padding:0}
+.ess-list li{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:9px 2px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.4;color:var(--text-2)}
+.ess-label{min-width:0}
+.ess-time{flex:0 0 auto;font-weight:650;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums}
+.essentials details.ess-rules{margin:0;border-top:1px solid var(--line);border-bottom:0;font-size:13.5px}
+.ess-rules summary{display:flex;align-items:center;gap:8px;min-height:var(--h-ctl);padding:0 2px;list-style:none;color:var(--cyan);font-weight:650}
+.ess-rules summary::-webkit-details-marker{display:none}
+.ess-rules summary:before{content:'▸';display:inline-block;transition:transform .15s ease}
+.ess-rules[open] summary:before{transform:rotate(90deg)}
+.ess-rules-body{padding:0 2px 14px;color:var(--text-2);line-height:1.5}
+.ess-rules-body h3{margin:12px 0 4px;font-size:14px;color:var(--text)}
+.rules-table{margin:0}
+.rules-row{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-top:1px solid var(--line)}
+.rules-row dt{color:var(--text-2);min-width:0}
+.rules-row dd{margin:0;flex:0 0 auto;max-width:52%;text-align:right;font-weight:600;color:var(--text)}
+.rules-val{display:block}
+.rules-row.stacked{display:block}
+.rules-row.stacked dd{max-width:none;text-align:left;font-weight:400;margin-top:2px}
+.rules-notes{margin:14px 0 0;padding:12px 14px 12px 30px;border-radius:var(--r-ctl);background:var(--surface-2);border:1px solid var(--line);color:var(--text-2)}
+.rules-notes li{margin:0 0 4px}
+.rules-notes li:first-child{color:var(--text);font-weight:650}
+
+/* Phase Two: weekly progress + Monday house meeting */
+#attendance-overview.goal-met #weekly-total{color:var(--cyan)}
+#attendance-overview .house-meeting{margin:14px 0 0;padding:10px 12px;border-radius:var(--r-ctl);background:var(--violet-soft);border:1px solid var(--violet-line);font-size:13px;line-height:1.5;color:var(--text-2)}
+.house-meeting strong{color:#fff}
+.hm-main{display:block;color:var(--text)}
+.hm-note{display:block;color:var(--text-2);font-size:12.5px}
+@media(max-width:420px){.essentials{padding:14px 14px 2px}.ess-meal{padding:11px 12px}}
+}

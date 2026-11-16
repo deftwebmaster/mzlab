@@ -1,4 +1,5 @@
-import {dallasNow,dateFor,shiftDate,meetingsFor,timeMinutes,timeLabel,endTime,isInProgress,inProgressMeetings,ruleFor,RULES,WEEKLY_GOAL,phaseOneMandatoryCalendar,weeklyCheckinCalendar,CHECKIN_FORM_URL} from './schedule.js';
+import {dallasNow,dateFor,shiftDate,meetingsFor,timeMinutes,timeLabel,endTime,isInProgress,inProgressMeetings,ruleFor,RULES,WEEKLY_GOAL,phaseOneMandatoryCalendar,weeklyCheckinCalendar,CHECKIN_FORM_URL,
+ minutesUntil,durationLabel,nextMeetingWhere,isPhaseOneMandatory,isPhaseTwoMandatory,mealStatus,minutesLabel,windowLabel,SACK_LUNCH_TIP,upcomingRule,curfewFor,RULES_SHEET} from './schedule.js';
 import {KEY,emptyStore,validateStore,mergeStores} from './storage.js';
 
 const $=id=>document.getElementById(id);
@@ -18,6 +19,12 @@ const kindLabel=r=>meetingKind(r)==='outside'?'Outside meeting':'24 Hour Club';
 const isHouseMeeting=r=>meetingKind(r)==='club'&&HOUSE.test(r.title);
 // The house meeting is mandatory but never counts toward the weekly goal.
 const countsToward=r=>r.counts&&!isHouseMeeting(r);
+// Weekly totals count each real meeting once, even if duplicate records exist (for example, the same
+// meeting restored from two devices). Club meetings are one per time slot; outside meetings match on name too.
+const meetingKey=r=>meetingKind(r)==='club'?`club|${r.date}|${r.time}`:`out|${r.date}|${r.time}|${r.title.trim().toLowerCase()}`;
+function countedOnce(list){const seen=new Set();return list.filter(r=>{if(!countsToward(r))return false;const k=meetingKey(r);if(seen.has(k))return false;seen.add(k);return true;});}
+const numberWord=n=>['zero','one','two','three','four','five','six','seven','eight','nine','ten'][n]??String(n);
+const capitalize=t=>t.charAt(0).toUpperCase()+t.slice(1);
 // Older outside entries saved the group name as the location when no address was given.
 const place=r=>r.location&&r.location.trim().toLowerCase()!==r.title.trim().toLowerCase()?r.location:'';
 const dallasStamp=iso=>new Date(iso).toLocaleString('en-US',DALLAS);
@@ -172,7 +179,7 @@ function weekSummaries(){
  const first=weekStart(recs.reduce((min,r)=>r.date<min?r.date:min,recs[0].date));
  const out=[];
  for(let w=weekStart(dallasNow().date);w>=first&&out.length<520;w=shiftDate(w,-7)){
-  const rs=recs.filter(r=>weekStart(r.date)===w),counted=rs.filter(countsToward).length;
+  const rs=recs.filter(r=>weekStart(r.date)===w),counted=countedOnce(rs).length;
   out.push({week:w,logged:rs.length,counted,status:weekStatus(w,counted),checkin:CHECKIN_LABEL(checkinFor(w))});
  }
  return out;
@@ -185,11 +192,11 @@ function rowClass(m){
  return ruleFor(m,'two')==='common'?'':' mandatory';
 }
 
-function renderOverview(now,tracking){
+const dayWord=(date,now)=>date===now.date?'Today':date===shiftDate(now.date,1)?'Tomorrow':fmt(date,{weekday:'long'});
+function renderOverview(now,tracking,clock){
  let next=meetingsFor(now.date).find(m=>timeMinutes(m.time)>now.minutes),nextDay=now.date;
  if(!next){nextDay=shiftDate(now.date,1);next=meetingsFor(nextDay)[0];}
- const wait=timeMinutes(next.time)-now.minutes+(nextDay===now.date?0:1440);
- const remaining=wait<60?`${wait} min`:`${Math.floor(wait/60)}h ${wait%60}m`;
+ const remaining=durationLabel(minutesUntil(nextDay,timeMinutes(next.time),clock));
  $('live-date').textContent=fmt(now.date,{month:'short',day:'numeric'});
  $('next-label').textContent=nextDay===now.date?'NEXT MEETING TODAY':`NEXT MEETING · TOMORROW, ${fmt(nextDay,{weekday:'long'}).toUpperCase()}`;
  $('next-title').textContent=next.title;
@@ -203,29 +210,120 @@ function renderOverview(now,tracking){
   if(!ongoing.length)return [];
   return [node('p',ongoing.length===1?'IN PROGRESS NOW':'MEETINGS IN PROGRESS','eyebrow'),...ongoing.flatMap(m=>[node('h2',m.title),node('p',`${timeLabel(m.time)} – ${timeLabel(endTime(m.time))} · ${RULES[phase][ruleFor(m,phase)].label}`,'progress-detail')])];
  });
+ renderNextRequired(now,tracking,clock,next,nextDay);
  return {next,nextDay};
 }
 
-function renderWeek(now){
+/* ---------- Phase One: next required (Mandatory) meeting ---------- */
+// Shown inside the next-meeting card. Hidden for Phase Two, and when the card's meeting already is it.
+function renderNextRequired(now,tracking,clock,next,nextDay){
+ const box=$('next-required'),req=tracking?null:nextMeetingWhere(isPhaseOneMandatory,clock);
+ if(!req||(!req.live&&req.date===nextDay&&req.meeting.time===next.time)){box.hidden=true;return;}
+ box.hidden=false;
+ const m=req.meeting;
+ box.classList.toggle('live',req.live);
+ $('nr-label').textContent=req.live?'REQUIRED MEETING · HAPPENING NOW':'NEXT REQUIRED MEETING';
+ $('nr-title').textContent=m.title;
+ $('nr-detail').textContent=req.live?`${timeLabel(m.time)}–${timeLabel(endTime(m.time))} · Mandatory`:`${dayWord(req.date,now)} · ${timeLabel(m.time)} · Mandatory`;
+ $('nr-countdown').textContent=req.live?`Ends in ${durationLabel(req.endsIn)}`:`Starts in ${durationLabel(req.startsIn)}`;
+}
+
+/* ---------- Phase One: Today at the 24 (floor meals + daily essentials) ---------- */
+function mealCard(ms){
+ const bf=ms.breakfast,dn=ms.dinner,tomorrowBreakfast=`Tomorrow’s breakfast: ${windowLabel(ms.nextBreakfast.window)}`;
+ const sinceBreakfast=ms.minutes-bf.end;
+ switch(ms.state){
+  case 'before-breakfast':
+   return ms.opensIn<=180
+    ?{tone:'soon',title:`Breakfast starts at ${minutesLabel(bf.start)}`,status:`Opens in ${durationLabel(ms.opensIn)}`,detail:`Breakfast & sack lunch pickup until ${minutesLabel(bf.end)}`,extra:SACK_LUNCH_TIP}
+    :{tone:'quiet',title:`Next floor meal: breakfast at ${minutesLabel(bf.start)}`,detail:`Breakfast & sack lunch pickup · ${windowLabel(bf)}`};
+  case 'breakfast':
+   return {tone:'open',title:'Breakfast & sack lunch pickup',status:'Available now',detail:`Until ${minutesLabel(bf.end)} · closes in ${durationLabel(ms.closesIn)}`,extra:SACK_LUNCH_TIP};
+  case 'between-meals':
+   if(ms.opensIn<=60)return {tone:'soon',title:`Dinner starts at ${minutesLabel(dn.start)}`,status:`Opens in ${durationLabel(ms.opensIn)}`,detail:`Dinner floor meals until ${minutesLabel(dn.end)}`};
+   return sinceBreakfast<60
+    ?{tone:'quiet',title:'Breakfast pickup has ended',detail:`Dinner floor meals today: ${windowLabel(dn)}`,extra:tomorrowBreakfast}
+    :{tone:'quiet',title:`Next floor meal: dinner at ${minutesLabel(dn.start)}`,detail:`Dinner floor meals · ${windowLabel(dn)}`};
+  case 'dinner':
+   return {tone:'open',title:'Dinner floor meals',status:'Available now',detail:`Until ${minutesLabel(dn.end)} · closes in ${durationLabel(ms.closesIn)}`};
+  case 'after-meals':
+   return {tone:'quiet',title:ms.minutes-dn.end<60?'Dinner floor meals have ended':'Next floor meal: breakfast tomorrow',detail:tomorrowBreakfast};
+  case 'weekend-day':
+   // Late evening: dinner no longer matters, so just point to the next breakfast.
+   if(ms.minutes>=1260)return {tone:'quiet',title:'Next floor meal: breakfast tomorrow',detail:tomorrowBreakfast};
+   return {tone:'quiet',title:sinceBreakfast<60?'Breakfast pickup has ended':'Weekend floor meals',detail:tomorrowBreakfast,extra:'Weekend dinner hours aren’t listed on the Phase One sheet. Ask staff.'};
+ }
+}
+// Keep "7:45 PM", "25 min" and "1h 45m" from breaking across lines.
+const keepTogether=t=>t.replace(/(\d) (AM|PM|min)\b/g,'$1\u00a0$2').replace(/(\d+[dh]) (\d+[hm])\b/g,'$1\u00a0$2').replace(/\b(in) (\d)/g,'$1\u00a0$2');
+function renderEssentials(now,tracking,clock){
+ $('essentials').hidden=tracking;
+ if(tracking)return;
+ const ms=mealStatus(clock),card=mealCard(ms),up=upcomingRule(clock),curfew=curfewFor(now.date);
+ $('ess-day').textContent=ms.weekend?'Weekend schedule':'Weekday schedule';
+ keyed($('ess-meal'),JSON.stringify(card),()=>{
+  $('ess-meal').className='ess-meal '+card.tone;
+  const text=node('div',undefined,'ess-text');
+  text.append(node('p',keepTogether(card.title),'ess-title'));
+  const line=node('p',undefined,'ess-detail');
+  if(card.status)line.append(node('span',keepTogether(card.status),'ess-status'),node('span',' · ','ess-sep'));
+  line.append(node('span',keepTogether(card.detail)));
+  text.append(line);
+  if(card.extra)text.append(node('p',card.extra,'ess-extra'));
+  return [node('span',undefined,'ess-dot'),text];
+ });
+ const rows=[];
+ if(up)rows.push({cls:'',label:up.label,time:up.during?`Now · until ${minutesLabel(up.end)}`:up.key==='chores'?`By ${minutesLabel(up.time)}`:up.end?`${minutesLabel(up.time)}–${minutesLabel(up.end)}`:minutesLabel(up.time)});
+ rows.push({cls:'curfew',label:'Curfew tonight',time:minutesLabel(curfew)});
+ keyed($('ess-list'),JSON.stringify(rows),()=>rows.map(r=>{const li=node('li',undefined,r.cls);li.append(node('span',r.label,'ess-label'),node('span',r.time,'ess-time'));return li;}));
+ keyed($('ess-rules-body'),'sheet-v1',()=>{
+  const out=[];
+  for(const part of [RULES_SHEET.weekday,RULES_SHEET.weekend]){
+   out.push(node('h3',part.title));
+   const dl=node('dl',undefined,'rules-table');
+   for(const [k,v] of part.rows){const row=node('div',undefined,'rules-row'),dd=node('dd');dd.append(...v.split(' · ').map(t=>node('span',keepTogether(t),'rules-val')));row.append(node('dt',k),dd);dl.append(row);}
+   out.push(dl);
+  }
+  out.push(node('h3','Showers'));
+  const sh=node('dl',undefined,'rules-table');
+  for(const [k,v] of RULES_SHEET.showers){const row=node('div',undefined,'rules-row stacked');row.append(node('dt',k),node('dd',v));sh.append(row);}
+  out.push(sh);
+  const notes=node('ul',undefined,'rules-notes');
+  for(const n of RULES_SHEET.notes)notes.append(node('li',n));
+  out.push(notes);
+  return out;
+ });
+}
+
+function renderWeek(now,clock){
  const week=weekStart(view==='schedule'?selected:historyDate);
- const counted=active().filter(r=>countsToward(r)&&weekStart(r.date)===week),total=counted.length;
- const state=weekStatus(week,total,now);
+ const counted=countedOnce(active().filter(r=>weekStart(r.date)===week)),total=counted.length;
+ const state=weekStatus(week,total,now),thisWeek=week===weekStart(now.date),left=GOAL-total;
  $('week-range').textContent=`${fmt(week,{month:'short',day:'numeric'})} – ${fmt(shiftDate(week,6),{month:'short',day:'numeric'})}`;
- $('weekly-total').textContent=total>GOAL?`${total} meetings attended`:`${total} of ${GOAL} meetings attended`;
+ $('weekly-total').textContent=state==='met'?'Weekly meeting goal complete':`${total} of ${GOAL} completed`;
+ $('attendance-overview').classList.toggle('goal-met',state==='met');
  $('progress').max=GOAL;$('progress').value=Math.min(total,GOAL);
  $('weekly-message').textContent={
-  met:week===weekStart(now.date)?'Weekly goal reached. Keep showing up.':`Goal met that week — ${total} counted meeting${total===1?'':'s'}.`,
+  met:thisWeek?(total===GOAL?`${GOAL} of ${GOAL} meetings logged.`:`${total} meetings logged · the ${numberWord(GOAL)}-meeting requirement is complete.`):`${total} meeting${total===1?'':'s'} logged that week.`,
   missed:`Goal missed that week — ${ofGoal(total)}.`,
-  current:`${GOAL-total} more to reach your weekly goal.`,
+  current:`${capitalize(numberWord(left))} more meeting${left===1?'':'s'} to meet your weekly requirement.`,
   upcoming:'This week hasn’t started yet.'
  }[state];
  $('weekly-message').className=state==='missed'?'missed':'';
+ renderHouseMeeting(now,clock);
  const days=Array.from({length:7},(_,i)=>{const date=shiftDate(week,i);return {date,count:counted.filter(r=>r.date===date).length};});
  keyed($('week-days'),JSON.stringify([days,selected]),()=>days.map(({date,count})=>{
   const b=button('',()=>{selected=date;setView('schedule');},'week-day'+(date===selected?' selected':'')+(count?' has-count':''),'day-'+date);
   b.append(node('span',fmt(date,{weekday:'short'}),'wd'),node('span',String(Number(date.slice(-2))),'dn'),node('span',count?`✓${count}`:'·','ct'));
   b.setAttribute('aria-label',`${fmt(date)}: ${count} qualifying meeting${count===1?'':'s'}`);return b;
  }));
+}
+// Phase Two: the Monday Night House Meeting is required but never counts toward the weekly three.
+function renderHouseMeeting(now,clock){
+ const h=nextMeetingWhere(isPhaseTwoMandatory,clock),el=$('house-meeting');
+ el.hidden=!h;if(!h)return;
+ const m=h.meeting,when=h.live?`happening now, until ${timeLabel(endTime(m.time))}`:`${h.date===now.date?'Today':h.date===shiftDate(now.date,1)?'Tomorrow':fmt(h.date,{weekday:'short',month:'short',day:'numeric'})} · ${timeLabel(m.time)}`;
+ keyed(el,m.title+when,()=>{const head=node('span',undefined,'hm-main');head.append(node('strong','Required: '),document.createTextNode(`${m.title} · ${when}`));return [head,node('span','Doesn’t count toward your three.','hm-note')];});
 }
 
 function renderSchedule(now,tracking,next,nextDay){
@@ -293,8 +391,8 @@ function renderHistory(now){
   return;
  }
  const records=historyRecords();
- let summary=`${records.length} meeting${records.length===1?'':'s'} logged · ${records.filter(countsToward).length} counted toward goals`;
- if(scope==='week')summary+=` · ${STATUS_LABEL[weekStatus(weekStart(historyDate),records.filter(countsToward).length,now)]}`;
+ let summary=`${records.length} meeting${records.length===1?'':'s'} logged · ${countedOnce(records).length} counted toward goals`;
+ if(scope==='week')summary+=` · ${STATUS_LABEL[weekStatus(weekStart(historyDate),countedOnce(records).length,now)]}`;
  $('history-summary').textContent=summary;
  keyed($('history-list'),JSON.stringify([scope,records.map(r=>r.id+r.updatedAt)]),()=>records.length?records.map(recordCard):[node('p','No meetings logged for this range. Check one off in the schedule or log an outside meeting.','empty')]);
 }
@@ -311,7 +409,7 @@ function backupDue(){
 
 function render(){
  const tracking=phase==='two';
- const now=dallasNow();
+ const clock=new Date(),now=dallasNow(clock);
  // If the app stays open (or is resumed) past midnight, move "today" views forward.
  if(now.date!==today){if(selected===today)selected=now.date;if(historyDate===today)historyDate=now.date;today=now.date;}
 
@@ -330,9 +428,10 @@ function render(){
  $('backup-reminder').hidden=!(tracking&&!blocked&&!reminderSnoozed&&backupDue());
  $('backup-reminder-text').textContent=store.lastBackup?`Your last backup was more than ${BACKUP_REMINDER_DAYS} days ago, and your records have changed since.`:'You haven’t backed up your records yet.';
 
- const {next,nextDay}=renderOverview(now,tracking);
+ const {next,nextDay}=renderOverview(now,tracking,clock);
+ renderEssentials(now,tracking,clock);
  renderCheckin(now);
- if(tracking)renderWeek(now);
+ if(tracking)renderWeek(now,clock);
  renderSchedule(now,tracking,next,nextDay);
  if(tracking)renderHistory(now);
 
@@ -514,7 +613,7 @@ function report(){
    csv:[['Week starting','Week ending','Counted meetings','Logged meetings','Weekly goal','Status','Weekly check-in'],...weeks.map(w=>[w.week,shiftDate(w.week,6),w.counted,w.logged,GOAL,STATUS_LABEL[w.status],w.checkin])],
    lines:weeks.map(w=>`${weekLabel(w.week)}: ${ofGoal(w.counted)} · ${STATUS_LABEL[w.status]} · check-in ${w.checkin.toLowerCase()}`)};
  }
- const records=historyRecords(),counted=records.filter(countsToward).length,week=weekStart(historyDate);
+ const records=historyRecords(),counted=countedOnce(records).length,week=weekStart(historyDate);
  const chronological=[...records].reverse();
  return {scope,slug:scope==='all'?'all':`week-of-${week}`,
   range:scope==='all'?'All logged attendance':`Monday ${fmt(week)} – Sunday ${fmt(shiftDate(week,6))}`,

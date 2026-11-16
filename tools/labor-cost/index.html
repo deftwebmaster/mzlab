@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Labor Cost per Unit Calculator | Warehouse CPU Tool</title>
+  <meta name="description" content="Calculate warehouse labor cost per unit, burden, throughput, operation cost drivers, and period-over-period productivity for receiving, picking, packing, and shipping.">
+  <link rel="canonical" href="https://lab.maniczone.com/tools/labor-cost/">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#090b10">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/tools/labor-cost/">
+  <meta property="og:title" content="Labor Cost per Unit Calculator | Warehouse CPU Tool">
+  <meta property="og:description" content="Calculate warehouse labor cost per unit, burden, throughput, operation cost drivers, and period-over-period productivity for receiving, picking, packing, and shipping.">
+  <meta property="og:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Labor Cost per Unit Calculator | Warehouse CPU Tool preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/tools/labor-cost/">
+  <meta name="twitter:title" content="Labor Cost per Unit Calculator | Warehouse CPU Tool">
+  <meta name="twitter:description" content="Calculate warehouse labor cost per unit, burden, throughput, operation cost drivers, and period-over-period productivity for receiving, picking, packing, and shipping.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta name="twitter:image:alt" content="Labor Cost per Unit Calculator | Warehouse CPU Tool preview image">
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Labor Cost per Unit Calculator",
+    "url": "https://lab.maniczone.com/tools/labor-cost/",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Any",
+    "description": "A browser-based warehouse labor cost per unit calculator for operation costs, burden, throughput, and period comparisons.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #334155;
+      --bg-input: #0f172a;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-glow: rgba(59, 130, 246, 0.3);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.3);
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: #475569;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-top: 0.25rem;
+    }
+
+    .trust-badges {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .trust-badge span {
+      color: var(--accent);
+    }
+
+    /* Sections */
+    .section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Global Settings */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select {
+      padding: 0.6rem 0.75rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .input-prefix,
+    .input-suffix {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .checkbox-label input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Comparison Toggle */
+    .mode-toggle {
+      display: flex;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem;
+    }
+
+    .mode-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .mode-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .mode-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Operations */
+    .operations-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Comparison Layout */
+    .comparison-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .comparison-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .column-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .column-header input {
+      flex: 1;
+      font-weight: 600;
+    }
+
+    .column-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .column-indicator.period-a {
+      background: var(--accent);
+    }
+
+    .column-indicator.period-b {
+      background: var(--success);
+    }
+
+    @media (max-width: 800px) {
+      .comparison-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Operation Card */
+    .operation-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+    }
+
+    .operation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .operation-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .operation-name input {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0;
+      width: 150px;
+    }
+
+    .operation-name input:focus {
+      outline: none;
+      box-shadow: none;
+      border-bottom: 1px solid var(--accent);
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+      font-size: 1.1rem;
+      line-height: 1;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .delete-btn:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .operation-inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .operation-results {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .result-item {
+      text-align: center;
+    }
+
+    .result-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .result-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .result-value.highlight {
+      color: var(--accent);
+    }
+
+    /* Add Operation Button */
+    .add-operation-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: transparent;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .add-operation-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    /* Summary Section */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 700px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .summary-numbers {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+    }
+
+    .summary-row.total {
+      border-top: 2px solid var(--border);
+      padding-top: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .summary-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .summary-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .summary-value.large {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    /* Chart */
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .chart-bar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .chart-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .chart-bar-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      width: 80px;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chart-bar-track {
+      flex: 1;
+      height: 24px;
+      background: var(--bg-input);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chart-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 0.5rem;
+      min-width: fit-content;
+    }
+
+    .chart-bar-value {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .bar-color-0 { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+    .bar-color-1 { background: linear-gradient(90deg, #10b981, #059669); }
+    .bar-color-2 { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+    .bar-color-3 { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .bar-color-4 { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    .bar-color-5 { background: linear-gradient(90deg, #ec4899, #db2777); }
+
+    /* Comparison Summary */
+    .comparison-summary {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .comparison-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+    }
+
+    .comparison-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .comparison-card .cpu-large {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .comparison-card.period-a .cpu-large { color: var(--accent); }
+    .comparison-card.period-b .cpu-large { color: var(--success); }
+
+    .vs-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 2rem;
+    }
+
+    .vs-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .delta-badge {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .delta-badge.positive {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    .delta-badge.negative {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .delta-badge.neutral {
+      background: var(--bg-card);
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 700px) {
+      .comparison-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .vs-divider {
+        flex-direction: row;
+        padding: 0.5rem 0;
+      }
+
+      .vs-text {
+        margin-bottom: 0;
+        margin-right: 0.75rem;
+      }
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.25rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Export Section */
+    .export-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* Presets */
+    .presets {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      padding: 0.4rem 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
+    .preset-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      margin-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--success);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      z-index: 1000;
+      animation: fadeInOut 2s ease;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--bg-card); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+    .hidden { display: none !important; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container { padding: 1rem; }
+      header h1 { font-size: 1.4rem; }
+      .operation-inputs { grid-template-columns: 1fr; }
+      .operation-results { grid-template-columns: 1fr; }
+      .settings-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Premium ops refresh */
+    :root {
+      color-scheme: dark;
+      --bg-primary: #090b10;
+      --bg-secondary: rgba(17, 23, 34, 0.9);
+      --bg-card: rgba(9, 11, 16, 0.56);
+      --bg-input: rgba(5, 8, 12, 0.86);
+      --accent: #2df8e6;
+      --accent-hover: #70ff9c;
+      --accent-glow: rgba(45, 248, 230, 0.18);
+      --success: #70ff9c;
+      --success-glow: rgba(112, 255, 156, 0.18);
+      --warning: #ffcc66;
+      --danger: #ff6b7a;
+      --purple: #b88cff;
+      --text-primary: #f7fafc;
+      --text-secondary: #a8b3c5;
+      --text-muted: #6f7c90;
+      --border: rgba(148, 163, 184, 0.24);
+      --radius: 8px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(180deg, #090b10 0%, #0d1118 48%, #090b10 100%);
+      background-size: 44px 44px, 44px 44px, auto;
+    }
+
+    body::before {
+      background:
+        linear-gradient(135deg, rgba(45, 248, 230, 0.1), transparent 36%),
+        linear-gradient(225deg, rgba(184, 140, 255, 0.12), transparent 38%);
+    }
+
+    .container {
+      max-width: 1180px;
+      padding-top: 1.25rem;
+    }
+
+    header {
+      text-align: left;
+      margin-bottom: 1.35rem;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(45, 248, 230, 0.08), rgba(184, 140, 255, 0.08)),
+        rgba(17, 23, 34, 0.92);
+      box-shadow: 0 18px 56px rgba(0, 0, 0, 0.26);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      min-width: 0;
+      margin: 0;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .logo:hover {
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      background:
+        linear-gradient(135deg, rgba(45, 248, 230, 0.18), rgba(184, 140, 255, 0.16)),
+        rgba(9, 11, 16, 0.72);
+      border: 1px solid rgba(45, 248, 230, 0.42);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 800;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 28px rgba(45, 248, 230, 0.2);
+    }
+
+    .app-kicker,
+    .section-kicker {
+      display: block;
+      margin: 0 0 0.18rem;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+      letter-spacing: 0;
+      background: none;
+      -webkit-text-fill-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .tagline {
+      max-width: 760px;
+      margin: 0.2rem 0 0;
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+    }
+
+    .header-links,
+    .kpi-strip,
+    .related-ops-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .header-links {
+      justify-content: flex-end;
+    }
+
+    .header-links a,
+    .kpi-strip span,
+    .local-pill {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-secondary);
+      background: rgba(9, 11, 16, 0.48);
+      font-size: 0.82rem;
+      font-weight: 750;
+    }
+
+    .header-links a:hover {
+      color: var(--accent);
+      border-color: rgba(45, 248, 230, 0.42);
+      background: rgba(45, 248, 230, 0.1);
+      text-decoration: none;
+    }
+
+    .kpi-strip {
+      margin-top: 1rem;
+    }
+
+    .kpi-strip strong,
+    .local-pill {
+      color: var(--accent);
+    }
+
+    .section,
+    .operation-card,
+    .comparison-card,
+    .related-ops-panel {
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(145deg, rgba(45, 248, 230, 0.045), rgba(184, 140, 255, 0.04)),
+        rgba(17, 23, 34, 0.9);
+      box-shadow: 0 18px 54px rgba(0, 0, 0, 0.2);
+    }
+
+    .section {
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-header,
+    .export-section {
+      align-items: flex-start;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    .mode-toggle,
+    .preset-btn,
+    .btn-secondary,
+    .chart-bar-track,
+    .metric-item {
+      background: rgba(9, 11, 16, 0.5);
+      border-color: var(--border);
+    }
+
+    .mode-btn.active,
+    .preset-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--success));
+      color: #061014;
+    }
+
+    .mode-btn:hover,
+    .preset-btn:hover,
+    .btn-secondary:hover,
+    .add-operation-btn:hover {
+      border-color: rgba(45, 248, 230, 0.42);
+      color: var(--accent);
+      background: rgba(45, 248, 230, 0.1);
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select {
+      background: var(--bg-input);
+      border-color: var(--border);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .operation-card {
+      background:
+        linear-gradient(145deg, rgba(45, 248, 230, 0.03), transparent),
+        rgba(9, 11, 16, 0.48);
+    }
+
+    .operation-name input {
+      background: transparent;
+    }
+
+    .operation-results,
+    .column-header,
+    .results-card h3,
+    .summary-row.total {
+      border-color: var(--border);
+    }
+
+    .result-value,
+    .summary-value,
+    .comparison-card .cpu-large {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-value.highlight,
+    .summary-value.large {
+      color: var(--accent);
+    }
+
+    .bar-color-0 { background: linear-gradient(90deg, #2df8e6, #0fb7c5); }
+    .bar-color-1 { background: linear-gradient(90deg, #70ff9c, #14b86d); }
+    .bar-color-2 { background: linear-gradient(90deg, #b88cff, #7c5cff); }
+    .bar-color-3 { background: linear-gradient(90deg, #ffcc66, #d8911e); }
+    .bar-color-4 { background: linear-gradient(90deg, #ff6b7a, #c9344d); }
+    .bar-color-5 { background: linear-gradient(90deg, #54a8ff, #2563eb); }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .insight-card {
+      min-height: 112px;
+      display: grid;
+      align-content: start;
+      gap: 0.45rem;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(9, 11, 16, 0.48);
+    }
+
+    .insight-label {
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .insight-card strong {
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .related-ops-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 0.65fr) minmax(0, 1fr);
+      gap: 1rem;
+      align-items: center;
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+
+    .related-ops-panel h2 {
+      margin: 0;
+      font-size: clamp(1.25rem, 2vw, 1.7rem);
+      letter-spacing: 0;
+    }
+
+    .related-ops-links {
+      align-items: stretch;
+    }
+
+    .related-ops-links a {
+      flex: 1 1 0;
+      min-height: 94px;
+      display: grid;
+      align-content: center;
+      gap: 0.3rem;
+      padding: 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      background: rgba(9, 11, 16, 0.48);
+    }
+
+    .related-ops-links a:hover {
+      border-color: rgba(45, 248, 230, 0.42);
+      background: rgba(45, 248, 230, 0.1);
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+
+    .related-ops-links span {
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    footer {
+      display: none;
+    }
+
+    .toast {
+      color: #061014;
+      background: linear-gradient(135deg, var(--accent), var(--success));
+    }
+
+    @media (max-width: 860px) {
+      .topbar,
+      .related-ops-panel {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-links {
+        justify-content: flex-start;
+      }
+
+      .insight-grid,
+      .related-ops-links {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 0.75rem;
+      }
+
+      header,
+      .section,
+      .related-ops-panel {
+        padding: 1rem;
+      }
+
+      .logo {
+        align-items: flex-start;
+      }
+
+      .logo-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+      }
+
+      .header-links {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-strip {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .kpi-strip span {
+        justify-content: center;
+        min-width: 0;
+      }
+
+      .section-header {
+        align-items: stretch;
+      }
+
+      .mode-toggle {
+        width: 100%;
+      }
+
+      .mode-btn {
+        flex: 1;
+      }
+
+      .btn-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+      }
+
+      .btn-group .btn {
+        width: 100%;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+
+      .related-ops-links a {
+        min-height: 82px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../tool-modern.css">
+  <script defer src="../tool-credit.js"></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="topbar">
+        <a class="logo" href="./" aria-label="Labor Cost per Unit Calculator home">
+          <div class="logo-icon">LC</div>
+          <div>
+            <span class="app-kicker">Warehouse labor workbench</span>
+            <h1>Labor Cost per Unit Calculator</h1>
+            <p class="tagline">Break down labor by operation, burden, throughput, and cost per unit.</p>
+          </div>
+        </a>
+        <nav class="header-links" aria-label="Related tools">
+          <a href="../">Tools Hub</a>
+          <a href="../ops-data-toolkit/">Ops Data Toolkit</a>
+          <a href="../pick-path-slotting/">Slotting Planner</a>
+        </nav>
+      </div>
+      <div class="kpi-strip" aria-label="Current labor metrics">
+        <span><strong id="heroCpu">$0.000</strong> cost/unit</span>
+        <span><strong id="heroHours">0.0</strong> labor hours</span>
+        <span><strong id="heroCost">$0</strong> total cost</span>
+        <span><strong id="heroVolume">0</strong> units</span>
+      </div>
+    </header>
+
+    <!-- Mode & Presets -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <p class="section-kicker">Model setup</p>
+          <div class="section-title">Configuration</div>
+        </div>
+        <div class="mode-toggle">
+          <button class="mode-btn active" data-mode="single" onclick="setMode('single')">Single Period</button>
+          <button class="mode-btn" data-mode="compare" onclick="setMode('compare')">Compare Periods</button>
+        </div>
+      </div>
+
+      <div class="settings-grid">
+        <div class="input-group">
+          <label>Default Hourly Rate</label>
+          <div class="input-row">
+            <span class="input-prefix">$</span>
+            <input type="number" id="defaultRate" value="18" min="0" step="0.5" onchange="recalculateAll()">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Burden / Overhead %</label>
+          <div class="input-row">
+            <input type="number" id="burdenPercent" value="30" min="0" max="100" step="1" onchange="recalculateAll()">
+            <span class="input-suffix">%</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Unit Type</label>
+          <select id="unitType" onchange="recalculateAll()">
+            <option value="units">Units</option>
+            <option value="cases">Cases</option>
+            <option value="pallets">Pallets</option>
+            <option value="orders">Orders</option>
+            <option value="lines">Lines</option>
+          </select>
+        </div>
+        <div class="input-group" style="justify-content: flex-end;">
+          <label class="checkbox-label">
+            <input type="checkbox" id="includeBurden" checked onchange="recalculateAll()">
+            Include burden in totals
+          </label>
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem;">
+        <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Quick Presets</label>
+        <div class="presets">
+          <button class="preset-btn" onclick="loadPreset('ecommerce')">E-commerce</button>
+          <button class="preset-btn" onclick="loadPreset('distribution')">Distribution</button>
+          <button class="preset-btn" onclick="loadPreset('3pl')">3PL</button>
+          <button class="preset-btn" onclick="loadPreset('clear')">Clear All</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Single Mode Operations -->
+    <section class="section" id="singleModeSection">
+      <div class="section-header">
+        <div>
+          <p class="section-kicker">Labor by process</p>
+          <div class="section-title">Operations</div>
+        </div>
+        <button class="btn btn-secondary" onclick="addOperation('single')">+ Add Operation</button>
+      </div>
+      <div class="operations-container" id="singleOperations">
+        <!-- Operations added dynamically -->
+      </div>
+    </section>
+
+    <!-- Compare Mode Operations -->
+    <section class="section hidden" id="compareModeSection">
+      <div class="section-header">
+        <div>
+          <p class="section-kicker">Period comparison</p>
+          <div class="section-title">Operations</div>
+        </div>
+      </div>
+      <div class="comparison-layout">
+        <div class="comparison-column">
+          <div class="column-header">
+            <div class="column-indicator period-a"></div>
+            <input type="text" id="periodAName" value="Period A" onchange="recalculateAll()">
+          </div>
+          <div class="operations-container" id="periodAOperations">
+            <!-- Operations added dynamically -->
+          </div>
+          <button class="add-operation-btn" onclick="addOperation('periodA')">+ Add Operation</button>
+        </div>
+        <div class="comparison-column">
+          <div class="column-header">
+            <div class="column-indicator period-b"></div>
+            <input type="text" id="periodBName" value="Period B" onchange="recalculateAll()">
+          </div>
+          <div class="operations-container" id="periodBOperations">
+            <!-- Operations added dynamically -->
+          </div>
+          <button class="add-operation-btn" onclick="addOperation('periodB')">+ Add Operation</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Single Mode Summary -->
+    <section class="section" id="singleSummary">
+      <div class="section-header">
+        <div>
+          <p class="section-kicker">Cost model</p>
+          <div class="section-title">Summary</div>
+        </div>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-numbers">
+          <div class="summary-row">
+            <span class="summary-label">Total Labor Hours</span>
+            <span class="summary-value" id="totalHours">0</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Base Labor Cost</span>
+            <span class="summary-value" id="baseLaborCost">$0.00</span>
+          </div>
+          <div class="summary-row" id="burdenRow">
+            <span class="summary-label">+ Burden (<span id="burdenPercentDisplay">30</span>%)</span>
+            <span class="summary-value" id="burdenCost">$0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span class="summary-label">Total Labor Cost</span>
+            <span class="summary-value" id="totalLaborCost">$0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Total <span class="unit-label">Units</span></span>
+            <span class="summary-value" id="totalUnits">0</span>
+          </div>
+          <div class="summary-row total">
+            <span class="summary-label">Cost per <span class="unit-label-singular">Unit</span></span>
+            <span class="summary-value large" id="costPerUnit">$0.00</span>
+          </div>
+        </div>
+        <div class="chart-container">
+          <div class="result-label" style="text-align: center;">Cost Breakdown by Operation</div>
+          <div class="chart-bar-container" id="costChart">
+            <!-- Chart bars added dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Compare Mode Summary -->
+    <section class="section hidden" id="compareSummary">
+      <div class="section-header">
+        <div>
+          <p class="section-kicker">Trend check</p>
+          <div class="section-title">Comparison Summary</div>
+        </div>
+      </div>
+      <div class="comparison-summary">
+        <div class="comparison-card period-a">
+          <div class="comparison-card-header">
+            <div class="column-indicator period-a"></div>
+            <span id="periodALabel">Period A</span>
+          </div>
+          <div class="cpu-large" id="periodACPU">$0.00</div>
+          <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+            <div>Total Cost: <span id="periodATotalCost">$0</span></div>
+            <div>Total <span class="unit-label">Units</span>: <span id="periodATotalUnits">0</span></div>
+          </div>
+        </div>
+        <div class="vs-divider">
+          <span class="vs-text">Difference</span>
+          <div class="delta-badge neutral" id="deltaBadge">$0.00 (0%)</div>
+        </div>
+        <div class="comparison-card period-b">
+          <div class="comparison-card-header">
+            <div class="column-indicator period-b"></div>
+            <span id="periodBLabel">Period B</span>
+          </div>
+          <div class="cpu-large" id="periodBCPU">$0.00</div>
+          <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+            <div>Total Cost: <span id="periodBTotalCost">$0</span></div>
+            <div>Total <span class="unit-label">Units</span>: <span id="periodBTotalUnits">0</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Decision Readout -->
+    <section class="section insights-section">
+      <div class="section-header">
+        <div>
+          <p class="section-kicker">Planner readout</p>
+          <div class="section-title">What to Watch</div>
+        </div>
+      </div>
+      <div class="insight-grid">
+        <article class="insight-card">
+          <span class="insight-label">Cost driver</span>
+          <strong id="driverInsight">Add labor data to identify the biggest cost driver.</strong>
+        </article>
+        <article class="insight-card">
+          <span class="insight-label">Throughput</span>
+          <strong id="throughputInsight">Enter hours and units to calculate total productivity.</strong>
+        </article>
+        <article class="insight-card">
+          <span class="insight-label">Next move</span>
+          <strong id="actionInsight">Load a preset or enter actual hours to start the labor review.</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="related-ops-panel" aria-labelledby="relatedOpsTitle">
+      <div>
+        <p class="section-kicker">Connected ops workflow</p>
+        <h2 id="relatedOpsTitle">Use labor cost with the rest of the warehouse picture.</h2>
+      </div>
+      <div class="related-ops-links">
+        <a href="../ops-data-toolkit/">
+          <strong>Reconcile actuals</strong>
+          <span>Clean CSVs, compare periods, and prep labor/unit source data.</span>
+        </a>
+        <a href="../pallet-calculator/">
+          <strong>Plan load assumptions</strong>
+          <span>Translate carton and pallet plans into expected handling volume.</span>
+        </a>
+        <a href="../pick-path-slotting/">
+          <strong>Reduce travel time</strong>
+          <span>Model slotting moves that can lower touches, walk distance, and labor cost per unit.</span>
+        </a>
+        <a href="../barcode-validator/">
+          <strong>Protect label flow</strong>
+          <span>Validate barcodes before scan failures distort labor time.</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Export -->
+    <section class="section">
+      <div class="export-section">
+        <div>
+          <p class="section-kicker">Share the math</p>
+          <div class="section-title">Export</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="copyAsTable()">Copy as Table</button>
+          <button class="btn btn-secondary" onclick="exportCSV()">Export CSV</button>
+          <button class="btn btn-secondary" onclick="saveConfig()">Save Config</button>
+          <button class="btn btn-secondary" onclick="loadConfig()">Load Config</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ============================================
+    // State
+    // ============================================
+    let currentMode = 'single';
+    let operations = {
+      single: [],
+      periodA: [],
+      periodB: []
+    };
+
+    const defaultOperations = [
+      { name: 'Receiving', hours: 0, rate: null, units: 0 },
+      { name: 'Put-away', hours: 0, rate: null, units: 0 },
+      { name: 'Picking', hours: 0, rate: null, units: 0 },
+      { name: 'Packing', hours: 0, rate: null, units: 0 },
+      { name: 'Shipping', hours: 0, rate: null, units: 0 }
+    ];
+
+    // ============================================
+    // Initialization
+    // ============================================
+    function init() {
+      // Load saved config if exists
+      const saved = localStorage.getItem('laborCalcConfig');
+      if (saved) {
+        try {
+          const config = JSON.parse(saved);
+          if (config.operations) operations = config.operations;
+          if (config.settings) {
+            document.getElementById('defaultRate').value = config.settings.defaultRate || 18;
+            document.getElementById('burdenPercent').value = config.settings.burdenPercent || 30;
+            document.getElementById('unitType').value = config.settings.unitType || 'units';
+            document.getElementById('includeBurden').checked = config.settings.includeBurden !== false;
+          }
+        } catch (e) {
+          console.error('Failed to load config:', e);
+        }
+      }
+
+      // If no operations, load defaults
+      if (operations.single.length === 0) {
+        operations.single = JSON.parse(JSON.stringify(defaultOperations));
+      }
+      if (operations.periodA.length === 0) {
+        operations.periodA = JSON.parse(JSON.stringify(defaultOperations));
+      }
+      if (operations.periodB.length === 0) {
+        operations.periodB = JSON.parse(JSON.stringify(defaultOperations));
+      }
+
+      renderOperations('single');
+      renderOperations('periodA');
+      renderOperations('periodB');
+      recalculateAll();
+    }
+
+    // ============================================
+    // Mode Switching
+    // ============================================
+    function setMode(mode) {
+      currentMode = mode;
+      
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+
+      document.getElementById('singleModeSection').classList.toggle('hidden', mode !== 'single');
+      document.getElementById('compareModeSection').classList.toggle('hidden', mode !== 'compare');
+      document.getElementById('singleSummary').classList.toggle('hidden', mode !== 'single');
+      document.getElementById('compareSummary').classList.toggle('hidden', mode !== 'compare');
+
+      recalculateAll();
+    }
+
+    // ============================================
+    // Operations Management
+    // ============================================
+    function addOperation(target) {
+      const op = { name: 'New Operation', hours: 0, rate: null, units: 0 };
+      operations[target].push(op);
+      renderOperations(target);
+      recalculateAll();
+    }
+
+    function removeOperation(target, index) {
+      operations[target].splice(index, 1);
+      renderOperations(target);
+      recalculateAll();
+    }
+
+    function updateOperation(target, index, field, value) {
+      if (field === 'hours' || field === 'units') {
+        operations[target][index][field] = parseFloat(value) || 0;
+      } else if (field === 'rate') {
+        operations[target][index][field] = value === '' ? null : parseFloat(value);
+      } else {
+        operations[target][index][field] = value;
+      }
+      recalculateAll();
+    }
+
+    function renderOperations(target) {
+      const container = document.getElementById(
+        target === 'single' ? 'singleOperations' : 
+        target === 'periodA' ? 'periodAOperations' : 'periodBOperations'
+      );
+
+      const defaultRate = parseFloat(document.getElementById('defaultRate').value) || 0;
+      const unitType = document.getElementById('unitType').value;
+      const unitLabel = unitType.charAt(0).toUpperCase() + unitType.slice(1);
+
+      container.innerHTML = operations[target].map((op, index) => {
+        const rate = op.rate !== null ? op.rate : defaultRate;
+        const cost = op.hours * rate;
+        const cpu = op.units > 0 ? cost / op.units : 0;
+        const uph = op.hours > 0 ? op.units / op.hours : 0;
+
+        return `
+          <div class="operation-card">
+            <div class="operation-header">
+              <div class="operation-name">
+                <input type="text" value="${escapeAttr(op.name)}" 
+                  onchange="updateOperation('${target}', ${index}, 'name', this.value)">
+              </div>
+              <button class="delete-btn" onclick="removeOperation('${target}', ${index})" title="Remove">×</button>
+            </div>
+            <div class="operation-inputs">
+              <div class="input-group">
+                <label>Hours</label>
+                <input type="number" value="${op.hours || ''}" min="0" step="0.5"
+                  placeholder="0"
+                  onchange="updateOperation('${target}', ${index}, 'hours', this.value)">
+              </div>
+              <div class="input-group">
+                <label>Rate ($/hr)</label>
+                <input type="number" value="${op.rate !== null ? op.rate : ''}" min="0" step="0.5"
+                  placeholder="${defaultRate} (default)"
+                  onchange="updateOperation('${target}', ${index}, 'rate', this.value)">
+              </div>
+              <div class="input-group">
+                <label>${unitLabel}</label>
+                <input type="number" value="${op.units || ''}" min="0" step="1"
+                  placeholder="0"
+                  onchange="updateOperation('${target}', ${index}, 'units', this.value)">
+              </div>
+            </div>
+            <div class="operation-results">
+              <div class="result-item">
+                <div class="result-label">Labor Cost</div>
+                <div class="result-value">$${cost.toFixed(2)}</div>
+              </div>
+              <div class="result-item">
+                <div class="result-label">Cost/${unitType.slice(0, -1)}</div>
+                <div class="result-value highlight">$${cpu.toFixed(3)}</div>
+              </div>
+              <div class="result-item">
+                <div class="result-label">${unitLabel}/Hour</div>
+                <div class="result-value">${uph.toFixed(1)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add the add button for single mode
+      if (target === 'single') {
+        container.innerHTML += `
+          <button class="add-operation-btn" onclick="addOperation('single')">+ Add Operation</button>
+        `;
+      }
+    }
+
+    // ============================================
+    // Calculations
+    // ============================================
+    function calculateTotals(target) {
+      const defaultRate = parseFloat(document.getElementById('defaultRate').value) || 0;
+      const burdenPercent = parseFloat(document.getElementById('burdenPercent').value) || 0;
+      const includeBurden = document.getElementById('includeBurden').checked;
+
+      let totalHours = 0;
+      let baseCost = 0;
+      let maxUnits = 0;
+      const opCosts = [];
+
+      operations[target].forEach(op => {
+        const rate = op.rate !== null ? op.rate : defaultRate;
+        const cost = op.hours * rate;
+        totalHours += op.hours;
+        baseCost += cost;
+        maxUnits = Math.max(maxUnits, op.units);
+        opCosts.push({ name: op.name, cost, units: op.units });
+      });
+
+      const burden = includeBurden ? baseCost * (burdenPercent / 100) : 0;
+      const totalCost = baseCost + burden;
+      const cpu = maxUnits > 0 ? totalCost / maxUnits : 0;
+
+      return {
+        totalHours,
+        baseCost,
+        burden,
+        totalCost,
+        totalUnits: maxUnits,
+        cpu,
+        opCosts
+      };
+    }
+
+    function recalculateAll() {
+      const unitType = document.getElementById('unitType').value;
+      const unitLabel = unitType.charAt(0).toUpperCase() + unitType.slice(1);
+      const unitSingular = unitType.slice(0, -1);
+
+      // Update all unit labels
+      document.querySelectorAll('.unit-label').forEach(el => el.textContent = unitLabel);
+      document.querySelectorAll('.unit-label-singular').forEach(el => el.textContent = unitSingular.charAt(0).toUpperCase() + unitSingular.slice(1));
+
+      // Update burden display
+      const burdenPercent = document.getElementById('burdenPercent').value;
+      document.getElementById('burdenPercentDisplay').textContent = burdenPercent;
+
+      // Re-render operations to update labels
+      renderOperations('single');
+      renderOperations('periodA');
+      renderOperations('periodB');
+
+      if (currentMode === 'single') {
+        updateSingleSummary();
+      } else {
+        updateCompareSummary();
+      }
+
+      updateHeroMetrics();
+      updateInsights();
+    }
+
+    function updateSingleSummary() {
+      const totals = calculateTotals('single');
+      const includeBurden = document.getElementById('includeBurden').checked;
+
+      document.getElementById('totalHours').textContent = totals.totalHours.toFixed(1);
+      document.getElementById('baseLaborCost').textContent = '$' + totals.baseCost.toFixed(2);
+      document.getElementById('burdenCost').textContent = '$' + totals.burden.toFixed(2);
+      document.getElementById('totalLaborCost').textContent = '$' + totals.totalCost.toFixed(2);
+      document.getElementById('totalUnits').textContent = totals.totalUnits.toLocaleString();
+      document.getElementById('costPerUnit').textContent = '$' + totals.cpu.toFixed(3);
+
+      document.getElementById('burdenRow').classList.toggle('hidden', !includeBurden);
+
+      // Update chart
+      updateChart(totals.opCosts);
+    }
+
+    function updateChart(opCosts) {
+      const container = document.getElementById('costChart');
+      const maxCost = Math.max(...opCosts.map(o => o.cost), 1);
+
+      container.innerHTML = opCosts
+        .filter(o => o.cost > 0)
+        .map((op, i) => {
+          const pct = (op.cost / maxCost) * 100;
+          return `
+            <div class="chart-bar-row">
+              <span class="chart-bar-label">${escapeHtml(op.name)}</span>
+              <div class="chart-bar-track">
+                <div class="chart-bar-fill bar-color-${i % 6}" style="width: ${Math.max(pct, 15)}%">
+                  <span class="chart-bar-value">$${op.cost.toFixed(0)}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+    }
+
+    function updateCompareSummary() {
+      const totalsA = calculateTotals('periodA');
+      const totalsB = calculateTotals('periodB');
+
+      document.getElementById('periodALabel').textContent = document.getElementById('periodAName').value;
+      document.getElementById('periodBLabel').textContent = document.getElementById('periodBName').value;
+
+      document.getElementById('periodACPU').textContent = '$' + totalsA.cpu.toFixed(3);
+      document.getElementById('periodATotalCost').textContent = '$' + totalsA.totalCost.toFixed(2);
+      document.getElementById('periodATotalUnits').textContent = totalsA.totalUnits.toLocaleString();
+
+      document.getElementById('periodBCPU').textContent = '$' + totalsB.cpu.toFixed(3);
+      document.getElementById('periodBTotalCost').textContent = '$' + totalsB.totalCost.toFixed(2);
+      document.getElementById('periodBTotalUnits').textContent = totalsB.totalUnits.toLocaleString();
+
+      // Calculate delta
+      const deltaCPU = totalsB.cpu - totalsA.cpu;
+      const deltaPct = totalsA.cpu > 0 ? (deltaCPU / totalsA.cpu) * 100 : 0;
+
+      const deltaBadge = document.getElementById('deltaBadge');
+      const sign = deltaCPU > 0 ? '+' : '';
+      deltaBadge.textContent = `${sign}$${deltaCPU.toFixed(3)} (${sign}${deltaPct.toFixed(1)}%)`;
+
+      deltaBadge.classList.remove('positive', 'negative', 'neutral');
+      if (deltaCPU > 0.001) {
+        deltaBadge.classList.add('positive'); // Cost went up = bad
+      } else if (deltaCPU < -0.001) {
+        deltaBadge.classList.add('negative'); // Cost went down = good
+      } else {
+        deltaBadge.classList.add('neutral');
+      }
+    }
+
+    function updateHeroMetrics() {
+      const totals = currentMode === 'single' ? calculateTotals('single') : calculateTotals('periodB');
+      const unitType = document.getElementById('unitType').value;
+
+      document.getElementById('heroCpu').textContent = '$' + totals.cpu.toFixed(3);
+      document.getElementById('heroHours').textContent = totals.totalHours.toFixed(1);
+      document.getElementById('heroCost').textContent = '$' + totals.totalCost.toFixed(0);
+      document.getElementById('heroVolume').textContent = totals.totalUnits.toLocaleString() + ' ' + unitType;
+    }
+
+    function updateInsights() {
+      const driverEl = document.getElementById('driverInsight');
+      const throughputEl = document.getElementById('throughputInsight');
+      const actionEl = document.getElementById('actionInsight');
+      const unitType = document.getElementById('unitType').value;
+      const unitSingular = unitType.slice(0, -1);
+
+      if (currentMode === 'compare') {
+        const totalsA = calculateTotals('periodA');
+        const totalsB = calculateTotals('periodB');
+        const deltaCPU = totalsB.cpu - totalsA.cpu;
+        const deltaPct = totalsA.cpu > 0 ? (deltaCPU / totalsA.cpu) * 100 : 0;
+        const periodAName = document.getElementById('periodAName').value || 'Period A';
+        const periodBName = document.getElementById('periodBName').value || 'Period B';
+
+        driverEl.textContent = getTopDriver(totalsB.opCosts);
+        throughputEl.textContent = totalsB.totalHours > 0
+          ? `${periodBName} is running ${(totalsB.totalUnits / totalsB.totalHours).toFixed(1)} ${unitType}/hour across the modeled labor.`
+          : `Enter ${periodBName} hours and volume to see productivity.`;
+
+        if (totalsA.cpu === 0 && totalsB.cpu === 0) {
+          actionEl.textContent = 'Enter both periods to see whether labor cost per unit improved or slipped.';
+        } else if (deltaCPU > 0.001) {
+          actionEl.textContent = `${periodBName} is ${Math.abs(deltaPct).toFixed(1)}% more expensive per ${unitSingular}. Review the largest cost driver first.`;
+        } else if (deltaCPU < -0.001) {
+          actionEl.textContent = `${periodBName} improved by ${Math.abs(deltaPct).toFixed(1)}% per ${unitSingular}. Capture what changed before it disappears.`;
+        } else {
+          actionEl.textContent = `${periodAName} and ${periodBName} are essentially flat on labor cost per ${unitSingular}.`;
+        }
+        return;
+      }
+
+      const totals = calculateTotals('single');
+      driverEl.textContent = getTopDriver(totals.opCosts);
+      throughputEl.textContent = totals.totalHours > 0
+        ? `Modeled throughput is ${(totals.totalUnits / totals.totalHours).toFixed(1)} ${unitType}/hour.`
+        : 'Enter labor hours and output volume to calculate total productivity.';
+
+      if (totals.cpu > 0) {
+        actionEl.textContent = `Current labor cost is $${totals.cpu.toFixed(3)} per ${unitSingular}. Compare against last period or your target CPU.`;
+      } else {
+        actionEl.textContent = 'Load a preset, then add actual hours and units from your shift or weekly report.';
+      }
+    }
+
+    function getTopDriver(opCosts) {
+      const active = opCosts.filter(op => op.cost > 0);
+      if (active.length === 0) {
+        return 'Add labor data to identify the biggest cost driver.';
+      }
+
+      const totalCost = active.reduce((sum, op) => sum + op.cost, 0);
+      const top = active.reduce((best, op) => op.cost > best.cost ? op : best, active[0]);
+      const share = totalCost > 0 ? (top.cost / totalCost) * 100 : 0;
+      return `${top.name} is the largest labor cost driver at $${top.cost.toFixed(0)} (${share.toFixed(0)}% of base labor).`;
+    }
+
+    // ============================================
+    // Presets
+    // ============================================
+    function loadPreset(preset) {
+      if (preset === 'clear') {
+        operations.single = [{ name: 'Operation 1', hours: 0, rate: null, units: 0 }];
+        operations.periodA = [{ name: 'Operation 1', hours: 0, rate: null, units: 0 }];
+        operations.periodB = [{ name: 'Operation 1', hours: 0, rate: null, units: 0 }];
+      } else if (preset === 'ecommerce') {
+        const ops = [
+          { name: 'Receiving', hours: 0, rate: null, units: 0 },
+          { name: 'Put-away', hours: 0, rate: null, units: 0 },
+          { name: 'Picking', hours: 0, rate: null, units: 0 },
+          { name: 'Packing', hours: 0, rate: null, units: 0 },
+          { name: 'Shipping', hours: 0, rate: null, units: 0 }
+        ];
+        operations.single = JSON.parse(JSON.stringify(ops));
+        operations.periodA = JSON.parse(JSON.stringify(ops));
+        operations.periodB = JSON.parse(JSON.stringify(ops));
+        document.getElementById('unitType').value = 'orders';
+      } else if (preset === 'distribution') {
+        const ops = [
+          { name: 'Receiving', hours: 0, rate: null, units: 0 },
+          { name: 'Put-away', hours: 0, rate: null, units: 0 },
+          { name: 'Replenishment', hours: 0, rate: null, units: 0 },
+          { name: 'Case Picking', hours: 0, rate: null, units: 0 },
+          { name: 'Loading', hours: 0, rate: null, units: 0 }
+        ];
+        operations.single = JSON.parse(JSON.stringify(ops));
+        operations.periodA = JSON.parse(JSON.stringify(ops));
+        operations.periodB = JSON.parse(JSON.stringify(ops));
+        document.getElementById('unitType').value = 'cases';
+      } else if (preset === '3pl') {
+        const ops = [
+          { name: 'Inbound', hours: 0, rate: null, units: 0 },
+          { name: 'Storage', hours: 0, rate: null, units: 0 },
+          { name: 'Pick & Pack', hours: 0, rate: null, units: 0 },
+          { name: 'Value-Add', hours: 0, rate: null, units: 0 },
+          { name: 'Outbound', hours: 0, rate: null, units: 0 }
+        ];
+        operations.single = JSON.parse(JSON.stringify(ops));
+        operations.periodA = JSON.parse(JSON.stringify(ops));
+        operations.periodB = JSON.parse(JSON.stringify(ops));
+        document.getElementById('unitType').value = 'units';
+      }
+
+      renderOperations('single');
+      renderOperations('periodA');
+      renderOperations('periodB');
+      recalculateAll();
+      showToast(`Loaded ${preset === 'clear' ? 'blank template' : preset + ' preset'}`);
+    }
+
+    // ============================================
+    // Export Functions
+    // ============================================
+    function copyAsTable() {
+      const unitType = document.getElementById('unitType').value;
+      const unitLabel = unitType.charAt(0).toUpperCase() + unitType.slice(1);
+      
+      let text = '';
+      
+      if (currentMode === 'single') {
+        const totals = calculateTotals('single');
+        const defaultRate = parseFloat(document.getElementById('defaultRate').value) || 0;
+        
+        text = `Operation\tHours\tRate\t${unitLabel}\tLabor Cost\tCost/${unitType.slice(0,-1)}\t${unitLabel}/Hr\n`;
+        operations.single.forEach(op => {
+          const rate = op.rate !== null ? op.rate : defaultRate;
+          const cost = op.hours * rate;
+          const cpu = op.units > 0 ? cost / op.units : 0;
+          const uph = op.hours > 0 ? op.units / op.hours : 0;
+          text += `${op.name}\t${op.hours}\t$${rate.toFixed(2)}\t${op.units}\t$${cost.toFixed(2)}\t$${cpu.toFixed(3)}\t${uph.toFixed(1)}\n`;
+        });
+        text += `\nTOTAL\t${totals.totalHours}\t\t${totals.totalUnits}\t$${totals.totalCost.toFixed(2)}\t$${totals.cpu.toFixed(3)}\t`;
+      } else {
+        const totalsA = calculateTotals('periodA');
+        const totalsB = calculateTotals('periodB');
+        const periodAName = document.getElementById('periodAName').value;
+        const periodBName = document.getElementById('periodBName').value;
+        
+        text = `Metric\t${periodAName}\t${periodBName}\tDelta\n`;
+        text += `Total Cost\t$${totalsA.totalCost.toFixed(2)}\t$${totalsB.totalCost.toFixed(2)}\t$${(totalsB.totalCost - totalsA.totalCost).toFixed(2)}\n`;
+        text += `Total ${unitLabel}\t${totalsA.totalUnits}\t${totalsB.totalUnits}\t${totalsB.totalUnits - totalsA.totalUnits}\n`;
+        text += `Cost per ${unitType.slice(0,-1)}\t$${totalsA.cpu.toFixed(3)}\t$${totalsB.cpu.toFixed(3)}\t$${(totalsB.cpu - totalsA.cpu).toFixed(3)}\n`;
+      }
+
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!'));
+    }
+
+    function exportCSV() {
+      const unitType = document.getElementById('unitType').value;
+      const unitLabel = unitType.charAt(0).toUpperCase() + unitType.slice(1);
+      
+      let csv = '';
+      
+      if (currentMode === 'single') {
+        const totals = calculateTotals('single');
+        const defaultRate = parseFloat(document.getElementById('defaultRate').value) || 0;
+        
+        csv = `Operation,Hours,Rate,${unitLabel},Labor Cost,Cost per ${unitType.slice(0,-1)},${unitLabel} per Hour\n`;
+        operations.single.forEach(op => {
+          const rate = op.rate !== null ? op.rate : defaultRate;
+          const cost = op.hours * rate;
+          const cpu = op.units > 0 ? cost / op.units : 0;
+          const uph = op.hours > 0 ? op.units / op.hours : 0;
+          csv += `"${op.name}",${op.hours},${rate.toFixed(2)},${op.units},${cost.toFixed(2)},${cpu.toFixed(3)},${uph.toFixed(1)}\n`;
+        });
+        csv += `\nTOTAL,${totals.totalHours},,${totals.totalUnits},${totals.totalCost.toFixed(2)},${totals.cpu.toFixed(3)},\n`;
+      } else {
+        const totalsA = calculateTotals('periodA');
+        const totalsB = calculateTotals('periodB');
+        const periodAName = document.getElementById('periodAName').value;
+        const periodBName = document.getElementById('periodBName').value;
+        
+        csv = `Metric,"${periodAName}","${periodBName}",Delta\n`;
+        csv += `Total Cost,${totalsA.totalCost.toFixed(2)},${totalsB.totalCost.toFixed(2)},${(totalsB.totalCost - totalsA.totalCost).toFixed(2)}\n`;
+        csv += `Total ${unitLabel},${totalsA.totalUnits},${totalsB.totalUnits},${totalsB.totalUnits - totalsA.totalUnits}\n`;
+        csv += `Cost per ${unitType.slice(0,-1)},${totalsA.cpu.toFixed(3)},${totalsB.cpu.toFixed(3)},${(totalsB.cpu - totalsA.cpu).toFixed(3)}\n`;
+      }
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `labor-cost-${currentMode === 'single' ? 'report' : 'comparison'}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('CSV exported!');
+    }
+
+    function saveConfig() {
+      const config = {
+        operations,
+        settings: {
+          defaultRate: document.getElementById('defaultRate').value,
+          burdenPercent: document.getElementById('burdenPercent').value,
+          unitType: document.getElementById('unitType').value,
+          includeBurden: document.getElementById('includeBurden').checked
+        }
+      };
+      localStorage.setItem('laborCalcConfig', JSON.stringify(config));
+      showToast('Configuration saved!');
+    }
+
+    function loadConfig() {
+      const saved = localStorage.getItem('laborCalcConfig');
+      if (saved) {
+        try {
+          const config = JSON.parse(saved);
+          if (config.operations) operations = config.operations;
+          if (config.settings) {
+            document.getElementById('defaultRate').value = config.settings.defaultRate || 18;
+            document.getElementById('burdenPercent').value = config.settings.burdenPercent || 30;
+            document.getElementById('unitType').value = config.settings.unitType || 'units';
+            document.getElementById('includeBurden').checked = config.settings.includeBurden !== false;
+          }
+          renderOperations('single');
+          renderOperations('periodA');
+          renderOperations('periodB');
+          recalculateAll();
+          showToast('Configuration loaded!');
+        } catch (e) {
+          showToast('Failed to load configuration');
+        }
+      } else {
+        showToast('No saved configuration found');
+      }
+    }
+
+    // ============================================
+    // Utility
+    // ============================================
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    function showToast(message) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    // Initialize
+    init();
+  </script>
+</body>
+</html>

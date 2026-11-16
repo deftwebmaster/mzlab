@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <meta name="theme-color" content="#080b12">
+  <meta name="color-scheme" content="dark">
+  <title>404 — Off the map | ManicZone Lab</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/404.css">
+</head>
+<body class="error-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page-shell error-shell">
+    <header class="site-header error-header">
+      <a class="wordmark" href="/" aria-label="ManicZone Lab home"><span class="brand-mark" aria-hidden="true">MZ</span><span>ManicZone <span class="wordmark-lab">/ Lab</span></span></a>
+      <span class="error-header-status"><span class="status-dot" aria-hidden="true"></span> <span class="lab-health">LAB ONLINE</span> <span class="status-slash">/</span> <span class="route-status">ROUTE UNKNOWN</span></span>
+    </header>
+
+    <main id="main" class="error-main">
+      <section class="lost-signal" aria-labelledby="error-title">
+        <div class="signal-visual" aria-hidden="true">
+          <div class="visual-topline"><span>SECTOR / UNMAPPED</span><span class="crosshair">+</span></div>
+          <div class="radar-field"><div class="radar-orbit orbit-a"></div><div class="radar-orbit orbit-b"></div><div class="radar-orbit orbit-c"></div><span class="radar-axis axis-h"></span><span class="radar-axis axis-v"></span><span class="signal-number">4<span>0</span>4</span><span class="signal-point point-a"></span><span class="signal-point point-b"></span><span class="signal-label">NO SIGNAL AT THESE COORDINATES</span></div>
+          <div class="visual-bottomline"><span class="signal-bars"><i></i><i></i><i></i><i></i><i></i></span><span>CONNECTION TO REALITY: UNCERTAIN</span></div>
+        </div>
+
+        <div class="error-copy">
+          <p class="eyebrow"><span class="error-code">ERROR / 404</span><span class="error-rule" aria-hidden="true"></span> A MINOR DETOUR</p>
+          <h1 id="error-title"><span class="visually-hidden">Page not found. </span>You’ve drifted<br><span class="cyan-text">off the map.</span></h1>
+          <p class="error-description">Nothing at these coordinates. The page may have moved, or this particular experiment never made it out of the Lab.</p>
+          <div class="route-readout"><span class="route-label">REQUESTED ROUTE <span aria-hidden="true">↳</span></span><code id="requested-route">/404.html</code></div>
+          <div class="error-actions"><a class="button primary" href="/">Back to the Lab <span aria-hidden="true">↗</span></a><a class="button secondary" href="/games/">Take a play break <span aria-hidden="true">→</span></a></div>
+          <p class="error-footnote"><span aria-hidden="true">✳</span> A wrong turn can still lead somewhere good.</p>
+        </div>
+      </section>
+
+      <nav class="recovery-nav" aria-label="Find your way back"><p><span class="recovery-cross" aria-hidden="true">+</span> KNOWN COORDINATES</p><div class="recovery-links"><a href="/tools/">Tools <span aria-hidden="true">↗</span></a><a href="/#apps">Apps <span aria-hidden="true">↗</span></a><a href="/projects/">Projects <span aria-hidden="true">↗</span></a><a href="/shed/">Script Shed <span aria-hidden="true">↗</span></a></div></nav>
+    </main>
+
+    <footer class="error-footer"><span>ManicZone Lab <span class="footer-divider">/</span> Curiosity survives a 404.</span><a href="https://maniczone.com/">Back to ManicZone <span aria-hidden="true">↗</span></a></footer>
+  </div>
+  <script>document.getElementById('requested-route').textContent = window.location.pathname;</script>
+</body>
+</html>

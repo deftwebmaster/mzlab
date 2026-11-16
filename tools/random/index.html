@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Decision Lab | Picker, RNG, Teams & Brackets Tool</title>
+  <meta name="description" content="Use crypto-backed randomness for fair picks, weighted choices, no-repeat draws, raffles, teams, brackets, coin flips, numbers, and copyable decision receipts.">
+  <link rel="canonical" href="https://lab.maniczone.com/tools/random/">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/tools/random/">
+  <meta property="og:title" content="Random Decision Lab | Picker, RNG, Teams & Brackets Tool">
+  <meta property="og:description" content="Use crypto-backed randomness for fair picks, weighted choices, no-repeat draws, raffles, teams, brackets, coin flips, numbers, and copyable decision receipts.">
+  <meta property="og:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Random Decision Lab | Picker, RNG, Teams & Brackets Tool preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/tools/random/">
+  <meta name="twitter:title" content="Random Decision Lab | Picker, RNG, Teams & Brackets Tool">
+  <meta name="twitter:description" content="Use crypto-backed randomness for fair picks, weighted choices, no-repeat draws, raffles, teams, brackets, coin flips, numbers, and copyable decision receipts.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta name="twitter:image:alt" content="Random Decision Lab | Picker, RNG, Teams & Brackets Tool preview image">
+<meta name="keywords" content="random decision lab, random number generator, decision picker, weighted picker, raffle picker, coin flip, team generator, bracket randomizer">
+<link rel="stylesheet" href="../tool-modern.css">
+  <script defer src="../tool-credit.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08090f;
+      --panel: #131822;
+      --panel-2: #1b2330;
+      --panel-3: #253244;
+      --line: rgba(247, 248, 255, 0.14);
+      --line-strong: rgba(247, 248, 255, 0.24);
+      --text: #f7f8ff;
+      --muted: #b9c2d0;
+      --faint: #7f8b9b;
+      --cyan: #8df7c8;
+      --violet: #7c8cff;
+      --green: #c6ff7a;
+      --amber: #f4c95d;
+      --rose: #ff647f;
+      --blue: #59b6ff;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      --radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(247, 248, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(247, 248, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 14% 6%, rgba(141, 247, 200, 0.18), transparent 30rem),
+        radial-gradient(circle at 88% 2%, rgba(89, 182, 255, 0.17), transparent 30rem),
+        linear-gradient(135deg, #08090f 0%, #0d1119 50%, #071213 100%);
+      background-size: 44px 44px, 44px 44px, auto, auto, auto;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .app {
+      width: min(1120px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 72px;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 38px;
+    }
+
+    .back-link,
+    .creator-link {
+      color: var(--faint);
+      font-size: 0.9rem;
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .back-link::before {
+      content: "<-";
+      margin-right: 8px;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--violet);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 860px;
+      margin: 0;
+      font-size: clamp(3.2rem, 15vw, 6.8rem);
+      line-height: 0.9;
+      letter-spacing: 0;
+    }
+
+    .hero-text {
+      max-width: 850px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 3.6vw, 1.35rem);
+      line-height: 1.45;
+    }
+
+    .hero-actions,
+    .row-actions,
+    .result-actions,
+    .mode-tabs,
+    .quick-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hero-actions {
+      margin-top: 22px;
+    }
+
+    .btn,
+    .mode-btn {
+      min-height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      padding: 0.72rem 1rem;
+      background: var(--panel-2);
+      color: var(--text);
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .btn:hover,
+    .mode-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(46, 246, 226, 0.58);
+    }
+
+    .btn:disabled,
+    .btn:disabled:hover {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      border-color: var(--line);
+      background: transparent;
+    }
+
+    .btn.primary,
+    .mode-btn.active {
+      color: #06100f;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+    }
+
+    .btn.secondary {
+      background: linear-gradient(135deg, rgba(46, 246, 226, 0.15), rgba(179, 108, 255, 0.18));
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .btn.danger {
+      color: #ffc0cc;
+    }
+
+    .btn.full {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .card,
+    .receipt-card,
+    .lab-panel,
+    .saved-card,
+    .stat-card,
+    .bracket-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(19, 24, 34, 0.78);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel {
+      padding: 16px;
+      background:
+        linear-gradient(135deg, rgba(46, 246, 226, 0.1), rgba(179, 108, 255, 0.12)),
+        rgba(19, 24, 34, 0.82);
+    }
+
+    .hero-panel strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero-panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .receipt-card {
+      min-height: 220px;
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      margin: 20px 0 16px;
+      background:
+        linear-gradient(135deg, rgba(46, 246, 226, 0.12), rgba(179, 108, 255, 0.14)),
+        rgba(19, 24, 34, 0.82);
+    }
+
+    .receipt-card.empty {
+      background: rgba(19, 24, 34, 0.72);
+    }
+
+    .receipt-kicker {
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .receipt-result {
+      display: block;
+      font-size: clamp(2.4rem, 11vw, 5.2rem);
+      font-weight: 950;
+      line-height: 0.95;
+      overflow-wrap: anywhere;
+    }
+
+    .receipt-summary {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .receipt-meta {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .receipt-meta li {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 16px;
+    }
+
+    .mode-tabs {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 8px 0;
+      background: linear-gradient(to bottom, rgba(8, 9, 15, 0.98), rgba(8, 9, 15, 0.76));
+      backdrop-filter: blur(16px);
+    }
+
+    .mode-btn {
+      flex: 1 1 auto;
+      min-width: 118px;
+      min-height: 40px;
+      padding: 0.62rem 0.74rem;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.88rem;
+    }
+
+    .lab-panel {
+      padding: 16px;
+      box-shadow: none;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1.05;
+    }
+
+    .panel-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .form-grid,
+    .two-grid,
+    .stats-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 850;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 0.72rem 0.82rem;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #070a0f;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid rgba(46, 246, 226, 0.25);
+      border-color: rgba(46, 246, 226, 0.72);
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    .checkbox input {
+      width: 18px;
+      min-height: 18px;
+      margin-top: 2px;
+      accent-color: var(--cyan);
+    }
+
+    .hint {
+      color: var(--faint);
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .quick-row {
+      margin: 10px 0 0;
+    }
+
+    .chip {
+      min-height: 36px;
+      padding: 0.44rem 0.66rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .chip:hover {
+      color: var(--text);
+      border-color: var(--cyan);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .stat-card,
+    .saved-card,
+    .bracket-card {
+      padding: 13px;
+      box-shadow: none;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .stat-card span,
+    .saved-card span {
+      display: block;
+      color: var(--faint);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.35rem;
+      overflow-wrap: anywhere;
+    }
+
+    .saved-list,
+    .receipt-history,
+    .bracket-output {
+      display: grid;
+      gap: 10px;
+    }
+
+    .saved-card strong {
+      display: block;
+      margin: 5px 0;
+      font-size: 1rem;
+    }
+
+    .saved-card p,
+    .bracket-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .saved-card .row-actions,
+    .bracket-card .row-actions {
+      margin-top: 12px;
+    }
+
+    .draw-bag {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.17);
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .receipt-text {
+      white-space: pre-wrap;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .error-box {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid rgba(255, 100, 127, 0.45);
+      border-radius: var(--radius);
+      background: rgba(255, 100, 127, 0.1);
+      color: #ffc0cc;
+    }
+
+    .footer {
+      margin-top: 42px;
+      padding: 18px 0;
+      color: var(--faint);
+      text-align: center;
+      font-size: 0.86rem;
+    }
+
+    .footer a {
+      color: var(--violet);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    @media (min-width: 820px) {
+      .app {
+        width: min(1120px, calc(100% - 40px));
+        padding-top: 28px;
+      }
+
+      .top-nav {
+        margin-bottom: 58px;
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1fr) 340px;
+        align-items: end;
+        gap: 34px;
+      }
+
+      .receipt-card {
+        padding: 22px;
+      }
+
+      .dashboard {
+        grid-template-columns: 390px minmax(0, 1fr);
+        align-items: start;
+      }
+
+      .left-stack {
+        position: sticky;
+        top: 12px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .two-grid,
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .hero-actions .btn,
+      .result-actions .btn,
+      .row-actions .btn,
+      .quick-row .chip {
+        width: 100%;
+      }
+
+      .mode-btn {
+        flex: 1 1 calc(50% - 6px);
+      }
+    }
+  </style>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="app">
+    <nav class="top-nav" aria-label="Tool navigation">
+      <a class="back-link" href="../">Tools</a>
+      <a class="creator-link" href="https://lab.maniczone.com">Matt Livingston</a>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Fair Picks, Clean Receipts</p>
+        <h1>Random: Decision Lab</h1>
+        <p class="hero-text">Use browser crypto randomness to pick winners, settle ties, draw samples, build teams, run brackets, and copy a decision receipt everyone can trust.</p>
+        <div class="hero-actions">
+          <button class="btn primary" type="button" data-mode-jump="pick">Pick From A List</button>
+          <button class="btn secondary" type="button" data-mode-jump="numbers">Generate Numbers</button>
+        </div>
+      </div>
+      <aside class="card hero-panel">
+        <strong>Decision rule</strong>
+        <p>Random is best when every remaining option is acceptable. Remove the bad options first, then let the lab break the tie.</p>
+      </aside>
+    </header>
+
+    <section class="receipt-card empty" id="receiptCard" aria-live="polite">
+      <span class="receipt-kicker">Ready to decide</span>
+      <span class="receipt-result">No result yet</span>
+      <p class="receipt-summary">Choose a mode, add your options, and generate a copyable decision receipt.</p>
+      <div class="result-actions">
+        <button class="btn secondary" type="button" id="copyReceipt" disabled>Copy Receipt</button>
+        <button class="btn ghost" type="button" id="saveReceipt" disabled>Save Receipt</button>
+      </div>
+    </section>
+
+    <div class="mode-tabs" role="tablist" aria-label="Decision modes">
+      <button class="mode-btn active" type="button" data-mode="pick">Pick</button>
+      <button class="mode-btn" type="button" data-mode="numbers">Numbers</button>
+      <button class="mode-btn" type="button" data-mode="coin">Coin</button>
+      <button class="mode-btn" type="button" data-mode="teams">Teams</button>
+      <button class="mode-btn" type="button" data-mode="bracket">Bracket</button>
+    </div>
+
+    <main class="dashboard">
+      <div class="left-stack">
+        <section class="lab-panel" data-panel="pick">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Decision Picker</p>
+              <h2>Pick fairly</h2>
+              <p>Equal, weighted, shortlist, or no-repeat draws.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="decisionName">Decision Name</label>
+              <input id="decisionName" type="text" value="Pick a winner">
+            </div>
+            <div class="field">
+              <label for="pickMethod">Method</label>
+              <select id="pickMethod">
+                <option value="equal">Equal-weight pick</option>
+                <option value="weighted">Weighted pick</option>
+                <option value="shortlist">Shortlist then winner</option>
+                <option value="norepeat">No-repeat draw</option>
+              </select>
+            </div>
+            <div class="field" id="shortlistField">
+              <label for="shortlistCount">Shortlist Size</label>
+              <input id="shortlistCount" type="number" value="3" min="2" max="20">
+            </div>
+            <div class="field">
+              <label for="pickOptions">Options</label>
+              <textarea id="pickOptions">Thai food
+Pizza
+Sushi
+Burgers
+Tacos</textarea>
+              <div class="hint">One per line. For weighted picks, use <strong>Option | weight</strong>, like <strong>Vendor A | 3</strong>.</div>
+            </div>
+            <label class="checkbox">
+              <input id="acceptableOnly" type="checkbox" checked>
+              <span>Every option left on this list is acceptable. Random will only break the tie.</span>
+            </label>
+            <button class="btn primary full" type="button" id="runPick">Run Decision</button>
+            <div class="row-actions">
+              <button class="btn secondary" type="button" id="savePickList">Save List</button>
+              <button class="btn ghost" type="button" id="resetDrawBag">Reset No-Repeat Bag</button>
+            </div>
+            <div class="draw-bag" id="drawBag">No-repeat bag is ready.</div>
+            <div class="quick-row">
+              <button class="chip" type="button" data-preset="lunch">Lunch</button>
+              <button class="chip" type="button" data-preset="team">Team Members</button>
+              <button class="chip" type="button" data-preset="priorities">Priorities</button>
+              <button class="chip" type="button" data-preset="qa">QA Sample</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="lab-panel hidden" data-panel="numbers">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Number Lab</p>
+              <h2>Generate samples</h2>
+              <p>Numbers, raffle IDs, and sample percentages.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="numberMode">Mode</label>
+              <select id="numberMode">
+                <option value="range">Range draw</option>
+                <option value="sample">Sample percent from population</option>
+              </select>
+            </div>
+            <div class="two-grid" id="rangeFields">
+              <div class="field">
+                <label for="minNumber">Minimum</label>
+                <input id="minNumber" type="number" value="1">
+              </div>
+              <div class="field">
+                <label for="maxNumber">Maximum</label>
+                <input id="maxNumber" type="number" value="100">
+              </div>
+              <div class="field">
+                <label for="numberQty">Quantity</label>
+                <input id="numberQty" type="number" value="1" min="1">
+              </div>
+              <label class="checkbox">
+                <input id="uniqueNumbers" type="checkbox" checked>
+                <span>Unique only</span>
+              </label>
+            </div>
+            <div class="two-grid hidden" id="sampleFields">
+              <div class="field">
+                <label for="populationSize">Population Size</label>
+                <input id="populationSize" type="number" value="250" min="1">
+              </div>
+              <div class="field">
+                <label for="samplePercent">Sample Percent</label>
+                <input id="samplePercent" type="number" value="10" min="0.1" max="100" step="0.1">
+              </div>
+            </div>
+            <label class="checkbox">
+              <input id="sortNumbers" type="checkbox">
+              <span>Sort result</span>
+            </label>
+            <div class="quick-row" aria-label="Number presets">
+              <button class="chip" type="button" data-number-preset="d6">D6</button>
+              <button class="chip" type="button" data-number-preset="d20">D20</button>
+              <button class="chip" type="button" data-number-preset="raffle">Raffle 1-500</button>
+              <button class="chip" type="button" data-number-preset="lotto">Lotto 5</button>
+            </div>
+            <button class="btn primary full" type="button" id="runNumbers">Generate</button>
+          </div>
+        </section>
+
+        <section class="lab-panel hidden" data-panel="coin">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Coin Lab</p>
+              <h2>Binary calls</h2>
+              <p>Fair 50/50 flips with custom labels and stats.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="two-grid">
+              <div class="field">
+                <label for="coinA">Side A</label>
+                <input id="coinA" type="text" value="Heads">
+              </div>
+              <div class="field">
+                <label for="coinB">Side B</label>
+                <input id="coinB" type="text" value="Tails">
+              </div>
+              <div class="field">
+                <label for="coinCount">Flips</label>
+                <input id="coinCount" type="number" value="1" min="1" max="1000">
+              </div>
+            </div>
+            <button class="btn primary full" type="button" id="runCoin">Flip</button>
+            <button class="btn ghost danger full" type="button" id="resetCoinStats">Reset Stats</button>
+          </div>
+        </section>
+
+        <section class="lab-panel hidden" data-panel="teams">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Team Builder</p>
+              <h2>Make groups</h2>
+              <p>Shuffle people into balanced teams or presentation order.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="teamName">Assignment Name</label>
+              <input id="teamName" type="text" value="Team assignment">
+            </div>
+            <div class="two-grid">
+              <div class="field">
+                <label for="teamCount">Number of Teams</label>
+                <input id="teamCount" type="number" value="2" min="1">
+              </div>
+              <div class="field">
+                <label for="teamMode">Output</label>
+                <select id="teamMode">
+                  <option value="teams">Balanced teams</option>
+                  <option value="order">Random order</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="teamMembers">People</label>
+              <textarea id="teamMembers">Alex
+Jordan
+Morgan
+Taylor
+Riley
+Casey</textarea>
+            </div>
+            <button class="btn primary full" type="button" id="runTeams">Create Assignment</button>
+          </div>
+        </section>
+
+        <section class="lab-panel hidden" data-panel="bracket">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Bracket Lab</p>
+              <h2>Run a bracket</h2>
+              <p>Randomly resolve a tournament and keep the path.</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="bracketName">Bracket Name</label>
+              <input id="bracketName" type="text" value="Decision bracket">
+            </div>
+            <div class="field">
+              <label for="bracketItems">Contestants</label>
+              <textarea id="bracketItems">Pizza
+Thai food
+Sushi
+Tacos
+Burgers
+Ramen
+Salads
+Indian food</textarea>
+            </div>
+            <button class="btn primary full" type="button" id="runBracket">Run Random Bracket</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="right-stack">
+        <section class="lab-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Trust Layer</p>
+              <h2>How randomness works</h2>
+              <p>This tool uses <strong>crypto.getRandomValues()</strong>, not <strong>Math.random()</strong>, for draws.</p>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card"><span>Saved lists</span><strong id="savedCount">0</strong></div>
+            <div class="stat-card"><span>Receipt history</span><strong id="receiptCount">0</strong></div>
+          </div>
+        </section>
+
+        <section class="lab-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Saved Lists</p>
+              <h2>Reusable decisions</h2>
+              <p>Saved locally in this browser.</p>
+            </div>
+            <button class="btn ghost danger" type="button" id="clearLists">Clear</button>
+          </div>
+          <div class="saved-list" id="savedLists"></div>
+        </section>
+
+        <section class="lab-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Recent Receipts</p>
+              <h2>Decision audit trail</h2>
+              <p>Copy or revisit the latest decisions from this session.</p>
+            </div>
+            <button class="btn ghost danger" type="button" id="clearReceipts">Clear</button>
+          </div>
+          <div class="receipt-history" id="receiptHistory"></div>
+        </section>
+
+        <section class="lab-panel hidden" id="bracketOutputPanel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Bracket Path</p>
+              <h2>Rounds</h2>
+              <p>Every match was resolved randomly.</p>
+            </div>
+          </div>
+          <div class="bracket-output" id="bracketOutput"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      Built by <a href="https://lab.maniczone.com">Matt Livingston</a> · Random: Decision Lab · Local-only, no accounts, no tracking.
+    </footer>
+  </div>
+
+  <script>
+    const TOOL_URL = 'https://lab.maniczone.com/tools/random/';
+    const LISTS_KEY = 'random-decision-lab-lists';
+    const RECEIPTS_KEY = 'random-decision-lab-receipts';
+    const COIN_KEY = 'random-decision-lab-coin-stats';
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    const state = {
+      mode: 'pick',
+      receipt: null,
+      savedLists: loadJson(LISTS_KEY, []),
+      receipts: loadJson(RECEIPTS_KEY, []),
+      coinStats: loadJson(COIN_KEY, {}),
+      drawBag: [],
+      drawBagHash: '',
+    };
+
+    const presets = {
+      lunch: ['Thai food', 'Pizza', 'Sushi', 'Burgers', 'Tacos', 'Ramen'],
+      team: ['Alex', 'Jordan', 'Morgan', 'Taylor', 'Riley', 'Casey'],
+      priorities: ['Call client', 'Write proposal', 'Clean inbox', 'Review numbers', 'Plan next week'],
+      qa: ['Row 12', 'Row 44', 'Row 87', 'Row 103', 'Row 211', 'Row 349'],
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    function init() {
+      bindEvents();
+      updateNumberMode();
+      updateShortlistVisibility();
+      renderAll();
+    }
+
+    function bindEvents() {
+      $$('[data-mode]').forEach((button) => {
+        button.addEventListener('click', () => setMode(button.dataset.mode));
+      });
+      $$('[data-mode-jump]').forEach((button) => {
+        button.addEventListener('click', () => setMode(button.dataset.modeJump));
+      });
+      $$('[data-preset]').forEach((button) => {
+        button.addEventListener('click', () => {
+          $('#pickOptions').value = presets[button.dataset.preset].join('\n');
+          $('#pickMethod').value = 'equal';
+          resetDrawBag();
+          updateShortlistVisibility();
+        });
+      });
+      $$('[data-number-preset]').forEach((button) => {
+        button.addEventListener('click', () => applyNumberPreset(button.dataset.numberPreset));
+      });
+
+      $('#pickMethod').addEventListener('change', updateShortlistVisibility);
+      $('#numberMode').addEventListener('change', updateNumberMode);
+      $('#runPick').addEventListener('click', runPick);
+      $('#runNumbers').addEventListener('click', runNumbers);
+      $('#runCoin').addEventListener('click', runCoin);
+      $('#runTeams').addEventListener('click', runTeams);
+      $('#runBracket').addEventListener('click', runBracket);
+      $('#savePickList').addEventListener('click', savePickList);
+      $('#resetDrawBag').addEventListener('click', () => {
+        resetDrawBag();
+        renderDrawBag();
+      });
+      $('#copyReceipt').addEventListener('click', () => copyText(formatReceipt(state.receipt), $('#copyReceipt')));
+      $('#saveReceipt').addEventListener('click', () => saveReceipt(state.receipt));
+      $('#clearLists').addEventListener('click', clearLists);
+      $('#clearReceipts').addEventListener('click', clearReceipts);
+      $('#resetCoinStats').addEventListener('click', resetCoinStats);
+
+      document.addEventListener('keydown', (event) => {
+        if (event.code !== 'Space') return;
+        if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(document.activeElement.tagName)) return;
+        event.preventDefault();
+        const actions = { pick: runPick, numbers: runNumbers, coin: runCoin, teams: runTeams, bracket: runBracket };
+        actions[state.mode]();
+      });
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      $$('[data-mode]').forEach((button) => button.classList.toggle('active', button.dataset.mode === mode));
+      $$('[data-panel]').forEach((panel) => panel.classList.toggle('hidden', panel.dataset.panel !== mode));
+      document.querySelector('.mode-tabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateShortlistVisibility() {
+      $('#shortlistField').classList.toggle('hidden', $('#pickMethod').value !== 'shortlist');
+    }
+
+    function updateNumberMode() {
+      const sample = $('#numberMode').value === 'sample';
+      $('#rangeFields').classList.toggle('hidden', sample);
+      $('#sampleFields').classList.toggle('hidden', !sample);
+    }
+
+    function applyNumberPreset(preset) {
+      const configs = {
+        d6: { min: 1, max: 6, qty: 1, unique: true, sort: false },
+        d20: { min: 1, max: 20, qty: 1, unique: true, sort: false },
+        raffle: { min: 1, max: 500, qty: 1, unique: true, sort: false },
+        lotto: { min: 1, max: 69, qty: 5, unique: true, sort: true },
+      };
+      const config = configs[preset];
+      if (!config) return;
+      $('#numberMode').value = 'range';
+      updateNumberMode();
+      $('#minNumber').value = config.min;
+      $('#maxNumber').value = config.max;
+      $('#numberQty').value = config.qty;
+      $('#uniqueNumbers').checked = config.unique;
+      $('#sortNumbers').checked = config.sort;
+    }
+
+    function runPick() {
+      clearError();
+      if (!$('#acceptableOnly').checked) {
+        showError('Remove unacceptable options before using randomness. The lab should break ties, not make bad options acceptable.');
+        return;
+      }
+
+      const method = $('#pickMethod').value;
+      const options = parseOptions($('#pickOptions').value);
+      if (options.length < 2) {
+        showError('Add at least two options.');
+        return;
+      }
+
+      let title = $('#decisionName').value.trim() || 'Random decision';
+      let result;
+      let details = [];
+
+      if (method === 'weighted') {
+        const total = options.reduce((sum, option) => sum + option.weight, 0);
+        result = weightedPick(options);
+        details = options.map((option) => `${option.label}: ${round((option.weight / total) * 100)}% chance`);
+      } else if (method === 'shortlist') {
+        const count = Math.min(Math.max(Number($('#shortlistCount').value) || 3, 2), options.length);
+        const finalists = drawWithoutReplacement(options.map((option) => option.label), count);
+        result = finalists[cryptoInt(finalists.length)];
+        details = [`Finalists: ${finalists.join(', ')}`, `Winner selected from ${count} finalists.`];
+      } else if (method === 'norepeat') {
+        const labels = options.map((option) => option.label);
+        const hash = labels.join('|');
+        if (state.drawBagHash !== hash || state.drawBag.length === 0) {
+          state.drawBag = [...labels];
+          state.drawBagHash = hash;
+        }
+        const index = cryptoInt(state.drawBag.length);
+        result = state.drawBag.splice(index, 1)[0];
+        details = [`Remaining after this draw: ${state.drawBag.length}`, state.drawBag.length ? `Still in bag: ${state.drawBag.join(', ')}` : 'Bag is empty. Reset to draw again.'];
+        renderDrawBag();
+      } else {
+        result = options[cryptoInt(options.length)].label;
+        details = [`Equal chance across ${options.length} options.`];
+      }
+
+      createReceipt({
+        type: 'Decision Pick',
+        title,
+        result,
+        summary: methodLabel(method),
+        details: [
+          `Options considered: ${options.length}`,
+          ...details,
+        ],
+      });
+    }
+
+    function runNumbers() {
+      clearError();
+      const mode = $('#numberMode').value;
+      let title = mode === 'sample' ? 'Random sample' : 'Random number draw';
+      let result;
+      let details = [];
+
+      if (mode === 'sample') {
+        const population = Math.max(Number($('#populationSize').value) || 1, 1);
+        const percent = Math.max(Math.min(Number($('#samplePercent').value) || 1, 100), 0.1);
+        const quantity = Math.max(Math.ceil(population * (percent / 100)), 1);
+        const picks = drawWithoutReplacement(Array.from({ length: population }, (_, i) => String(i + 1)), quantity);
+        result = picks.join(', ');
+        details = [`Population: ${population}`, `Sample percent: ${percent}%`, `Sample size: ${quantity}`];
+      } else {
+        const min = Number($('#minNumber').value);
+        const max = Number($('#maxNumber').value);
+        const qty = Math.max(Number($('#numberQty').value) || 1, 1);
+        const unique = $('#uniqueNumbers').checked;
+        if (!Number.isFinite(min) || !Number.isFinite(max) || max < min) {
+          showError('Enter a valid minimum and maximum.');
+          return;
+        }
+        const range = max - min + 1;
+        if (unique && qty > range) {
+          showError('Quantity cannot exceed range size when unique-only is enabled.');
+          return;
+        }
+        const values = unique ? drawWithoutReplacement(Array.from({ length: range }, (_, i) => String(min + i)), qty) : Array.from({ length: qty }, () => String(min + cryptoInt(range)));
+        if ($('#sortNumbers').checked) values.sort((a, b) => Number(a) - Number(b));
+        result = values.join(', ');
+        details = [`Range: ${min} to ${max}`, `Quantity: ${qty}`, `Unique only: ${unique ? 'yes' : 'no'}`];
+      }
+
+      createReceipt({
+        type: 'Number Draw',
+        title,
+        result,
+        summary: 'Crypto-backed number generation.',
+        details,
+      });
+    }
+
+    function runCoin() {
+      clearError();
+      const sideA = $('#coinA').value.trim() || 'Side A';
+      const sideB = $('#coinB').value.trim() || 'Side B';
+      const count = Math.max(Math.min(Number($('#coinCount').value) || 1, 1000), 1);
+      const outcomes = [];
+      for (let i = 0; i < count; i++) {
+        const result = cryptoInt(2) === 0 ? sideA : sideB;
+        outcomes.push(result);
+        state.coinStats[result] = (state.coinStats[result] || 0) + 1;
+      }
+      localStorage.setItem(COIN_KEY, JSON.stringify(state.coinStats));
+
+      const tally = tallyValues(outcomes);
+      createReceipt({
+        type: 'Coin Flip',
+        title: count === 1 ? 'Fair coin flip' : `${count} fair flips`,
+        result: count === 1 ? outcomes[0] : Object.entries(tally).map(([label, total]) => `${label}: ${total}`).join(', '),
+        summary: `50/50 draw between ${sideA} and ${sideB}.`,
+        details: [
+          `Flips this run: ${count}`,
+          `Lifetime stats in this browser: ${Object.entries(state.coinStats).map(([label, total]) => `${label} ${total}`).join(', ')}`,
+        ],
+      });
+      renderAll();
+    }
+
+    function runTeams() {
+      clearError();
+      const members = parsePlainList($('#teamMembers').value);
+      if (members.length < 2) {
+        showError('Add at least two people.');
+        return;
+      }
+      const title = $('#teamName').value.trim() || 'Team assignment';
+      const mode = $('#teamMode').value;
+      const shuffled = shuffle([...members]);
+
+      if (mode === 'order') {
+        createReceipt({
+          type: 'Random Order',
+          title,
+          result: shuffled.join(' -> '),
+          summary: 'Random presentation or turn order.',
+          details: shuffled.map((person, index) => `${index + 1}. ${person}`),
+        });
+        return;
+      }
+
+      const teamCount = Math.max(Math.min(Number($('#teamCount').value) || 2, members.length), 1);
+      const teams = Array.from({ length: teamCount }, () => []);
+      shuffled.forEach((member, index) => teams[index % teamCount].push(member));
+      createReceipt({
+        type: 'Team Assignment',
+        title,
+        result: `${teamCount} teams`,
+        summary: 'Balanced random groups.',
+        details: teams.map((team, index) => `Team ${index + 1}: ${team.join(', ')}`),
+      });
+    }
+
+    function runBracket() {
+      clearError();
+      const contestants = parsePlainList($('#bracketItems').value);
+      if (contestants.length < 2) {
+        showError('Add at least two contestants.');
+        return;
+      }
+      const title = $('#bracketName').value.trim() || 'Decision bracket';
+      let round = shuffle([...contestants]);
+      const rounds = [];
+      while (round.length > 1) {
+        const next = [];
+        const matches = [];
+        for (let i = 0; i < round.length; i += 2) {
+          if (!round[i + 1]) {
+            next.push(round[i]);
+            matches.push(`${round[i]} advances by bye`);
+          } else {
+            const winner = cryptoInt(2) === 0 ? round[i] : round[i + 1];
+            next.push(winner);
+            matches.push(`${round[i]} vs ${round[i + 1]} -> ${winner}`);
+          }
+        }
+        rounds.push(matches);
+        round = next;
+      }
+      const winner = round[0];
+      renderBracket(rounds);
+      createReceipt({
+        type: 'Random Bracket',
+        title,
+        result: winner,
+        summary: `${contestants.length} contestants resolved by random matchups.`,
+        details: rounds.flatMap((matches, index) => [`Round ${index + 1}`, ...matches]),
+      });
+    }
+
+    function renderBracket(rounds) {
+      $('#bracketOutputPanel').classList.remove('hidden');
+      $('#bracketOutput').innerHTML = rounds.map((matches, index) => `
+        <article class="bracket-card">
+          <span>Round ${index + 1}</span>
+          ${matches.map((match) => `<p>${escapeHtml(match)}</p>`).join('')}
+        </article>
+      `).join('');
+    }
+
+    function createReceipt(receipt) {
+      state.receipt = {
+        id: randomId(),
+        timestamp: new Date().toISOString(),
+        ...receipt,
+      };
+      renderReceipt();
+      $('#receiptCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderReceipt() {
+      const card = $('#receiptCard');
+      const receipt = state.receipt;
+      if (!receipt) {
+        card.className = 'receipt-card empty';
+        card.innerHTML = `
+          <span class="receipt-kicker">Ready to decide</span>
+          <span class="receipt-result">No result yet</span>
+          <p class="receipt-summary">Choose a mode, add your options, and generate a copyable decision receipt.</p>
+          <div class="result-actions">
+            <button class="btn secondary" type="button" id="copyReceipt" disabled>Copy Receipt</button>
+            <button class="btn ghost" type="button" id="saveReceipt" disabled>Save Receipt</button>
+          </div>
+        `;
+        $('#copyReceipt').addEventListener('click', () => copyText(formatReceipt(state.receipt), $('#copyReceipt')));
+        $('#saveReceipt').addEventListener('click', () => saveReceipt(state.receipt));
+        return;
+      }
+
+      card.className = 'receipt-card';
+      card.innerHTML = `
+        <span class="receipt-kicker">${escapeHtml(receipt.type)}</span>
+        <span class="receipt-result">${escapeHtml(receipt.result)}</span>
+        <p class="receipt-summary">${escapeHtml(receipt.title)} - ${escapeHtml(receipt.summary)}</p>
+        <ul class="receipt-meta">
+          ${receipt.details.map((detail) => `<li>${escapeHtml(detail)}</li>`).join('')}
+        </ul>
+        <div class="result-actions">
+          <button class="btn primary" type="button" id="copyReceipt">Copy Receipt</button>
+          <button class="btn secondary" type="button" id="saveReceipt">Save Receipt</button>
+        </div>
+      `;
+      $('#copyReceipt').addEventListener('click', () => copyText(formatReceipt(receipt), $('#copyReceipt')));
+      $('#saveReceipt').addEventListener('click', () => saveReceipt(receipt));
+    }
+
+    function saveReceipt(receipt) {
+      if (!receipt) return;
+      state.receipts.unshift(receipt);
+      state.receipts = state.receipts.slice(0, 20);
+      localStorage.setItem(RECEIPTS_KEY, JSON.stringify(state.receipts));
+      renderAll();
+      flashButton($('#saveReceipt'), 'Saved');
+    }
+
+    function savePickList() {
+      const options = parsePlainList($('#pickOptions').value);
+      if (!options.length) {
+        showError('Add options before saving a list.');
+        return;
+      }
+      const name = window.prompt('Save this list as:', $('#decisionName').value || 'Decision list');
+      if (!name) return;
+      state.savedLists.unshift({
+        id: randomId(),
+        name,
+        savedAt: new Date().toISOString(),
+        items: options,
+      });
+      state.savedLists = state.savedLists.slice(0, 20);
+      localStorage.setItem(LISTS_KEY, JSON.stringify(state.savedLists));
+      renderAll();
+    }
+
+    function renderAll() {
+      renderReceipt();
+      renderSavedLists();
+      renderReceiptHistory();
+      renderStats();
+      renderDrawBag();
+    }
+
+    function renderSavedLists() {
+      const target = $('#savedLists');
+      if (!state.savedLists.length) {
+        target.innerHTML = '<article class="saved-card"><p>No saved lists yet. Save lunch spots, team members, QA rows, chores, or regular raffle pools.</p></article>';
+        return;
+      }
+      target.innerHTML = state.savedLists.map((list) => `
+        <article class="saved-card">
+          <span>${list.items.length} items</span>
+          <strong>${escapeHtml(list.name)}</strong>
+          <p>${escapeHtml(list.items.slice(0, 6).join(', '))}${list.items.length > 6 ? '...' : ''}</p>
+          <div class="row-actions">
+            <button class="btn secondary" type="button" data-load-list="${list.id}" data-target="pick">Load Pick</button>
+            <button class="btn ghost" type="button" data-load-list="${list.id}" data-target="teams">Load Teams</button>
+            <button class="btn ghost danger" type="button" data-delete-list="${list.id}">Delete</button>
+          </div>
+        </article>
+      `).join('');
+
+      $$('[data-load-list]', target).forEach((button) => {
+        button.addEventListener('click', () => {
+          const list = state.savedLists.find((item) => item.id === button.dataset.loadList);
+          if (!list) return;
+          if (button.dataset.target === 'teams') {
+            $('#teamMembers').value = list.items.join('\n');
+            setMode('teams');
+          } else {
+            $('#pickOptions').value = list.items.join('\n');
+            $('#decisionName').value = list.name;
+            resetDrawBag();
+            setMode('pick');
+          }
+        });
+      });
+      $$('[data-delete-list]', target).forEach((button) => {
+        button.addEventListener('click', () => {
+          state.savedLists = state.savedLists.filter((list) => list.id !== button.dataset.deleteList);
+          localStorage.setItem(LISTS_KEY, JSON.stringify(state.savedLists));
+          renderAll();
+        });
+      });
+    }
+
+    function renderReceiptHistory() {
+      const target = $('#receiptHistory');
+      if (!state.receipts.length) {
+        target.innerHTML = '<article class="saved-card"><p>No saved receipts yet. Save any result to build a local audit trail.</p></article>';
+        return;
+      }
+      target.innerHTML = state.receipts.slice(0, 8).map((receipt) => `
+        <article class="saved-card">
+          <span>${new Date(receipt.timestamp).toLocaleString()}</span>
+          <strong>${escapeHtml(receipt.result)}</strong>
+          <p>${escapeHtml(receipt.title)} - ${escapeHtml(receipt.type)}</p>
+          <div class="row-actions">
+            <button class="btn secondary" type="button" data-copy-history="${receipt.id}">Copy</button>
+          </div>
+        </article>
+      `).join('');
+      $$('[data-copy-history]', target).forEach((button) => {
+        button.addEventListener('click', () => {
+          const receipt = state.receipts.find((item) => item.id === button.dataset.copyHistory);
+          if (receipt) copyText(formatReceipt(receipt), button);
+        });
+      });
+    }
+
+    function renderStats() {
+      $('#savedCount').textContent = state.savedLists.length;
+      $('#receiptCount').textContent = state.receipts.length;
+    }
+
+    function renderDrawBag() {
+      if (!state.drawBag.length) {
+        $('#drawBag').textContent = 'No-repeat bag is ready.';
+      } else {
+        $('#drawBag').textContent = `No-repeat bag has ${state.drawBag.length} item${state.drawBag.length === 1 ? '' : 's'} remaining: ${state.drawBag.join(', ')}`;
+      }
+    }
+
+    function parseOptions(text) {
+      return parsePlainList(text).map((line) => {
+        const parts = line.split('|').map((part) => part.trim());
+        const label = parts[0];
+        const weight = parts[1] == null ? 1 : Math.max(Number(parts[1]) || 0, 0);
+        return { label, weight: weight > 0 ? weight : 1 };
+      });
+    }
+
+    function parsePlainList(text) {
+      const normalized = text.includes('\n') ? text : text.replace(/,/g, '\n');
+      return normalized.split(/\n+/).map((item) => item.trim()).filter(Boolean);
+    }
+
+    function weightedPick(options) {
+      const total = options.reduce((sum, option) => sum + option.weight, 0);
+      let marker = cryptoFloat() * total;
+      for (const option of options) {
+        marker -= option.weight;
+        if (marker <= 0) return option.label;
+      }
+      return options[options.length - 1].label;
+    }
+
+    function drawWithoutReplacement(items, count) {
+      const pool = [...items];
+      const output = [];
+      while (pool.length && output.length < count) {
+        output.push(pool.splice(cryptoInt(pool.length), 1)[0]);
+      }
+      return output;
+    }
+
+    function shuffle(items) {
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = cryptoInt(i + 1);
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      return items;
+    }
+
+    function cryptoInt(maxExclusive) {
+      if (maxExclusive <= 0) return 0;
+      const range = 0x100000000;
+      const limit = range - (range % maxExclusive);
+      const array = new Uint32Array(1);
+      do {
+        crypto.getRandomValues(array);
+      } while (array[0] >= limit);
+      return array[0] % maxExclusive;
+    }
+
+    function cryptoFloat() {
+      const array = new Uint32Array(1);
+      crypto.getRandomValues(array);
+      return array[0] / 0x100000000;
+    }
+
+    function randomId() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      return `${Date.now()}-${cryptoInt(0x1000000).toString(16)}`;
+    }
+
+    function tallyValues(values) {
+      return values.reduce((acc, value) => {
+        acc[value] = (acc[value] || 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    function methodLabel(method) {
+      const labels = {
+        equal: 'Equal-weight random pick.',
+        weighted: 'Weighted random pick.',
+        shortlist: 'Shortlist mode: finalists first, winner second.',
+        norepeat: 'No-repeat draw without replacement.',
+      };
+      return labels[method] || 'Random pick.';
+    }
+
+    function resetDrawBag() {
+      state.drawBag = [];
+      state.drawBagHash = '';
+    }
+
+    function resetCoinStats() {
+      state.coinStats = {};
+      localStorage.setItem(COIN_KEY, JSON.stringify(state.coinStats));
+      renderAll();
+    }
+
+    function clearLists() {
+      if (!state.savedLists.length) return;
+      if (!window.confirm('Clear saved Random: Decision Lab lists from this browser?')) return;
+      state.savedLists = [];
+      localStorage.setItem(LISTS_KEY, JSON.stringify(state.savedLists));
+      renderAll();
+    }
+
+    function clearReceipts() {
+      if (!state.receipts.length) return;
+      if (!window.confirm('Clear saved Random: Decision Lab receipts from this browser?')) return;
+      state.receipts = [];
+      localStorage.setItem(RECEIPTS_KEY, JSON.stringify(state.receipts));
+      renderAll();
+    }
+
+    function formatReceipt(receipt) {
+      if (!receipt) return '';
+      return [
+        `${receipt.type}: ${receipt.title}`,
+        '',
+        `Result: ${receipt.result}`,
+        `Summary: ${receipt.summary}`,
+        `Generated: ${receipt.timestamp}`,
+        '',
+        'Details:',
+        ...receipt.details.map((detail) => `- ${detail}`),
+        '',
+        `Generated by Random: Decision Lab: ${TOOL_URL}`,
+      ].join('\n');
+    }
+
+    function copyText(text, button) {
+      navigator.clipboard?.writeText(text).then(() => flashButton(button, 'Copied')).catch(() => {
+        const area = document.createElement('textarea');
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+        flashButton(button, 'Copied');
+      });
+    }
+
+    function flashButton(button, label) {
+      if (!button) return;
+      const original = button.textContent;
+      button.textContent = label;
+      setTimeout(() => { button.textContent = original; }, 1300);
+    }
+
+    function showError(message) {
+      clearError();
+      const box = document.createElement('div');
+      box.className = 'error-box';
+      box.id = 'errorBox';
+      box.textContent = message;
+      document.querySelector(`[data-panel="${state.mode}"]`).appendChild(box);
+    }
+
+    function clearError() {
+      $('#errorBox')?.remove();
+    }
+
+    function loadJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      } catch {
+        return fallback;
+      }
+    }
+
+    function round(value) {
+      return Math.round(value * 10) / 10;
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement('div');
+      div.textContent = value == null ? '' : String(value);
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

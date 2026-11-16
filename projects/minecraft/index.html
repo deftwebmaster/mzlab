@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iona &amp; Matt's Minecraft Tools | Build Planning Utilities</title>
+  <meta name="description" content="Use a small suite of Minecraft companion tools for block counts, build palettes, coordinates, Nether highways, farms, villagers, potions, and enchants.">
+  <link rel="canonical" href="https://lab.maniczone.com/projects/minecraft/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/projects/minecraft/">
+  <meta property="og:title" content="Iona &amp; Matt's Minecraft Tools | Build Planning Utilities">
+  <meta property="og:description" content="Use a small suite of Minecraft companion tools for block counts, build palettes, coordinates, Nether highways, farms, villagers, potions, and enchants.">
+  <meta property="og:image" content="https://lab.maniczone.com/assets/lab-card.png">
+  <meta property="og:image:alt" content="Iona &amp; Matt's Minecraft Tools | Build Planning Utilities preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/projects/minecraft/">
+  <meta name="twitter:title" content="Iona &amp; Matt's Minecraft Tools | Build Planning Utilities">
+  <meta name="twitter:description" content="Use a small suite of Minecraft companion tools for block counts, build palettes, coordinates, Nether highways, farms, villagers, potions, and enchants.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/assets/lab-card.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  body[data-tool="hub"] { --accent: var(--gold); --accent-dim: #7a6320; }
+
+  .hero-wrap {
+    width: 100%;
+    height: 540px;
+    min-height: 540px;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid var(--panel-border);
+    isolation: isolate;
+  }
+  .hero-img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 35%; }
+  .hero-fade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(16,19,13,.84) 0%, rgba(16,19,13,.46) 42%, rgba(16,19,13,.08) 72%),
+      linear-gradient(to bottom, rgba(16,19,13,.16) 0%, rgba(16,19,13,.10) 54%, var(--bg) 100%);
+  }
+  .hero-content {
+    position: absolute;
+    inset: auto 0 58px;
+    z-index: 2;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .hero-kicker {
+    margin: 0 0 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .hero-title {
+    margin: 0;
+    max-width: 540px;
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 64px;
+    line-height: .92;
+    text-transform: uppercase;
+    color: var(--text);
+    text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
+  }
+  .hero-subtitle {
+    max-width: 520px;
+    margin: 14px 0 0;
+    color: #eee3c8;
+    font-size: 16px;
+    line-height: 1.5;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .65);
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .hero-actions .btn { text-decoration: none; }
+
+  .hub-shell { max-width: 980px; padding-top: 32px; }
+  .session-panel {
+    display: grid;
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+    gap: 20px;
+    align-items: stretch;
+    margin-bottom: 34px;
+  }
+  .session-copy {
+    border: var(--border-w) solid var(--panel-border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--panel);
+    padding: 22px;
+    box-shadow: var(--shadow-soft);
+  }
+  .session-copy h1 { font-size: 42px; }
+  .session-copy .subtitle { margin-bottom: 0; }
+  .play-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .play-action {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 128px;
+    text-decoration: none;
+    border: var(--border-w) solid var(--panel-border);
+    border-top: 4px solid var(--action-accent, var(--accent));
+    border-radius: var(--radius);
+    background: rgba(31, 36, 24, .84);
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+    transition: transform .16s ease, border-color .16s ease, background .16s ease;
+  }
+  .play-action:hover,
+  .play-action:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--action-accent, var(--accent));
+    background: rgba(38, 45, 29, .94);
+    outline: none;
+  }
+  .play-action b {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 25px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .play-action span { margin-top: 10px; color: var(--text-dim); font-size: 13px; line-height: 1.4; }
+  .play-action small {
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--action-accent, var(--accent));
+  }
+  .suite-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 32px; }
+  .suite-stat { border: 1px solid var(--panel-border); border-radius: var(--radius); background: var(--panel); padding: 12px; }
+  .suite-stat b { display: block; font-family: 'Big Shoulders Display', sans-serif; font-size: 28px; line-height: 1; color: var(--accent); }
+  .suite-stat span { display: block; margin-top: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0; text-transform: uppercase; color: var(--text-faint); }
+
+  .tool-section { margin-bottom: 36px; }
+  .tool-section h2 {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0;
+    text-transform: uppercase; color: var(--text-dim); margin: 0 0 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .tool-section h2::after { content: ''; flex: 1; height: 1px; background: var(--panel-border); }
+
+  .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+
+  .tool-card {
+    display: block; text-decoration: none; background: var(--panel);
+    border: var(--border-w) solid var(--panel-border);
+    border-left: 4px solid var(--card-accent, var(--accent));
+    border-radius: var(--radius);
+    padding: 18px 20px; transition: background 0.15s, border-color 0.15s;
+    box-shadow: var(--shadow-soft);
+  }
+  .tool-card:hover,
+  .tool-card:focus-visible { background: rgba(255,255,255,0.04); border-color: var(--card-accent, var(--accent)); outline: none; }
+  .tool-card .name {
+    font-family: 'Big Shoulders Display', sans-serif; text-transform: uppercase;
+    font-size: 19px; color: var(--text); line-height: 1.05;
+  }
+  .tool-card .desc { font-size: 13px; color: var(--text-dim); margin-top: 8px; line-height: 1.45; }
+  .tool-card .go {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0; margin-top: 12px; color: var(--card-accent, var(--accent));
+  }
+  .map-feature {
+    margin: 8px 0 40px;
+    border: var(--border-w) solid var(--panel-border);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+  }
+  .map-copy { padding: 22px 24px 18px; }
+  .map-copy h2 {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .map-copy p { color: var(--text-dim); font-size: 14px; line-height: 1.5; max-width: 68ch; margin: 0; }
+  .farmstead-map {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-top: 1px solid var(--panel-border);
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .district-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 8px;
+    padding: 12px;
+  }
+  .district-link {
+    display: block;
+    min-height: 64px;
+    text-decoration: none;
+    background: var(--bg);
+    border: 1px solid var(--panel-border);
+    border-left: 4px solid var(--district-accent, var(--accent));
+    border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+  .district-link:hover,
+  .district-link:focus-visible { border-color: var(--district-accent, var(--accent)); outline: none; }
+  .district-link b {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .district-link span { display: block; margin-top: 6px; color: var(--text-faint); font-size: 12px; line-height: 1.35; }
+
+  @media (max-width: 760px) {
+    .hero-wrap { height: 430px; min-height: 430px; }
+    .hero-title { font-size: 52px; max-width: 460px; }
+    .session-panel { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .hero-wrap { height: 360px; min-height: 360px; }
+    .hero-img { object-position: center 34%; }
+    .hero-content { inset: auto 0 34px; padding: 0 14px; }
+    .hero-title { font-size: 40px; max-width: 340px; }
+    .hero-subtitle { font-size: 14px; max-width: 330px; }
+    .hero-actions .btn { width: 100%; text-align: center; }
+    .play-actions { grid-template-columns: 1fr; }
+    .suite-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .suite-stat { padding: 10px 8px; }
+    .suite-stat b { font-size: 24px; }
+    .map-copy { padding: 18px; }
+    .map-copy h2 { font-size: 26px; }
+    .district-grid { grid-template-columns: 1fr; }
+  }
+</style>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body data-tool="hub">
+<nav class="site-nav" aria-label="Minecraft tools">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="./" aria-current="page">Minecraft Tools</a>
+    <div class="site-links">
+      <a href="challenge/">Challenge</a>
+      <a href="blocks/">Blocks</a>
+      <a href="palette/">Palette</a>
+      <a href="enchant/">Enchant</a>
+      <a href="potion/">Potions</a>
+      <a href="highway/">Highway</a>
+      <a href="coords/">Coords</a>
+      <a href="villagers/">Villagers</a>
+      <a href="farm/">Farm</a>
+      <a href="controls/">Controls</a>
+    </div>
+    <details class="mobile-tools-menu">
+      <summary>Tools</summary>
+      <div class="mobile-menu-panel">
+        <a data-tool="hub" href="./">Hub</a>
+        <a data-tool="challenge" href="challenge/">Challenge</a>
+        <a data-tool="blocks" href="blocks/">Blocks</a>
+        <a data-tool="palette" href="palette/">Palette</a>
+        <a data-tool="enchant" href="enchant/">Enchant</a>
+        <a data-tool="potion" href="potion/">Potions</a>
+        <a data-tool="highway" href="highway/">Highway</a>
+        <a data-tool="coords" href="coords/">Coords</a>
+        <a data-tool="villagers" href="villagers/">Villagers</a>
+        <a data-tool="farm" href="farm/">Farm</a>
+        <a data-tool="controls" href="controls/">Controls</a>
+      </div>
+    </details>
+  </div>
+</nav>
+
+<div class="hero-wrap">
+  <img class="hero-img" src="assets/hero.webp" alt="Iona's Farmstead — a Minecraft world banner">
+  <div class="hero-fade"></div>
+  <div class="hero-content">
+    <p class="hero-kicker">Iona &amp; Matt's Farmstead</p>
+    <h1 class="hero-title">Build, Farm, Explore Together</h1>
+    <p class="hero-subtitle">A fast, private Minecraft companion for planning builds, saving places, checking routes, and keeping the good trades from disappearing into memory fog.</p>
+    <div class="hero-actions" aria-label="Primary Minecraft tools">
+      <a class="btn" href="coords/">Open Coordinates</a>
+      <a class="btn btn-ghost" href="challenge/">Roll a Build</a>
+    </div>
+  </div>
+</div>
+
+<div class="shell hub-shell">
+  <section class="session-panel" aria-labelledby="sessionTitle">
+    <div class="session-copy">
+      <p class="eyebrow">Session Bench</p>
+      <h1 id="sessionTitle">What are we doing now?</h1>
+      <p class="subtitle">Jump straight to the jobs that come up while playing: where something is, how much to gather, whether the trip is worth a Nether route, and which villager had the magic trade.</p>
+    </div>
+    <div class="play-actions" aria-label="Common play session actions">
+      <a class="play-action" style="--action-accent: var(--lapis)" href="coords/">
+        <b>Find a Place</b>
+        <span>Bases, farms, villages, portals, biomes, and notes saved on this device.</span>
+        <small>Coords</small>
+      </a>
+      <a class="play-action" style="--action-accent: var(--stone)" href="blocks/">
+        <b>Gather Blocks</b>
+        <span>Convert a build idea into blocks, stacks, shulkers, doors, and windows.</span>
+        <small>Materials</small>
+      </a>
+      <a class="play-action" style="--action-accent: var(--portal)" href="highway/">
+        <b>Plan the Trip</b>
+        <span>Nether portal math, tunnel distance, road materials, and route copy text.</span>
+        <small>Travel</small>
+      </a>
+      <a class="play-action" style="--action-accent: var(--emerald)" href="villagers/">
+        <b>Check Trades</b>
+        <span>Star the best deals and find the right villager before everyone wanders.</span>
+        <small>Village</small>
+      </a>
+    </div>
+  </section>
+
+  <div class="suite-stats" aria-label="Tool suite stats">
+    <div class="suite-stat"><b>10</b><span>Tools</span></div>
+    <div class="suite-stat"><b>0</b><span>Logins</span></div>
+    <div class="suite-stat"><b>Fast</b><span>Offline-ready</span></div>
+  </div>
+
+  <div class="grid3 divider"><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>
+
+  <div class="tool-section">
+    <h2>Build Planning</h2>
+    <div class="tool-grid">
+      <a class="tool-card" style="--card-accent: var(--grass)" href="challenge/">
+        <div class="name">Challenge Generator</div>
+        <div class="desc">Roll a theme, material restriction, scope, and twist for your next build. Every result is a shareable link.</div>
+        <div class="go">Open →</div>
+      </a>
+      <a class="tool-card" style="--card-accent: var(--stone)" href="blocks/">
+        <div class="name">Block Quantity Calculator</div>
+        <div class="desc">Wall, floor, solid cube, or hollow box — get the block count, stacks, and shulkers. Subtracts doors and windows.</div>
+        <div class="go">Open →</div>
+      </a>
+      <a class="tool-card" style="--card-accent: var(--copper)" href="palette/">
+        <div class="name">Block Palette Builder</div>
+        <div class="desc">Pick a build vibe and get a balanced set of primary, accent, trim, lighting, and detail blocks.</div>
+        <div class="go">Open →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="tool-section">
+    <h2>Survival Systems</h2>
+    <div class="tool-grid">
+      <a class="tool-card" style="--card-accent: var(--gold)" href="enchant/">
+        <div class="name">Enchant / Anvil Optimizer</div>
+        <div class="desc">Exact anvil XP cost — prior work penalty, enchantment multipliers, and the 40-level "Too Expensive" cap.</div>
+        <div class="go">Open →</div>
+      </a>
+      <a class="tool-card" style="--card-accent: var(--amethyst)" href="potion/">
+        <div class="name">Potion Brew Sheet</div>
+        <div class="desc">Choose a potion result and see the brewing path, core ingredient, modifiers, splash, and lingering steps.</div>
+        <div class="go">Open →</div>
+      </a>
+      <a class="tool-card" style="--card-accent: var(--redstone)" href="farm/">
+        <div class="name">Farm Calculator</div>
+        <div class="desc">Crop growth timing, hopper transfer throughput, and mob spawn range checks.</div>
+        <div class="go">Open →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="tool-section">
+    <h2>World Navigation</h2>
+    <div class="tool-grid">
+      <a class="tool-card" style="--card-accent: var(--portal)" href="highway/">
+        <div class="name">Nether Highway Planner</div>
+        <div class="desc">Convert start and end coordinates, estimate Nether tunnel distance, and plan ice, rail, and block counts.</div>
+        <div class="go">Open →</div>
+      </a>
+      <a class="tool-card" style="--card-accent: var(--lapis)" href="coords/">
+        <div class="name">Base Coordinate Notebook</div>
+        <div class="desc">Save bases, portals, farms, villages, and biomes locally with tags, notes, filters, and copy buttons.</div>
+        <div class="go">Open →</div>
+      </a>
+      <a class="tool-card" style="--card-accent: var(--emerald)" href="villagers/">
+        <div class="name">Villager Trade Tracker</div>
+        <div class="desc">Log your villagers and their trades, star the good ones, find them again fast.</div>
+        <div class="go">Open →</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="tool-section">
+    <h2>Reference</h2>
+    <div class="tool-grid">
+      <a class="tool-card" style="--card-accent: var(--water)" href="controls/">
+        <div class="name">Minecraft Controls Guide</div>
+        <div class="desc">Desktop Java mouse controls, movement keys, inventory shortcuts, and F3 debug bindings in one quick reference.</div>
+        <div class="go">Open →</div>
+      </a>
+    </div>
+  </div>
+
+  <section class="map-feature" id="estate-map" aria-labelledby="mapTitle">
+    <div class="map-copy">
+      <p class="eyebrow">Estate Plan</p>
+      <h2 id="mapTitle">Iona's Farmstead Map</h2>
+      <p>Use the master plan as a world-first way into the toolbox. Each district points to the tool that helps most when you are building, farming, traveling, or organizing that part of the farmstead.</p>
+    </div>
+    <img class="farmstead-map" src="assets/farmstead-map.webp" alt="Iona's Farmstead master estate plan map with labeled districts">
+    <div class="district-grid" aria-label="Farmstead district tool links">
+      <a class="district-link" style="--district-accent: var(--redstone)" href="farm/"><b>Grain District</b><span>Crop timing, hoppers, and farm placement checks.</span></a>
+      <a class="district-link" style="--district-accent: var(--stone)" href="blocks/"><b>Logistics Yard</b><span>Block counts, stacks, shulkers, and build materials.</span></a>
+      <a class="district-link" style="--district-accent: var(--portal)" href="highway/"><b>Nether Transit Terminal</b><span>Portal coordinates and Nether highway estimates.</span></a>
+      <a class="district-link" style="--district-accent: var(--lapis)" href="coords/"><b>Iona's Homestead</b><span>Save bases, landmarks, farms, and route notes.</span></a>
+      <a class="district-link" style="--district-accent: var(--copper)" href="palette/"><b>Botanical Garden</b><span>Pick block palettes for garden paths and themed builds.</span></a>
+      <a class="district-link" style="--district-accent: var(--gold)" href="enchant/"><b>Equipment Shed</b><span>Plan tool enchants, anvil costs, and upgrades.</span></a>
+      <a class="district-link" style="--district-accent: var(--amethyst)" href="potion/"><b>Apiary &amp; Orchard</b><span>Brew support potions for exploring, farming, and safety.</span></a>
+      <a class="district-link" style="--district-accent: var(--water)" href="controls/"><b>Future Expansion</b><span>Quick Java controls and F3 shortcuts while learning.</span></a>
+    </div>
+  </section>
+
+  <footer class="tool-footer">
+    <div class="footer-title">Tool Bench</div>
+    <div class="footer-links">
+      <a href="challenge/">Challenge</a>
+      <a href="#estate-map">Farmstead Map</a>
+      <a href="blocks/">Blocks</a>
+      <a href="palette/">Palette</a>
+      <a href="potion/">Potions</a>
+      <a href="highway/">Highway</a>
+      <a href="coords/">Coords</a>
+      <a href="controls/">Controls</a>
+    </div>
+    <div class="footer-note">Iona's Farmstead Toolbox · Build · Farm · Explore · Together</div>
+    <div class="footer-credit">Built for fun by Matt Livingston</div>
+  </footer>
+</div>
+
+</body>
+</html>

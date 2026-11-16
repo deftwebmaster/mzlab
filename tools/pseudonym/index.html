@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pseudonym Generator | Fictional Identity & Pen Name Tool</title>
+  <meta name="description" content="Create fictional identity profiles, pen names, aliases, addresses, phone numbers, birthdays, zodiac signs, and exportable test data locally.">
+  <link rel="canonical" href="https://lab.maniczone.com/tools/pseudonym/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/tools/pseudonym/">
+  <meta property="og:title" content="Pseudonym Generator | Fictional Identity & Pen Name Tool">
+  <meta property="og:description" content="Create fictional identity profiles, pen names, aliases, addresses, phone numbers, birthdays, zodiac signs, and exportable test data locally.">
+  <meta property="og:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Pseudonym Generator | Fictional Identity & Pen Name Tool preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/tools/pseudonym/">
+  <meta name="twitter:title" content="Pseudonym Generator | Fictional Identity & Pen Name Tool">
+  <meta name="twitter:description" content="Create fictional identity profiles, pen names, aliases, addresses, phone numbers, birthdays, zodiac signs, and exportable test data locally.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta name="twitter:image:alt" content="Pseudonym Generator | Fictional Identity & Pen Name Tool preview image">
+<meta name="keywords" content="pseudonym generator, pen name generator, fictional identity creator, fake identity generator, test data generator, alias generator, fictional address, fake phone number">
+  <meta name="robots" content="index,follow">
+<link rel="stylesheet" href="../tool-modern.css">
+  <script defer src="../tool-credit.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08090f;
+      --panel: #131822;
+      --panel-2: #1b2330;
+      --panel-3: #243146;
+      --line: rgba(247, 248, 255, 0.14);
+      --line-strong: rgba(247, 248, 255, 0.24);
+      --text: #f7f8ff;
+      --muted: #b9c2d0;
+      --faint: #7f8b9b;
+      --cyan: #a78bfa;
+      --violet: #64d2ff;
+      --pink: #ff64d8;
+      --green: #7cf7bd;
+      --rose: #ff647f;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      --radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(247, 248, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(247, 248, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 10% 2%, rgba(167, 139, 250, 0.23), transparent 30rem),
+        radial-gradient(circle at 90% 4%, rgba(100, 210, 255, 0.16), transparent 30rem),
+        linear-gradient(135deg, #08090f 0%, #10111a 48%, #071414 100%);
+      background-size: 44px 44px, 44px 44px, auto, auto, auto;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button { color: inherit; }
+    a { color: inherit; }
+
+    .app {
+      width: min(1140px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 72px;
+    }
+
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 38px;
+    }
+
+    .back-link,
+    .creator-link {
+      color: var(--faint);
+      font-size: 0.9rem;
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .back-link::before {
+      content: "<-";
+      margin-right: 8px;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--violet);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      font-size: clamp(3rem, 13vw, 6.6rem);
+      line-height: 0.9;
+      letter-spacing: 0;
+    }
+
+    .hero-text {
+      max-width: 860px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 3.6vw, 1.35rem);
+      line-height: 1.45;
+    }
+
+    .hero-actions,
+    .row-actions,
+    .tabs,
+    .chip-row,
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hero-actions {
+      margin-top: 22px;
+    }
+
+    .btn,
+    .tab-btn,
+    .chip {
+      min-height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      color: var(--text);
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .btn,
+    .tab-btn {
+      padding: 0.72rem 1rem;
+    }
+
+    .chip {
+      min-height: 36px;
+      padding: 0.42rem 0.66rem;
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.82rem;
+    }
+
+    .btn:hover,
+    .tab-btn:hover,
+    .chip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(46, 246, 226, 0.58);
+    }
+
+    .btn:disabled,
+    .btn:disabled:hover {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      border-color: var(--line);
+      background: transparent;
+    }
+
+    .btn.primary,
+    .tab-btn.active {
+      color: #06100f;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+    }
+
+    .btn.secondary {
+      background: linear-gradient(135deg, rgba(46, 246, 226, 0.15), rgba(179, 108, 255, 0.18));
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .btn.danger {
+      color: #ffc0cc;
+    }
+
+    .btn.full {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .card,
+    .panel,
+    .identity-card,
+    .saved-card,
+    .trust-card,
+    .output-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(19, 24, 34, 0.78);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel {
+      padding: 16px;
+      background:
+        linear-gradient(135deg, rgba(46, 246, 226, 0.1), rgba(179, 108, 255, 0.12)),
+        rgba(19, 24, 34, 0.82);
+    }
+
+    .hero-panel strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero-panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 8px 0;
+      background: linear-gradient(to bottom, rgba(8, 9, 15, 0.98), rgba(8, 9, 15, 0.76));
+      backdrop-filter: blur(16px);
+    }
+
+    .tab-btn {
+      flex: 1 1 auto;
+      min-width: 130px;
+      min-height: 40px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.88rem;
+    }
+
+    .workspace {
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .left-stack,
+    .right-stack,
+    .form-grid,
+    .two-grid,
+    .three-grid,
+    .saved-list,
+    .results,
+    .identity-fields {
+      display: grid;
+      gap: 12px;
+    }
+
+    .panel {
+      padding: 16px;
+      box-shadow: none;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1.05;
+    }
+
+    .panel-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 850;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 0.72rem 0.82rem;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #070a0f;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid rgba(46, 246, 226, 0.25);
+      border-color: rgba(46, 246, 226, 0.72);
+    }
+
+    .hint {
+      color: var(--faint);
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    .checkbox input {
+      width: 18px;
+      min-height: 18px;
+      margin-top: 2px;
+      accent-color: var(--cyan);
+    }
+
+    .identity-card,
+    .output-card {
+      padding: 16px;
+      box-shadow: none;
+      background:
+        linear-gradient(135deg, rgba(46, 246, 226, 0.08), rgba(179, 108, 255, 0.1)),
+        rgba(19, 24, 34, 0.82);
+    }
+
+    .identity-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .identity-name {
+      display: block;
+      font-size: clamp(1.65rem, 8vw, 2.7rem);
+      font-weight: 950;
+      line-height: 0.95;
+      overflow-wrap: anywhere;
+    }
+
+    .identity-role {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .mini-btn {
+      min-width: 38px;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .mini-btn:hover,
+    .mini-btn.active {
+      color: var(--cyan);
+      border-color: rgba(46, 246, 226, 0.62);
+    }
+
+    .identity-fields {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: minmax(90px, 0.72fr) minmax(0, 1.5fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(247, 248, 255, 0.08);
+    }
+
+    .info-row:last-child {
+      border-bottom: 0;
+    }
+
+    .info-label {
+      color: var(--faint);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .identity-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .saved-card,
+    .trust-card {
+      padding: 13px;
+      box-shadow: none;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .saved-card span,
+    .trust-card span,
+    .output-card span {
+      display: block;
+      color: var(--faint);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .saved-card strong,
+    .trust-card strong {
+      display: block;
+      margin: 5px 0;
+      font-size: 1rem;
+    }
+
+    .saved-card p,
+    .trust-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .trust-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .export-box {
+      width: 100%;
+      min-height: 220px;
+      margin-top: 12px;
+      white-space: pre;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.82rem;
+    }
+
+    .empty {
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 20;
+      transform: translateX(-50%);
+      padding: 0.74rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-3);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-weight: 850;
+    }
+
+    .footer {
+      margin-top: 42px;
+      padding: 18px 0;
+      color: var(--faint);
+      text-align: center;
+      font-size: 0.86rem;
+    }
+
+    .footer a {
+      color: var(--violet);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    @media (min-width: 860px) {
+      .app {
+        width: min(1140px, calc(100% - 40px));
+        padding-top: 28px;
+      }
+
+      .top-nav {
+        margin-bottom: 58px;
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1fr) 340px;
+        align-items: end;
+        gap: 34px;
+      }
+
+      .workspace {
+        grid-template-columns: 390px minmax(0, 1fr);
+        align-items: start;
+      }
+
+      .left-stack {
+        position: sticky;
+        top: 12px;
+      }
+
+      .two-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .three-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .results.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero-actions .btn,
+      .result-actions .btn,
+      .row-actions .btn,
+      .chip-row .chip {
+        width: 100%;
+      }
+
+      .tab-btn {
+        flex: 1 1 calc(50% - 6px);
+      }
+
+      .info-row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .info-label {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="app">
+    <nav class="top-nav" aria-label="Tool navigation">
+      <a class="back-link" href="../">Tools</a>
+      <a class="creator-link" href="https://lab.maniczone.com">Matt Livingston</a>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Pen Names, Personas, Test Data</p>
+        <h1>Pseudonym: Fictional Identity Creator</h1>
+        <p class="hero-text">Create polished pen names first, then build fictional identity packs for mockups, stories, privacy-safe examples, and synthetic test data.</p>
+        <div class="hero-actions">
+          <button class="btn primary" type="button" data-mode-jump="pen">Create Pen Names</button>
+          <button class="btn secondary" type="button" data-mode-jump="identity">Build Identity Pack</button>
+        </div>
+      </div>
+      <aside class="card hero-panel">
+        <strong>Fictional only</strong>
+        <p>Profiles are generated locally in your browser for writing, demos, and testing. Keep them fictional, privacy-safe, and out of real-world transactions.</p>
+      </aside>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Pseudonym workflows">
+      <button class="tab-btn active" type="button" data-mode="pen">Pen Names</button>
+      <button class="tab-btn" type="button" data-mode="identity">Identity Pack</button>
+      <button class="tab-btn" type="button" data-mode="test">Test Data</button>
+      <button class="tab-btn" type="button" data-mode="saved">Saved</button>
+    </div>
+
+    <main class="workspace">
+      <div class="left-stack">
+        <section class="panel" data-panel="pen">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Primary Tool</p>
+              <h2>Find a pen name</h2>
+              <p>Generate names that feel intentional, not randomly stapled together.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="penGenre">Writing Lane</label>
+              <select id="penGenre">
+                <option value="literary">Literary / essay</option>
+                <option value="thriller">Thriller / mystery</option>
+                <option value="romance">Romance</option>
+                <option value="scifi">Sci-fi / speculative</option>
+                <option value="business">Business / nonfiction</option>
+                <option value="anonymous">Anonymous column</option>
+              </select>
+            </div>
+            <div class="two-grid">
+              <div class="field">
+                <label for="penCulture">Name Set</label>
+                <select id="penCulture">
+                  <option value="western">Western</option>
+                  <option value="hispanic">Hispanic / Mexican</option>
+                  <option value="global">Global mix</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="penGender">Style</label>
+                <select id="penGender">
+                  <option value="any">Any</option>
+                  <option value="masculine">Masculine</option>
+                  <option value="feminine">Feminine</option>
+                  <option value="neutral">Neutral</option>
+                </select>
+              </div>
+            </div>
+            <div class="two-grid">
+              <div class="field">
+                <label for="penMiddle">Middle</label>
+                <select id="penMiddle">
+                  <option value="none">None</option>
+                  <option value="initial">Middle initial</option>
+                  <option value="name">Middle name</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="penCount">How Many</label>
+                <select id="penCount">
+                  <option value="4">4</option>
+                  <option value="6" selected>6</option>
+                  <option value="8">8</option>
+                </select>
+              </div>
+            </div>
+            <label class="checkbox">
+              <input id="alliterative" type="checkbox">
+              <span>Prefer memorable alliteration when possible.</span>
+            </label>
+            <button class="btn primary full" type="button" id="generatePen">Generate Pen Names</button>
+            <div class="chip-row" aria-label="Pen name presets">
+              <button class="chip" type="button" data-pen-preset="literary">Literary</button>
+              <button class="chip" type="button" data-pen-preset="thriller">Thriller</button>
+              <button class="chip" type="button" data-pen-preset="scifi">Sci-fi</button>
+              <button class="chip" type="button" data-pen-preset="anonymous">Anonymous</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel hidden" data-panel="identity">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Fictional Profile</p>
+              <h2>Build an identity pack</h2>
+              <p>Name, birthday, zodiac, safe phone, address, email, and username.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="two-grid">
+              <div class="field">
+                <label for="identityPurpose">Use Case</label>
+                <select id="identityPurpose">
+                  <option value="story">Story character</option>
+                  <option value="mockup">Product mockup</option>
+                  <option value="privacy">Privacy-safe example</option>
+                  <option value="qa">QA persona</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="identityAge">Age Range</label>
+                <select id="identityAge">
+                  <option value="adult">Adult, 18-65</option>
+                  <option value="young">Young adult, 18-29</option>
+                  <option value="middle">Mid-career, 30-54</option>
+                  <option value="senior">Senior, 55-82</option>
+                </select>
+              </div>
+            </div>
+            <div class="two-grid">
+              <div class="field">
+                <label for="identityRegion">US Region</label>
+                <select id="identityRegion">
+                  <option value="any">Any US region</option>
+                  <option value="west">West</option>
+                  <option value="south">South</option>
+                  <option value="midwest">Midwest</option>
+                  <option value="northeast">Northeast</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="identityCount">How Many</label>
+                <select id="identityCount">
+                  <option value="1">1</option>
+                  <option value="3" selected>3</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+            </div>
+            <label class="checkbox">
+              <input id="includeBio" type="checkbox" checked>
+              <span>Include a short fictional context note.</span>
+            </label>
+            <button class="btn primary full" type="button" id="generateIdentity">Generate Identity Pack</button>
+          </div>
+        </section>
+
+        <section class="panel hidden" data-panel="test">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Developer Utility</p>
+              <h2>Export test data</h2>
+              <p>Create synthetic rows for fixtures, demos, and QA spreadsheets.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="two-grid">
+              <div class="field">
+                <label for="testRows">Rows</label>
+                <input id="testRows" type="number" min="1" max="100" value="12">
+              </div>
+              <div class="field">
+                <label for="testFormat">Format</label>
+                <select id="testFormat">
+                  <option value="json">JSON</option>
+                  <option value="csv">CSV</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="testRegion">Region</label>
+              <select id="testRegion">
+                <option value="any">Any US region</option>
+                <option value="west">West</option>
+                <option value="south">South</option>
+                <option value="midwest">Midwest</option>
+                <option value="northeast">Northeast</option>
+              </select>
+            </div>
+            <button class="btn primary full" type="button" id="generateTest">Generate Test Data</button>
+            <button class="btn secondary full" type="button" id="copyExport" disabled>Copy Export</button>
+          </div>
+        </section>
+
+        <section class="panel hidden" data-panel="saved">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Local Shelf</p>
+              <h2>Saved identities</h2>
+              <p>Saved only in this browser.</p>
+            </div>
+            <button class="btn ghost danger" type="button" id="clearSaved">Clear</button>
+          </div>
+          <div class="saved-list" id="savedList"></div>
+        </section>
+      </div>
+
+      <div class="right-stack">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow" id="resultEyebrow">Results</p>
+              <h2 id="resultTitle">Pen name candidates</h2>
+              <p id="resultSummary">Choose a name, copy the supporting ideas, or save your favorites.</p>
+            </div>
+          </div>
+          <div class="results two" id="results"></div>
+          <div class="output-card hidden" id="exportPanel">
+            <span>Export</span>
+            <textarea class="export-box" id="exportOutput" readonly></textarea>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Trust Layer</p>
+              <h2>Built for safe fiction</h2>
+              <p>Everything is generated in your browser and can be copied without creating an account.</p>
+            </div>
+          </div>
+          <div class="trust-grid">
+            <article class="trust-card">
+              <span>Randomness</span>
+              <strong>Browser crypto</strong>
+              <p>Draws use <code>crypto.getRandomValues()</code> for stronger browser-based randomness.</p>
+            </article>
+            <article class="trust-card">
+              <span>Phone numbers</span>
+              <strong>Fictional 555-01XX range</strong>
+              <p>US phone numbers use the reserved fictional range, such as 555-0100 through 555-0199.</p>
+            </article>
+            <article class="trust-card">
+              <span>Boundary</span>
+              <strong>Fictional profile data</strong>
+              <p>Use these profiles for stories, examples, screenshots, fixtures, and QA. Do not use them as real personal data.</p>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      Built by <a href="https://lab.maniczone.com">Matt Livingston</a> · Pseudonym: Fictional Identity Creator · Local-only, no accounts, no tracking.
+    </footer>
+  </div>
+
+  <script>
+    const TOOL_URL = 'https://lab.maniczone.com/tools/pseudonym/';
+    const SAVED_KEY = 'pseudonym-fictional-identity-saved';
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    const state = {
+      mode: 'pen',
+      results: [],
+      exportText: '',
+      saved: loadJson(SAVED_KEY, []),
+    };
+
+    const DATA = {
+      names: {
+        western: {
+          masculine: ['James', 'Michael', 'Robert', 'David', 'William', 'Daniel', 'Matthew', 'Anthony', 'Joseph', 'Samuel', 'Benjamin', 'Alexander', 'Julian', 'Miles', 'Grant', 'Everett', 'Owen', 'Caleb', 'Nathan', 'Elliot'],
+          feminine: ['Mary', 'Elizabeth', 'Sarah', 'Katherine', 'Rebecca', 'Laura', 'Emily', 'Anna', 'Grace', 'Claire', 'Audrey', 'Nora', 'Vivian', 'Elise', 'June', 'Maren', 'Celia', 'Iris', 'Lydia', 'Tessa'],
+          neutral: ['Avery', 'Jordan', 'Morgan', 'Taylor', 'Riley', 'Casey', 'Quinn', 'Rowan', 'Sage', 'Parker', 'Reese', 'Emerson', 'Hayden', 'Blair', 'Ellis', 'Arden'],
+          last: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Wilson', 'Anderson', 'Taylor', 'Moore', 'Parker', 'Collins', 'Bennett', 'Hayes', 'Foster', 'Reed', 'Sullivan', 'Brooks', 'Hart', 'Wells', 'Stone', 'Vaughn', 'Archer'],
+        },
+        hispanic: {
+          masculine: ['Miguel', 'Carlos', 'Luis', 'Antonio', 'Alejandro', 'Diego', 'Rafael', 'Javier', 'Mateo', 'Santiago', 'Nicolás', 'Emilio', 'Andrés', 'Gabriel', 'Marco', 'Hugo'],
+          feminine: ['María', 'Sofía', 'Elena', 'Isabel', 'Gabriela', 'Daniela', 'Alejandra', 'Lucía', 'Valeria', 'Camila', 'Natalia', 'Carmen', 'Paola', 'Rosa', 'Adriana', 'Mónica'],
+          neutral: ['Ángel', 'Cruz', 'Guadalupe', 'Reyes', 'Sol', 'Noel', 'Alexis', 'Ariel', 'René', 'Azul'],
+          last: ['García', 'Rodríguez', 'Martínez', 'López', 'González', 'Hernández', 'Pérez', 'Sánchez', 'Ramírez', 'Torres', 'Flores', 'Rivera', 'Morales', 'Reyes', 'Jiménez', 'Cruz', 'Vargas', 'Castillo'],
+        },
+        global: {
+          masculine: ['Owen', 'Felix', 'Theo', 'Nico', 'Arun', 'Kai', 'Malik', 'Hugo', 'Jonas', 'Rafi', 'Milo', 'Luca', 'Soren', 'Dante', 'Amir', 'Elias'],
+          feminine: ['Mina', 'Asha', 'Lina', 'Mira', 'Noemi', 'Freya', 'Anika', 'Sana', 'Leona', 'Ines', 'Nadia', 'Amara', 'Clara', 'Zara', 'Iona', 'Maya'],
+          neutral: ['Kai', 'Noa', 'Ari', 'Remy', 'Lior', 'Indigo', 'Sasha', 'Rio', 'Marin', 'Sol', 'Taj', 'Niko'],
+          last: ['Vale', 'Novak', 'Kline', 'Sato', 'Morrow', 'Vega', 'Lennox', 'Rossi', 'Hayashi', 'Kaur', 'Moreau', 'Ivers', 'Solberg', 'Rivers', 'Kade', 'Marin', 'Silva', 'Noor'],
+        },
+      },
+      genreLast: {
+        literary: ['Ash', 'Vale', 'Wells', 'Hart', 'Morrow', 'Reed', 'Ellis', 'Stone'],
+        thriller: ['Cross', 'Rook', 'Wolfe', 'Pierce', 'Locke', 'Voss', 'Kade', 'Sloane'],
+        romance: ['Rose', 'Hart', 'Vale', 'Brooks', 'Summers', 'Blythe', 'Hayes', 'Lark'],
+        scifi: ['Nova', 'Voss', 'Kade', 'Orion', 'Vale', 'Sable', 'Quill', 'Cyra'],
+        business: ['Grant', 'Bennett', 'Parker', 'Sterling', 'Hayes', 'Brooks', 'Foster', 'Wells'],
+        anonymous: ['Gray', 'Vale', 'North', 'Page', 'Stone', 'Lane', 'Reed', 'Black'],
+      },
+      middle: ['Avery', 'Blake', 'Claire', 'Dean', 'Elliot', 'Francis', 'Grace', 'Hayes', 'Iris', 'James', 'Lane', 'Morgan', 'Quinn', 'Reese', 'Sage', 'Vale'],
+      authorNotes: {
+        literary: ['quiet, credible, and essay-friendly', 'serious without feeling stiff', 'works well for fiction, essays, or memoir-adjacent pieces'],
+        thriller: ['sharp enough for a mystery cover', 'short, memorable, and easy to search', 'built for suspense, noir, or procedural work'],
+        romance: ['warm and memorable without getting sugary', 'soft enough for contemporary romance', 'good for character-forward fiction'],
+        scifi: ['clean, speculative, and future-friendly', 'distinctive without becoming costume-y', 'works for sci-fi, fantasy, and worldbuilding'],
+        business: ['credible for nonfiction and professional writing', 'polished, direct, and easy to cite', 'good for guides, essays, and newsletters'],
+        anonymous: ['privacy-forward and intentionally low-profile', 'simple enough to avoid drawing attention', 'good for columns, forums, and anonymous publishing'],
+      },
+      regions: {
+        west: [
+          { city: 'Portland', state: 'OR', zip: '97205', area: '503' },
+          { city: 'Seattle', state: 'WA', zip: '98104', area: '206' },
+          { city: 'Denver', state: 'CO', zip: '80202', area: '303' },
+          { city: 'San Diego', state: 'CA', zip: '92101', area: '619' },
+          { city: 'Las Vegas', state: 'NV', zip: '89101', area: '702' },
+        ],
+        south: [
+          { city: 'Austin', state: 'TX', zip: '78701', area: '512' },
+          { city: 'Nashville', state: 'TN', zip: '37203', area: '615' },
+          { city: 'Atlanta', state: 'GA', zip: '30303', area: '404' },
+          { city: 'Charlotte', state: 'NC', zip: '28202', area: '704' },
+          { city: 'Miami', state: 'FL', zip: '33130', area: '305' },
+        ],
+        midwest: [
+          { city: 'Chicago', state: 'IL', zip: '60602', area: '312' },
+          { city: 'Minneapolis', state: 'MN', zip: '55401', area: '612' },
+          { city: 'Columbus', state: 'OH', zip: '43215', area: '614' },
+          { city: 'Kansas City', state: 'MO', zip: '64106', area: '816' },
+          { city: 'Milwaukee', state: 'WI', zip: '53202', area: '414' },
+        ],
+        northeast: [
+          { city: 'Boston', state: 'MA', zip: '02108', area: '617' },
+          { city: 'New York', state: 'NY', zip: '10007', area: '212' },
+          { city: 'Philadelphia', state: 'PA', zip: '19103', area: '215' },
+          { city: 'Providence', state: 'RI', zip: '02903', area: '401' },
+          { city: 'Burlington', state: 'VT', zip: '05401', area: '802' },
+        ],
+      },
+      streets: ['Example Lane', 'Fiction Street', 'Mockingbird Way', 'Placeholder Avenue', 'Sample Road', 'Demo Drive', 'Atlas Court', 'Nova Terrace', 'Cedar Test Lane', 'Keystone Loop', 'Juniper Mock Road', 'Summit Fiction Ave'],
+      purposes: {
+        story: ['Fictional character profile for drafting.', 'Story-ready persona with enough detail to feel grounded.'],
+        mockup: ['Product mockup profile for realistic UI screens.', 'Demo user for onboarding, forms, and account pages.'],
+        privacy: ['Privacy-safe example profile for screenshots or documentation.', 'Synthetic profile for examples where real personal data does not belong.'],
+        qa: ['QA persona for manual testing and fixture data.', 'Synthetic user for repeatable product checks.'],
+      },
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    function init() {
+      bindEvents();
+      generatePen();
+      renderSaved();
+    }
+
+    function bindEvents() {
+      $$('[data-mode]').forEach((button) => {
+        button.addEventListener('click', () => setMode(button.dataset.mode));
+      });
+      $$('[data-mode-jump]').forEach((button) => {
+        button.addEventListener('click', () => setMode(button.dataset.modeJump));
+      });
+      $$('[data-pen-preset]').forEach((button) => {
+        button.addEventListener('click', () => {
+          $('#penGenre').value = button.dataset.penPreset;
+          if (button.dataset.penPreset === 'anonymous') $('#penMiddle').value = 'none';
+          generatePen();
+        });
+      });
+
+      $('#generatePen').addEventListener('click', generatePen);
+      $('#generateIdentity').addEventListener('click', generateIdentity);
+      $('#generateTest').addEventListener('click', generateTestData);
+      $('#copyExport').addEventListener('click', () => copyText(state.exportText, $('#copyExport')));
+      $('#clearSaved').addEventListener('click', clearSaved);
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      $$('[data-mode]').forEach((button) => button.classList.toggle('active', button.dataset.mode === mode));
+      $$('[data-panel]').forEach((panel) => panel.classList.toggle('hidden', panel.dataset.panel !== mode));
+      $('#exportPanel').classList.toggle('hidden', mode !== 'test' || !state.exportText);
+
+      if (mode === 'pen') {
+        updateResultHeader('Results', 'Pen name candidates', 'Choose a name, copy the supporting ideas, or save your favorites.');
+        renderResults(state.results.length ? state.results : makePenNames());
+      } else if (mode === 'identity') {
+        updateResultHeader('Results', 'Fictional identity packs', 'Copy a complete synthetic profile or save one for later.');
+        if (!state.results.length || state.results[0]?.kind !== 'identity') generateIdentity();
+      } else if (mode === 'test') {
+        updateResultHeader('Export', 'Synthetic test data', 'Generate JSON or CSV for fixtures, mockups, and QA.');
+        if (!state.exportText) generateTestData();
+      } else if (mode === 'saved') {
+        updateResultHeader('Saved', 'Local favorites', 'Your saved pen names and fictional identities live only in this browser.');
+        renderSaved();
+      }
+
+      document.querySelector('.tabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateResultHeader(eyebrow, title, summary) {
+      $('#resultEyebrow').textContent = eyebrow;
+      $('#resultTitle').textContent = title;
+      $('#resultSummary').textContent = summary;
+    }
+
+    function generatePen() {
+      state.results = makePenNames();
+      state.exportText = '';
+      $('#exportPanel').classList.add('hidden');
+      updateResultHeader('Results', 'Pen name candidates', 'Choose a name, copy the supporting ideas, or save your favorites.');
+      renderResults(state.results);
+    }
+
+    function makePenNames() {
+      const genre = $('#penGenre').value;
+      const culture = $('#penCulture').value;
+      const gender = $('#penGender').value;
+      const middle = $('#penMiddle').value;
+      const count = Number($('#penCount').value) || 6;
+      const alliterative = $('#alliterative').checked;
+
+      return Array.from({ length: count }, () => {
+        const name = createName({ culture, gender, middle, alliterative, genre });
+        const handles = makeHandles(name);
+        const domains = handles.slice(0, 3).map((handle) => `${handle.replace(/_/g, '')}.com`);
+        const note = randomItem(DATA.authorNotes[genre]);
+        return {
+          kind: 'pen',
+          id: randomId(),
+          name: name.full,
+          firstName: name.first,
+          lastName: name.last,
+          subtitle: `${titleCase(genre)} pen name`,
+          note: `${name.full} feels ${note}.`,
+          fields: [
+            { label: 'Full name', value: name.full },
+            { label: 'Byline', value: `By ${name.full}` },
+            { label: 'Handles', value: handles.slice(0, 4).join(', ') },
+            { label: 'Domain ideas', value: domains.join(', ') },
+          ],
+          copy: formatProfile({
+            type: 'Pen Name',
+            name: name.full,
+            note: `${name.full} feels ${note}.`,
+            handles: handles.slice(0, 4).join(', '),
+            domains: domains.join(', '),
+          }),
+        };
+      });
+    }
+
+    function generateIdentity() {
+      const purpose = $('#identityPurpose').value;
+      const ageRange = $('#identityAge').value;
+      const region = $('#identityRegion').value;
+      const count = Number($('#identityCount').value) || 3;
+      const includeBio = $('#includeBio').checked;
+
+      state.results = Array.from({ length: count }, () => makeIdentity({ purpose, ageRange, region, includeBio }));
+      state.exportText = '';
+      $('#exportPanel').classList.add('hidden');
+      updateResultHeader('Results', 'Fictional identity packs', 'Copy a complete synthetic profile or save one for later.');
+      renderResults(state.results);
+    }
+
+    function makeIdentity({ purpose = 'mockup', ageRange = 'adult', region = 'any', includeBio = true } = {}) {
+      const name = createName({ culture: 'global', gender: 'any', middle: 'none', alliterative: false, genre: 'business' });
+      const birthday = makeBirthday(ageRange);
+      const location = randomLocation(region);
+      const address = makeAddress(location);
+      const phone = makePhone(location.area);
+      const email = makeEmail(name);
+      const username = makeHandles(name)[0];
+      const context = randomItem(DATA.purposes[purpose]);
+      const bio = includeBio ? `${name.first} is a fictional ${purposeLabel(purpose).toLowerCase()} profile based in ${location.city}.` : '';
+
+      const fields = [
+        { label: 'Full name', value: name.full },
+        { label: 'Birthday', value: `${birthday.date} (${birthday.age}, ${birthday.zodiac})` },
+        { label: 'Address', value: address.full },
+        { label: 'Phone', value: phone },
+        { label: 'Email', value: email },
+        { label: 'Username', value: username },
+      ];
+      if (bio) fields.push({ label: 'Context', value: bio });
+
+      const profile = {
+        type: 'Fictional Identity Pack',
+        name: name.full,
+        birthday: birthday.date,
+        age: birthday.age,
+        zodiac: birthday.zodiac,
+        address: address.full,
+        phone,
+        email,
+        username,
+        note: context,
+        bio,
+      };
+
+      return {
+        kind: 'identity',
+        id: randomId(),
+        name: name.full,
+        firstName: name.first,
+        lastName: name.last,
+        subtitle: purposeLabel(purpose),
+        note: context,
+        fields,
+        raw: profile,
+        copy: formatProfile(profile),
+      };
+    }
+
+    function generateTestData() {
+      const rows = clamp(Number($('#testRows').value) || 12, 1, 100);
+      const format = $('#testFormat').value;
+      const region = $('#testRegion').value;
+      const records = Array.from({ length: rows }, (_, index) => {
+        const identity = makeIdentity({ purpose: 'qa', ageRange: 'adult', region, includeBio: false });
+        return {
+          id: `user_${String(index + 1).padStart(3, '0')}`,
+          full_name: identity.raw.name,
+          birthday: identity.raw.birthday,
+          age: identity.raw.age,
+          zodiac: identity.raw.zodiac,
+          address: identity.raw.address,
+          phone: identity.raw.phone,
+          email: identity.raw.email,
+          username: identity.raw.username,
+        };
+      });
+
+      state.results = [];
+      state.exportText = format === 'csv' ? toCsv(records) : JSON.stringify(records, null, 2);
+      $('#exportOutput').value = state.exportText;
+      $('#exportPanel').classList.remove('hidden');
+      $('#copyExport').disabled = false;
+      $('#results').innerHTML = `<div class="empty">Generated ${rows} ${format.toUpperCase()} rows. Use Copy Export to grab the data.</div>`;
+      updateResultHeader('Export', 'Synthetic test data', 'Generate JSON or CSV for fixtures, mockups, and QA.');
+    }
+
+    function renderResults(items) {
+      $('#exportPanel').classList.add('hidden');
+      const target = $('#results');
+      if (!items.length) {
+        target.innerHTML = '<div class="empty">Generate a profile to get started.</div>';
+        return;
+      }
+      target.innerHTML = items.map((item, index) => `
+        <article class="identity-card" data-id="${item.id}" style="animation-delay:${index * 20}ms">
+          <div class="identity-top">
+            <div>
+              <span class="identity-name">${escapeHtml(item.name)}</span>
+              <span class="identity-role">${escapeHtml(item.subtitle)}</span>
+            </div>
+            <button class="mini-btn ${isSaved(item) ? 'active' : ''}" type="button" data-save="${item.id}" aria-label="Save ${escapeHtml(item.name)}">${isSaved(item) ? 'Saved' : 'Save'}</button>
+          </div>
+          <p class="identity-note">${escapeHtml(item.note)}</p>
+          <div class="identity-fields">
+            ${item.fields.map((field) => `
+              <div class="info-row">
+                <span class="info-label">${escapeHtml(field.label)}</span>
+                <span class="info-value">${escapeHtml(field.value)}</span>
+                <button class="mini-btn" type="button" data-copy="${escapeAttribute(field.value)}">Copy</button>
+              </div>
+            `).join('')}
+          </div>
+          <div class="result-actions" style="margin-top: 14px;">
+            <button class="btn primary" type="button" data-copy-profile="${item.id}">Copy Profile</button>
+            <button class="btn secondary" type="button" data-regenerate="${item.id}">Regenerate</button>
+          </div>
+        </article>
+      `).join('');
+
+      $$('[data-copy]', target).forEach((button) => {
+        button.addEventListener('click', () => copyText(button.dataset.copy, button));
+      });
+      $$('[data-copy-profile]', target).forEach((button) => {
+        button.addEventListener('click', () => {
+          const item = state.results.find((result) => result.id === button.dataset.copyProfile);
+          if (item) copyText(item.copy, button);
+        });
+      });
+      $$('[data-save]', target).forEach((button) => {
+        button.addEventListener('click', () => {
+          const item = state.results.find((result) => result.id === button.dataset.save);
+          if (item) toggleSaved(item);
+        });
+      });
+      $$('[data-regenerate]', target).forEach((button) => {
+        button.addEventListener('click', () => regenerateOne(button.dataset.regenerate));
+      });
+    }
+
+    function regenerateOne(id) {
+      const index = state.results.findIndex((item) => item.id === id);
+      if (index < 0) return;
+      if (state.results[index].kind === 'pen') {
+        state.results[index] = makePenNames()[0];
+      } else {
+        state.results[index] = makeIdentity({
+          purpose: $('#identityPurpose').value,
+          ageRange: $('#identityAge').value,
+          region: $('#identityRegion').value,
+          includeBio: $('#includeBio').checked,
+        });
+      }
+      renderResults(state.results);
+    }
+
+    function renderSaved() {
+      const target = $('#savedList');
+      if (!state.saved.length) {
+        target.innerHTML = '<div class="empty">No saved identities yet.</div>';
+        if (state.mode === 'saved') $('#results').innerHTML = '<div class="empty">Save a favorite from Pen Names or Identity Pack and it will show up here.</div>';
+        return;
+      }
+      target.innerHTML = state.saved.map((item) => `
+        <article class="saved-card">
+          <span>${escapeHtml(item.kind === 'pen' ? 'Pen name' : 'Identity pack')}</span>
+          <strong>${escapeHtml(item.name)}</strong>
+          <p>${escapeHtml(item.note)}</p>
+          <div class="row-actions" style="margin-top: 12px;">
+            <button class="btn secondary" type="button" data-copy-saved="${item.id}">Copy</button>
+            <button class="btn ghost danger" type="button" data-remove-saved="${item.id}">Remove</button>
+          </div>
+        </article>
+      `).join('');
+
+      $$('[data-copy-saved]', target).forEach((button) => {
+        button.addEventListener('click', () => {
+          const item = state.saved.find((saved) => saved.id === button.dataset.copySaved);
+          if (item) copyText(item.copy, button);
+        });
+      });
+      $$('[data-remove-saved]', target).forEach((button) => {
+        button.addEventListener('click', () => {
+          state.saved = state.saved.filter((saved) => saved.id !== button.dataset.removeSaved);
+          persistSaved();
+          renderSaved();
+          if (state.mode !== 'saved') renderResults(state.results);
+        });
+      });
+
+      if (state.mode === 'saved') {
+        $('#results').innerHTML = state.saved.map((item) => `
+          <article class="identity-card">
+            <div class="identity-top">
+              <div>
+                <span class="identity-name">${escapeHtml(item.name)}</span>
+                <span class="identity-role">${escapeHtml(item.subtitle)}</span>
+              </div>
+            </div>
+            <p class="identity-note">${escapeHtml(item.note)}</p>
+            <div class="result-actions" style="margin-top: 14px;">
+              <button class="btn primary" type="button" data-copy-saved-result="${item.id}">Copy Profile</button>
+            </div>
+          </article>
+        `).join('');
+        $$('[data-copy-saved-result]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const item = state.saved.find((saved) => saved.id === button.dataset.copySavedResult);
+            if (item) copyText(item.copy, button);
+          });
+        });
+      }
+    }
+
+    function toggleSaved(item) {
+      if (isSaved(item)) {
+        state.saved = state.saved.filter((saved) => saved.name !== item.name || saved.kind !== item.kind);
+      } else {
+        state.saved.unshift({ ...item, savedAt: new Date().toISOString() });
+        state.saved = state.saved.slice(0, 30);
+      }
+      persistSaved();
+      renderSaved();
+      renderResults(state.results);
+    }
+
+    function isSaved(item) {
+      return state.saved.some((saved) => saved.name === item.name && saved.kind === item.kind);
+    }
+
+    function clearSaved() {
+      if (!state.saved.length) return;
+      if (!window.confirm('Clear saved fictional identities from this browser?')) return;
+      state.saved = [];
+      persistSaved();
+      renderSaved();
+      if (state.mode !== 'saved') renderResults(state.results);
+    }
+
+    function persistSaved() {
+      localStorage.setItem(SAVED_KEY, JSON.stringify(state.saved));
+    }
+
+    function createName({ culture = 'western', gender = 'any', middle = 'none', alliterative = false, genre = 'literary' } = {}) {
+      const pool = DATA.names[culture] || DATA.names.western;
+      let lane = gender === 'any' ? randomItem(['masculine', 'feminine', 'neutral']) : gender;
+      if (!pool[lane]) lane = 'neutral';
+      const first = randomItem(pool[lane]);
+      let lastPool = [...pool.last, ...(DATA.genreLast[genre] || [])];
+      if (alliterative) {
+        const matches = lastPool.filter((name) => normalizeName(name)[0] === normalizeName(first)[0]);
+        if (matches.length) lastPool = matches;
+      }
+      const last = randomItem(lastPool);
+      const middleValue = middle === 'initial' ? `${randomLetter()}.` : middle === 'name' ? randomItem(DATA.middle) : '';
+      return {
+        first,
+        middle: middleValue,
+        last,
+        full: [first, middleValue, last].filter(Boolean).join(' '),
+      };
+    }
+
+    function makeHandles(name) {
+      const first = slug(name.first);
+      const last = slug(name.last);
+      const year = randomInt(1978, 2006);
+      const suffix = randomInt(10, 98);
+      return [
+        `${first}${last}`,
+        `${first}_${last}`,
+        `${first}.${last}`,
+        `${first[0] || 'x'}${last}`,
+        `${first}${suffix}`,
+        `${first}_${year}`,
+      ];
+    }
+
+    function makeEmail(name) {
+      const handle = makeHandles(name)[randomInt(0, 2)];
+      return `${handle}@example.com`;
+    }
+
+    function makeBirthday(rangeName) {
+      const ranges = {
+        young: [18, 29],
+        middle: [30, 54],
+        senior: [55, 82],
+        adult: [18, 65],
+      };
+      const [min, max] = ranges[rangeName] || ranges.adult;
+      const age = randomInt(min, max);
+      const today = new Date();
+      const year = today.getFullYear() - age;
+      const month = randomInt(0, 11);
+      const day = randomInt(1, new Date(year, month + 1, 0).getDate());
+      const birthDate = new Date(year, month, day);
+      const adjustedAge = getAge(birthDate, today);
+      return {
+        date: `${String(month + 1).padStart(2, '0')}/${String(day).padStart(2, '0')}/${year}`,
+        age: adjustedAge,
+        zodiac: zodiac(month + 1, day),
+      };
+    }
+
+    function randomLocation(region) {
+      const pools = region === 'any'
+        ? Object.values(DATA.regions).flat()
+        : DATA.regions[region] || DATA.regions.south;
+      return randomItem(pools);
+    }
+
+    function makeAddress(location) {
+      const unit = randomInt(100, 999);
+      const streetNumber = randomInt(100, 9899);
+      const street = `${streetNumber} ${randomItem(DATA.streets)}`;
+      return {
+        street,
+        city: location.city,
+        state: location.state,
+        zip: location.zip,
+        full: `${street}, Apt ${unit}, ${location.city}, ${location.state} ${location.zip}`,
+      };
+    }
+
+    function makePhone(areaCode) {
+      return `(${areaCode}) 555-01${String(randomInt(0, 99)).padStart(2, '0')}`;
+    }
+
+    function purposeLabel(purpose) {
+      const labels = {
+        story: 'Story Character',
+        mockup: 'Product Mockup Persona',
+        privacy: 'Privacy-Safe Example',
+        qa: 'QA Persona',
+      };
+      return labels[purpose] || 'Fictional Persona';
+    }
+
+    function formatProfile(profile) {
+      return [
+        `${profile.type}: ${profile.name}`,
+        '',
+        ...Object.entries(profile)
+          .filter(([key]) => !['type', 'name'].includes(key))
+          .filter(([, value]) => value)
+          .map(([key, value]) => `${titleCase(key)}: ${value}`),
+        '',
+        `Generated by Pseudonym: Fictional Identity Creator: ${TOOL_URL}`,
+      ].join('\n');
+    }
+
+    function toCsv(records) {
+      if (!records.length) return '';
+      const headers = Object.keys(records[0]);
+      const rows = records.map((record) => headers.map((header) => csvCell(record[header])).join(','));
+      return [headers.join(','), ...rows].join('\n');
+    }
+
+    function csvCell(value) {
+      const text = String(value ?? '');
+      return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+    }
+
+    function copyText(text, button) {
+      if (!text) return;
+      navigator.clipboard?.writeText(text).then(() => flashButton(button, 'Copied')).catch(() => {
+        const area = document.createElement('textarea');
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+        flashButton(button, 'Copied');
+      });
+    }
+
+    function flashButton(button, label) {
+      if (!button) return;
+      const original = button.textContent;
+      button.textContent = label;
+      button.classList.add('active');
+      setTimeout(() => {
+        button.textContent = original;
+        button.classList.remove('active');
+      }, 1200);
+    }
+
+    function randomItem(items) {
+      return items[cryptoInt(items.length)];
+    }
+
+    function randomInt(min, max) {
+      return min + cryptoInt(max - min + 1);
+    }
+
+    function cryptoInt(maxExclusive) {
+      if (maxExclusive <= 0) return 0;
+      const range = 0x100000000;
+      const limit = range - (range % maxExclusive);
+      const array = new Uint32Array(1);
+      do {
+        crypto.getRandomValues(array);
+      } while (array[0] >= limit);
+      return array[0] % maxExclusive;
+    }
+
+    function randomId() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      return `${Date.now()}-${cryptoInt(0x1000000).toString(16)}`;
+    }
+
+    function randomLetter() {
+      return String.fromCharCode(65 + cryptoInt(26));
+    }
+
+    function zodiac(month, day) {
+      const signs = [
+        ['Capricorn', 19], ['Aquarius', 18], ['Pisces', 20], ['Aries', 19],
+        ['Taurus', 20], ['Gemini', 20], ['Cancer', 22], ['Leo', 22],
+        ['Virgo', 22], ['Libra', 22], ['Scorpio', 21], ['Sagittarius', 21],
+        ['Capricorn', 31],
+      ];
+      return day <= signs[month - 1][1] ? signs[month - 1][0] : signs[month][0];
+    }
+
+    function getAge(birthDate, today) {
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const hasBirthdayPassed = today.getMonth() > birthDate.getMonth()
+        || (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+      if (!hasBirthdayPassed) age -= 1;
+      return age;
+    }
+
+    function slug(value) {
+      return normalizeName(value).replace(/[^a-z0-9]+/g, '');
+    }
+
+    function normalizeName(value) {
+      return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    }
+
+    function titleCase(value) {
+      return String(value || '').replace(/[_-]/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function loadJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      } catch {
+        return fallback;
+      }
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement('div');
+      div.textContent = value == null ? '' : String(value);
+      return div.innerHTML;
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

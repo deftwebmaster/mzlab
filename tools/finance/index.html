@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Decision Lab | Loan, Savings & Scenario Calculator</title>
+  <meta name="description" content="Compare personal finance scenarios including loans, savings, debt payoff, rent versus buy, subscriptions, inflation, and side-hustle decisions with exportable reports.">
+  <link rel="canonical" href="https://lab.maniczone.com/tools/finance/">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lab.maniczone.com/tools/finance/">
+  <meta property="og:title" content="Finance Decision Lab | Loan, Savings & Scenario Calculator">
+  <meta property="og:description" content="Compare personal finance scenarios including loans, savings, debt payoff, rent versus buy, subscriptions, inflation, and side-hustle decisions with exportable reports.">
+  <meta property="og:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Finance Decision Lab | Loan, Savings & Scenario Calculator preview image">
+
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://lab.maniczone.com/tools/finance/">
+  <meta name="twitter:title" content="Finance Decision Lab | Loan, Savings & Scenario Calculator">
+  <meta name="twitter:description" content="Compare personal finance scenarios including loans, savings, debt payoff, rent versus buy, subscriptions, inflation, and side-hustle decisions with exportable reports.">
+  <meta name="twitter:image" content="https://lab.maniczone.com/tools/assets/og/tools-og-card.png">
+  <meta name="twitter:image:alt" content="Finance Decision Lab | Loan, Savings & Scenario Calculator preview image">
+<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../tool-modern.css">
+  <script defer src="../tool-credit.js"></script>
+  <script defer src="app.js"></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="top-nav" aria-label="Tool navigation">
+      <a class="back-link" href="../">Tools</a>
+      <a class="creator-link" href="https://lab.maniczone.com">Matt Livingston</a>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Private Money Modeling</p>
+        <h1>Finance: Decision Lab</h1>
+        <p class="hero-text">Compare real-life money decisions with transparent assumptions, side-by-side scenarios, sensitivity checks, and exportable reports. No accounts, no uploads, no pretending one number tells the whole story.</p>
+        <div class="hero-actions">
+          <button class="btn primary" type="button" data-open-lab="rentbuy">Start with Rent vs Buy</button>
+          <button class="btn secondary" type="button" data-open-lab="loan">Open Loan Lab</button>
+          <button class="btn ghost" type="button" data-scroll="#scenario-vault">Saved Scenarios</button>
+        </div>
+      </div>
+      <aside class="hero-panel" aria-label="Decision Lab principles">
+        <div>
+          <span>01</span>
+          <strong>Show assumptions</strong>
+          <p>Every result names the inputs that shaped it.</p>
+        </div>
+        <div>
+          <span>02</span>
+          <strong>Compare scenarios</strong>
+          <p>Save versions locally and see which one wins.</p>
+        </div>
+        <div>
+          <span>03</span>
+          <strong>Export the thinking</strong>
+          <p>Download a readable report for future you.</p>
+        </div>
+      </aside>
+    </header>
+
+    <section class="notice" aria-label="Important note">
+      <strong>Planning tool, not financial advice.</strong>
+      <span>Results are estimates based on the assumptions you enter. Tax, housing, loan, and subscription details vary by location, lender, provider, and date.</span>
+    </section>
+
+    <main>
+      <section id="dashboard" class="dashboard" aria-label="Decision labs">
+        <button class="lab-card flagship" type="button" data-open-lab="rentbuy">
+          <span class="lab-kicker">Flagship</span>
+          <h2>Rent vs Buy</h2>
+          <p>Compare monthly cash flow, equity, opportunity cost, selling costs, break-even timing, and what has to change for the opposite choice to win.</p>
+          <span class="card-action">Open decision lab</span>
+        </button>
+
+        <button class="lab-card" type="button" data-open-lab="loan">
+          <span class="lab-kicker">Debt</span>
+          <h2>Loan Payoff</h2>
+          <p>Model monthly payment, total interest, extra payments, payoff date, and refinance-style tradeoffs for auto, student, mortgage, or custom debt.</p>
+          <span class="card-action">Open decision lab</span>
+        </button>
+
+        <button class="lab-card" type="button" data-open-lab="carlease">
+          <span class="lab-kicker">Vehicle</span>
+          <h2>Buy vs Lease</h2>
+          <p>Compare equity, residual value, lease fees, mileage risk, buyout context, and total cash out over the same holding period.</p>
+          <span class="card-action">Open decision lab</span>
+        </button>
+
+        <button class="lab-card" type="button" data-open-lab="sidehustle">
+          <span class="lab-kicker">Income</span>
+          <h2>Side Hustle</h2>
+          <p>Find your true hourly rate after expenses, taxes, platform fees, unpaid admin time, and the gross revenue needed to beat your day job.</p>
+          <span class="card-action">Open decision lab</span>
+        </button>
+
+        <button class="lab-card" type="button" data-open-lab="subscription">
+          <span class="lab-kicker">Recurring Costs</span>
+          <h2>Subscription Audit</h2>
+          <p>Track monthly burn, annual cost, fair split amounts, budget gap, and which services push you over your target.</p>
+          <span class="card-action">Open decision lab</span>
+        </button>
+
+        <button class="lab-card" type="button" data-open-lab="inflation">
+          <span class="lab-kicker">Purchasing Power</span>
+          <h2>Inflation Lens</h2>
+          <p>Translate dollars across time, project future purchasing power, and compare common items using dated reference data.</p>
+          <span class="card-action">Open decision lab</span>
+        </button>
+      </section>
+
+      <section id="scenario-vault" class="scenario-vault" aria-label="Saved scenarios">
+        <div class="section-heading">
+          <p class="eyebrow">Scenario Vault</p>
+          <h2>Saved Comparisons</h2>
+          <p>Scenarios are saved only in this browser. Use them to compare decisions without re-entering everything.</p>
+        </div>
+        <div class="vault-actions">
+          <button class="btn secondary" type="button" id="exportScenariosBtn">Export Vault</button>
+          <button class="btn ghost danger" type="button" id="clearScenariosBtn">Clear Vault</button>
+        </div>
+        <div id="scenarioList" class="scenario-list"></div>
+      </section>
+
+      <section class="lab-panel hidden" id="inflation-lab" data-lab-panel="inflation">
+        <div class="panel-header">
+          <button class="back-btn" type="button" data-back>Back</button>
+          <div>
+            <p class="eyebrow">Purchasing Power</p>
+            <h2>Inflation Lens</h2>
+            <p>Use CPI annual averages to translate historical dollars, then stress-test the future with your own inflation assumption.</p>
+          </div>
+        </div>
+
+        <div class="workspace-grid">
+          <form class="input-panel" data-form="inflation">
+            <div class="field">
+              <label for="inflationMode">Question</label>
+              <select id="inflationMode">
+                <option value="historical">What was this amount worth in another year?</option>
+                <option value="future">How much will I need later?</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="inflationAmount">Amount</label>
+              <input id="inflationAmount" type="number" value="100" min="0" step="0.01">
+            </div>
+            <div class="field-row" data-mode-fields="historical">
+              <div class="field">
+                <label for="inflationFrom">From Year</label>
+                <select id="inflationFrom"></select>
+              </div>
+              <div class="field">
+                <label for="inflationTo">To Year</label>
+                <select id="inflationTo"></select>
+              </div>
+            </div>
+            <div class="field-row hidden" data-mode-fields="future">
+              <div class="field">
+                <label for="inflationYears">Years Ahead</label>
+                <input id="inflationYears" type="number" value="10" min="1" max="60" step="1">
+              </div>
+              <div class="field">
+                <label for="inflationRate">Expected Inflation</label>
+                <input id="inflationRate" type="number" value="3" min="0" max="20" step="0.1">
+              </div>
+            </div>
+            <button class="btn primary full" type="submit">Run Inflation Lens</button>
+          </form>
+          <div class="result-panel" id="inflationResults"></div>
+        </div>
+      </section>
+
+      <section class="lab-panel hidden" id="subscription-lab" data-lab-panel="subscription">
+        <div class="panel-header">
+          <button class="back-btn" type="button" data-back>Back</button>
+          <div>
+            <p class="eyebrow">Recurring Costs</p>
+            <h2>Subscription Audit</h2>
+            <p>Estimate monthly burn, annual cost, split math, and your budget gap. Starter prices are editable estimates, not live provider quotes.</p>
+          </div>
+        </div>
+
+        <div class="workspace-grid">
+          <form class="input-panel" data-form="subscription">
+            <div class="subscription-grid" id="subscriptionList"></div>
+            <div class="field-row">
+              <div class="field">
+                <label for="customSubName">Custom Service</label>
+                <input id="customSubName" type="text" placeholder="Service name">
+              </div>
+              <div class="field">
+                <label for="customSubPrice">Monthly Price</label>
+                <input id="customSubPrice" type="number" min="0" step="0.01" placeholder="12.99">
+              </div>
+            </div>
+            <button class="btn secondary full" type="button" id="addSubscriptionBtn">Add Custom Subscription</button>
+            <div class="field-row">
+              <div class="field">
+                <label for="splitPeople">People Splitting</label>
+                <input id="splitPeople" type="number" value="1" min="1" max="20" step="1">
+              </div>
+              <div class="field">
+                <label for="subscriptionBudget">Monthly Budget</label>
+                <input id="subscriptionBudget" type="number" value="75" min="0" step="5">
+              </div>
+            </div>
+            <button class="btn primary full" type="submit">Audit Subscriptions</button>
+          </form>
+          <div class="result-panel" id="subscriptionResults"></div>
+        </div>
+      </section>
+
+      <section class="lab-panel hidden" id="loan-lab" data-lab-panel="loan">
+        <div class="panel-header">
+          <button class="back-btn" type="button" data-back>Back</button>
+          <div>
+            <p class="eyebrow">Debt Strategy</p>
+            <h2>Loan Payoff Lab</h2>
+            <p>See the required payment, total interest, and what an extra monthly payment does to your payoff date.</p>
+          </div>
+        </div>
+
+        <div class="workspace-grid">
+          <form class="input-panel" data-form="loan">
+            <div class="field">
+              <label for="loanType">Loan Type</label>
+              <select id="loanType">
+                <option value="Auto loan">Auto loan</option>
+                <option value="Student loan">Student loan</option>
+                <option value="Mortgage">Mortgage</option>
+                <option value="Personal loan">Personal loan</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="loanAmount">Amount Borrowed</label>
+                <input id="loanAmount" type="number" value="30000" min="0" step="100">
+              </div>
+              <div class="field">
+                <label for="loanApr">APR</label>
+                <input id="loanApr" type="number" value="6.5" min="0" max="40" step="0.1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="loanTerm">Term in Months</label>
+                <input id="loanTerm" type="number" value="60" min="1" max="480" step="1">
+              </div>
+              <div class="field">
+                <label for="loanExtra">Extra Monthly Payment</label>
+                <input id="loanExtra" type="number" value="100" min="0" step="10">
+              </div>
+            </div>
+            <button class="btn primary full" type="submit">Analyze Loan</button>
+          </form>
+          <div class="result-panel" id="loanResults"></div>
+        </div>
+      </section>
+
+      <section class="lab-panel hidden" id="carlease-lab" data-lab-panel="carlease">
+        <div class="panel-header">
+          <button class="back-btn" type="button" data-back>Back</button>
+          <div>
+            <p class="eyebrow">Vehicle Decision</p>
+            <h2>Buy vs Lease Lab</h2>
+            <p>Compare total cash out, owned equity, mileage risk, lease-end buyout context, and monthly flexibility.</p>
+          </div>
+        </div>
+
+        <div class="workspace-grid">
+          <form class="input-panel" data-form="carlease">
+            <div class="field-row">
+              <div class="field">
+                <label for="vehiclePrice">Vehicle Price</label>
+                <input id="vehiclePrice" type="number" value="36000" min="0" step="500">
+              </div>
+              <div class="field">
+                <label for="salesTax">Sales Tax</label>
+                <input id="salesTax" type="number" value="6.5" min="0" max="15" step="0.1">
+              </div>
+            </div>
+            <div class="subgrid-title">Buying</div>
+            <div class="field-row">
+              <div class="field">
+                <label for="buyDown">Down Payment</label>
+                <input id="buyDown" type="number" value="5000" min="0" step="100">
+              </div>
+              <div class="field">
+                <label for="buyApr">APR</label>
+                <input id="buyApr" type="number" value="6.5" min="0" max="30" step="0.1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="buyTerm">Loan Term</label>
+                <input id="buyTerm" type="number" value="60" min="1" max="96" step="1">
+              </div>
+              <div class="field">
+                <label for="depreciationRate">Annual Depreciation</label>
+                <input id="depreciationRate" type="number" value="15" min="0" max="50" step="1">
+              </div>
+            </div>
+            <div class="subgrid-title">Leasing</div>
+            <div class="field-row">
+              <div class="field">
+                <label for="leaseDown">Due at Signing</label>
+                <input id="leaseDown" type="number" value="2500" min="0" step="100">
+              </div>
+              <div class="field">
+                <label for="leasePayment">Monthly Payment</label>
+                <input id="leasePayment" type="number" value="425" min="0" step="1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="leaseTerm">Lease Term</label>
+                <input id="leaseTerm" type="number" value="36" min="12" max="72" step="1">
+              </div>
+              <div class="field">
+                <label for="residualPercent">Residual Value</label>
+                <input id="residualPercent" type="number" value="58" min="0" max="100" step="1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="annualMiles">Expected Miles / Year</label>
+                <input id="annualMiles" type="number" value="12000" min="0" step="500">
+              </div>
+              <div class="field">
+                <label for="includedMiles">Included Miles / Year</label>
+                <input id="includedMiles" type="number" value="10000" min="0" step="500">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="mileFee">Overage Fee / Mile</label>
+                <input id="mileFee" type="number" value="0.25" min="0" step="0.01">
+              </div>
+              <div class="field">
+                <label for="leaseFees">Lease-End Fees</label>
+                <input id="leaseFees" type="number" value="395" min="0" step="1">
+              </div>
+            </div>
+            <button class="btn primary full" type="submit">Compare Vehicle Options</button>
+          </form>
+          <div class="result-panel" id="carleaseResults"></div>
+        </div>
+      </section>
+
+      <section class="lab-panel hidden" id="rentbuy-lab" data-lab-panel="rentbuy">
+        <div class="panel-header">
+          <button class="back-btn" type="button" data-back>Back</button>
+          <div>
+            <p class="eyebrow">Housing Decision</p>
+            <h2>Rent vs Buy Lab</h2>
+            <p>Model equity, cash flow, closing costs, selling costs, investment return if renting, and break-even timing.</p>
+          </div>
+        </div>
+
+        <div class="workspace-grid">
+          <form class="input-panel" data-form="rentbuy">
+            <div class="subgrid-title">Renting</div>
+            <div class="field-row">
+              <div class="field">
+                <label for="monthlyRent">Monthly Rent</label>
+                <input id="monthlyRent" type="number" value="1800" min="0" step="50">
+              </div>
+              <div class="field">
+                <label for="rentIncrease">Annual Rent Increase</label>
+                <input id="rentIncrease" type="number" value="3" min="0" max="20" step="0.1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="rentersInsurance">Renters Insurance</label>
+                <input id="rentersInsurance" type="number" value="20" min="0" step="5">
+              </div>
+              <div class="field">
+                <label for="investmentReturn">Return If Renting</label>
+                <input id="investmentReturn" type="number" value="6" min="-20" max="30" step="0.1">
+              </div>
+            </div>
+            <div class="subgrid-title">Buying</div>
+            <div class="field-row">
+              <div class="field">
+                <label for="homePrice">Home Price</label>
+                <input id="homePrice" type="number" value="350000" min="0" step="1000">
+              </div>
+              <div class="field">
+                <label for="downPayment">Down Payment</label>
+                <input id="downPayment" type="number" value="70000" min="0" step="1000">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="mortgageApr">Mortgage APR</label>
+                <input id="mortgageApr" type="number" value="7" min="0" max="30" step="0.1">
+              </div>
+              <div class="field">
+                <label for="mortgageTerm">Mortgage Term</label>
+                <input id="mortgageTerm" type="number" value="30" min="1" max="40" step="1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="propertyTax">Property Tax</label>
+                <input id="propertyTax" type="number" value="1.2" min="0" max="6" step="0.1">
+              </div>
+              <div class="field">
+                <label for="homeInsurance">Annual Insurance</label>
+                <input id="homeInsurance" type="number" value="1800" min="0" step="100">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="monthlyHoa">Monthly HOA</label>
+                <input id="monthlyHoa" type="number" value="150" min="0" step="10">
+              </div>
+              <div class="field">
+                <label for="maintenanceRate">Annual Maintenance</label>
+                <input id="maintenanceRate" type="number" value="1" min="0" max="8" step="0.1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="homeAppreciation">Home Appreciation</label>
+                <input id="homeAppreciation" type="number" value="3" min="-20" max="30" step="0.1">
+              </div>
+              <div class="field">
+                <label for="compareYears">Years to Compare</label>
+                <input id="compareYears" type="number" value="10" min="1" max="40" step="1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="closingCostRate">Buyer Closing Costs</label>
+                <input id="closingCostRate" type="number" value="3" min="0" max="12" step="0.1">
+              </div>
+              <div class="field">
+                <label for="sellingCostRate">Selling Costs</label>
+                <input id="sellingCostRate" type="number" value="6" min="0" max="12" step="0.1">
+              </div>
+            </div>
+            <button class="btn primary full" type="submit">Compare Rent vs Buy</button>
+          </form>
+          <div class="result-panel" id="rentbuyResults"></div>
+        </div>
+      </section>
+
+      <section class="lab-panel hidden" id="sidehustle-lab" data-lab-panel="sidehustle">
+        <div class="panel-header">
+          <button class="back-btn" type="button" data-back>Back</button>
+          <div>
+            <p class="eyebrow">Income Reality Check</p>
+            <h2>Side Hustle Lab</h2>
+            <p>Find the real hourly rate after platform fees, expenses, taxes, and the time that usually gets forgotten.</p>
+          </div>
+        </div>
+
+        <div class="workspace-grid">
+          <form class="input-panel" data-form="sidehustle">
+            <div class="field-row">
+              <div class="field">
+                <label for="hustleIncome">Monthly Gross Revenue</label>
+                <input id="hustleIncome" type="number" value="2000" min="0" step="50">
+              </div>
+              <div class="field">
+                <label for="platformFee">Platform / Processing Fee</label>
+                <input id="platformFee" type="number" value="3" min="0" max="50" step="0.1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="billableHours">Billable Hours</label>
+                <input id="billableHours" type="number" value="40" min="0" step="1">
+              </div>
+              <div class="field">
+                <label for="adminHours">Admin Hours</label>
+                <input id="adminHours" type="number" value="8" min="0" step="1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="hustleExpenses">Monthly Expenses</label>
+                <input id="hustleExpenses" type="number" value="250" min="0" step="10">
+              </div>
+              <div class="field">
+                <label for="taxSetAside">Tax Set-Aside</label>
+                <input id="taxSetAside" type="number" value="30" min="0" max="60" step="1">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="dayJobRate">Day Job Hourly Rate</label>
+                <input id="dayJobRate" type="number" value="25" min="0" step="0.5">
+              </div>
+              <div class="field">
+                <label for="monthlyGoal">Monthly Net Goal</label>
+                <input id="monthlyGoal" type="number" value="1000" min="0" step="50">
+              </div>
+            </div>
+            <button class="btn primary full" type="submit">Analyze Hustle</button>
+          </form>
+          <div class="result-panel" id="sidehustleResults"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-note">
+      Built by <a href="https://lab.maniczone.com">Matt Livingston</a> · Finance: Decision Lab · All calculations run locally in your browser.
+    </footer>
+  </div>
+</body>
+</html>
