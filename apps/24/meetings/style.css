@@ -27,3 +27,254 @@ progress{width:100%;height:10px;appearance:none;border:0;border-radius:20px;back
 .header-right{display:flex;align-items:center;gap:14px;min-width:0}.sobriety{display:flex;flex-direction:column;align-items:flex-end;text-align:right;line-height:1.25;color:#183e36;white-space:nowrap}#sobriety-count{font-size:14px;font-weight:700;letter-spacing:-.2px}#sobriety-label{font-size:12px;color:var(--muted)}.sobriety.milestone #sobriety-label{color:#9a6a1c;font-weight:700}
 .sobriety-setting{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sobriety-setting input{max-width:220px;margin-top:0}.details-body .sobriety-setting button{min-width:72px}.details-body .sobriety-setting #sobriety-clear{background:#fff;color:#183e36;border:1px solid #c8d2c6}.details-body .sobriety-setting button:disabled{opacity:.45}#sobriety-error{color:#962d24;font-size:13px;margin:6px 0 0}#sobriety-error:empty{display:none}
 @media(max-width:360px){header{gap:10px}.brand{gap:9px;letter-spacing:.4px}.mark{width:36px;height:36px;font-size:16px}.header-right{gap:8px}#sobriety-count{font-size:13px}}
+
+/* =====================================================================
+   CYAN × VIOLET — dark theme layer (screen only; print styles untouched)
+   Colour roles:  cyan = interactive / current / upcoming
+                  violet = mandatory, requirements, selected states
+                  neutral surfaces = ordinary information
+                  amber = weekly check-in and due-today reminders
+   ===================================================================== */
+@media screen{
+:root{color-scheme:dark;
+ /* Surfaces */
+ --bg:#080913;--surface-quiet:#121322;--surface:#17152B;--surface-2:#201A3B;
+ --line:#2A2748;--line-strong:#3B3566;
+ /* Text (contrast on --surface: 17:1 / 9.6:1 / 7.4:1) */
+ --text:#F4F6FF;--text-2:#B8C5E1;--text-3:#9AA8C6;
+ /* Cyan — interactive, current, upcoming */
+ --cyan:#00D9FF;--cyan-hover:#5BE6FF;--cyan-ink:#03141B;--cyan-soft:rgba(0,217,255,.12);--cyan-line:rgba(0,217,255,.45);
+ /* Violet — mandatory, requirements, selected */
+ --violet:#7C3AED;--violet-text:#C4B5FD;--violet-soft:rgba(124,58,237,.2);--violet-line:rgba(167,139,250,.5);
+ --mandatory-bg:#3A1D86;--mandatory-bg-2:#45219F;--mandatory-line:#8B5CF6;--on-mandatory:#FFFFFF;--on-mandatory-2:#DDD5FF;
+ /* Indigo — "attend or be off property" */
+ --indigo-bg:#1A2047;--indigo-line:#34418A;--indigo-text:#B4C3FF;
+ /* Amber — weekly check-in */
+ --amber:#FFC46B;--amber-ink:#1F1503;--amber-soft:rgba(255,196,107,.09);--amber-line:rgba(255,196,107,.42);--amber-text:#FFE2B3;
+ /* Status */
+ --rose:#FF8FB6;--rose-soft:rgba(255,122,174,.14);
+ /* Shape */
+ --r-card:18px;--r-row:14px;--r-ctl:12px;--r-pill:999px;--h-ctl:44px;
+ --shadow-card:0 14px 34px -22px rgba(0,0,0,.9);
+ color:var(--text);background:var(--bg);--green:var(--cyan);--muted:var(--text-3)}
+html{background:var(--bg)}
+body{background-color:var(--bg);background-image:radial-gradient(640px 360px at 105% -6%,rgba(124,58,237,.16),transparent 70%),radial-gradient(520px 320px at -12% 4%,rgba(0,217,255,.07),transparent 70%);background-repeat:no-repeat;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(124,58,237,.55);color:#fff}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+a{color:var(--cyan)}
+h2,h3{color:var(--text)}
+
+/* ---------- Header + intro ---------- */
+header{border-bottom:1px solid var(--line)}
+.brand{color:var(--text);letter-spacing:1.6px}
+.brand small{color:var(--text-3);letter-spacing:.1px}
+.mark{background:linear-gradient(135deg,var(--cyan),var(--violet));color:#fff;font-weight:800;box-shadow:0 4px 14px -4px rgba(124,58,237,.7)}
+.connection{color:var(--text-3)}
+.connection:before{background:var(--cyan)}
+.connection.offline:before{background:var(--amber)}
+.sobriety{color:var(--text)}#sobriety-count{color:var(--text)}#sobriety-label{color:var(--text-3)}.sobriety.milestone #sobriety-label{color:var(--violet-text)}
+.intro{padding:30px 0 22px}
+.eyebrow{color:var(--text-3);letter-spacing:1.6px}
+h1{background:linear-gradient(100deg,#FFFFFF 0%,#D4E8FF 45%,#C4B5FD 100%);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-1.4px;padding-bottom:3px}
+.subtitle{color:var(--text-2)}
+
+/* ---------- Buttons ---------- */
+button{min-height:var(--h-ctl)}
+.primary,a.button.primary,.details-body button,.notice button,#status button{background:var(--cyan);color:var(--cyan-ink);border:1px solid var(--cyan);border-radius:var(--r-ctl);font-weight:700;box-shadow:none}
+.phase-bar button,.dialog-heading button,.actions button:not(.primary),a.button{background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);border-radius:var(--r-ctl);font-weight:600}
+a.button{min-height:var(--h-ctl);font-size:14px}
+.notice button.quiet{background:transparent;border:0;color:var(--cyan);text-decoration:underline}
+.details-body .sobriety-setting #sobriety-clear{background:var(--surface-2);color:var(--text);border:1px solid var(--line-strong)}
+button:disabled{opacity:.45}
+@media(hover:hover){
+ .primary:hover,a.button.primary:hover,.details-body button:not(:disabled):hover,.notice button:hover,#status button:hover{background:var(--cyan-hover);border-color:var(--cyan-hover)}
+ .phase-bar button:hover,.dialog-heading button:hover,.actions button:not(.primary):hover,a.button:not(.primary):hover,.day-nav button:hover{border-color:var(--cyan-line);color:var(--text)}
+ .attend-button:not(:disabled):hover{background:rgba(0,217,255,.2)}
+}
+.primary:active,a.button:active,.actions button:active,.day-nav button:active,.attend-button:active{transform:translateY(1px)}
+
+/* ---------- Phase bar + tabs ---------- */
+.phase-bar{color:var(--text);margin-bottom:16px}
+#phase-indicator{display:inline-flex;align-items:center;gap:8px}
+#phase-indicator:before{content:'';width:8px;height:8px;border-radius:50%;background:var(--violet);box-shadow:0 0 0 3px var(--violet-soft)}
+.phase-bar button{min-height:40px}
+.tabs{border-bottom:1px solid var(--line)}
+.tabs button{color:var(--text-2);border-radius:var(--r-ctl)}
+.tabs button[aria-current]{background:var(--violet);color:#fff}
+
+/* ---------- Overview cards ---------- */
+.overview{border-radius:var(--r-card);padding:20px 22px;margin-bottom:22px;color:var(--text);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-card)}
+.overview+.overview{margin-top:-10px}
+.overview-top{margin-bottom:16px;color:var(--text-3);font-size:12.5px}
+.pill{border:1px solid var(--violet-line);background:var(--violet-soft);color:#E4DCFF;padding:5px 10px;font-size:11.5px;letter-spacing:1px}
+/* Next meeting — the primary focal point */
+#schedule-overview{background:radial-gradient(360px 200px at 100% 0%,rgba(139,92,246,.32),transparent 70%),linear-gradient(150deg,#2A1A63 0%,#1F1A4E 55%,#16204D 100%);border-color:rgba(167,139,250,.38);box-shadow:0 18px 40px -24px rgba(124,58,237,.85)}
+#schedule-overview .overview-top{color:#C9C2EC}
+.overview .eyebrow{color:var(--violet-text);margin:0 0 6px;font-size:11.5px;letter-spacing:1.4px}
+.next-title{color:#fff;font-size:clamp(22px,6vw,27px);line-height:1.2}
+.next-detail{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:8px;font-size:14px;line-height:1.5;color:var(--text-2)}
+#schedule-overview .next-detail{color:#D3DBF0}
+.next-time{color:#fff;font-weight:700}
+.next-sep{color:#AEB6DB;margin:0 6px}
+.next-countdown{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--r-pill);background:var(--cyan-soft);border:1px solid var(--cyan-line);color:var(--cyan);font-size:12.5px;font-weight:650}
+.next-countdown:before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cyan)}
+/* Weekly progress */
+.overview>p{color:var(--text-2);margin:10px 0 16px}
+#weekly-message.missed{color:var(--rose)}
+progress{height:8px;margin-top:16px;background:var(--surface-2)}
+progress::-webkit-progress-bar{background:var(--surface-2)}
+progress::-webkit-progress-value{background:var(--cyan)}
+progress::-moz-progress-bar{background:var(--cyan)}
+.week-day{border:1px solid var(--line-strong);color:var(--text);background:var(--surface-quiet);border-radius:10px}
+.week-day .wd{color:var(--text-3);opacity:1}
+.week-day.selected{background:var(--violet);border-color:var(--violet);color:#fff}
+.week-day.selected .wd{color:#FFFFFF}
+.week-day .ct{color:var(--text-3)}
+.week-day.has-count .ct{color:var(--cyan)}
+.week-day.selected.has-count .ct{color:#fff}
+
+/* ---------- In progress (current) ---------- */
+.in-progress{background:linear-gradient(var(--cyan-soft),var(--cyan-soft)),var(--surface);border:1px solid var(--cyan-line);border-left:4px solid var(--cyan);border-radius:var(--r-card);padding:18px 20px;color:var(--text)}
+.in-progress .eyebrow{color:var(--cyan)}
+.in-progress .eyebrow:before{background:var(--cyan);box-shadow:0 0 0 3px var(--cyan-soft)}
+.progress-detail{color:var(--text-2)}
+
+/* ---------- Date navigation: one component ---------- */
+.day-nav{gap:6px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card)}
+.day-nav button{flex:0 0 auto;width:48px;height:48px;border-radius:var(--r-ctl);background:var(--surface-2);border:1px solid var(--line-strong);color:var(--cyan);font-size:19px}
+.day-nav>div{flex:1 1 auto;max-width:none;display:flex;flex-direction:column;align-items:center;gap:2px}
+#day-heading{font-size:18px;line-height:1.2}
+.day-nav input{width:auto;min-width:0;max-width:100%;min-height:32px;margin:0;padding:2px 6px;border:0;border-radius:8px;background:transparent;color:var(--text-2);font-size:14px;color-scheme:dark}
+.schedule-meta{margin:12px 2px 10px;color:var(--text-3)}
+.schedule-meta button{color:var(--cyan);min-height:var(--h-ctl)}
+
+/* ---------- Meeting rows ---------- */
+.meeting{background:var(--surface-quiet);border:1px solid var(--line);border-radius:var(--r-row);color:var(--text);margin-bottom:8px;grid-template-columns:96px 1fr}
+.time{padding:14px 10px 14px 16px;font-size:14px;font-weight:650;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--text);line-height:1.5}
+.meeting-body{padding:13px 16px 14px;border-left:1px solid var(--line)}
+.meeting h3{font-size:15.5px;margin:0 0 4px;line-height:1.35}
+.rule{font-size:12.5px;color:var(--text-3)}
+.note{font-size:12.5px;line-height:1.5;margin:6px 0 0;opacity:1;color:var(--text-2)}
+.past{color:var(--text-3);font-size:12.5px;margin-top:4px}
+.hint{color:var(--text-3)}
+.upcoming-label{display:inline-flex;margin-top:8px;padding:3px 9px;border-radius:var(--r-pill);background:var(--cyan-soft);border:1px solid var(--cyan-line);color:var(--cyan);font-size:11.5px;letter-spacing:.8px}
+/* Attend or be off property — restrained indigo */
+.meeting.conditional{background:var(--indigo-bg);border-color:var(--indigo-line)}
+.conditional .meeting-body{border-color:var(--indigo-line)}
+.conditional .rule{color:var(--indigo-text)}
+/* Mandatory — violet, high contrast */
+.meeting.mandatory{background:linear-gradient(135deg,var(--mandatory-bg),var(--mandatory-bg-2));border-color:var(--mandatory-line);color:var(--on-mandatory);box-shadow:none}
+.mandatory .meeting-body{border-color:rgba(255,255,255,.16)}
+.mandatory .rule{color:var(--on-mandatory);font-weight:700}
+.mandatory .rule:before{color:var(--violet-text)}
+.meeting.mandatory .note{color:var(--on-mandatory-2)}
+.mandatory .past,.meeting.mandatory .hint{color:var(--on-mandatory-2)}
+.mandatory .upcoming-label{background:rgba(0,217,255,.16)}
+/* Attendance */
+.attend-button{background:var(--cyan-soft);border:1px solid var(--cyan-line);color:var(--cyan);border-radius:10px;font-weight:650;font-size:13px;margin-top:8px}
+.meeting.mandatory .attend-button{background:rgba(3,20,27,.35)}
+.attended{border-color:var(--cyan-line);box-shadow:inset 4px 0 0 var(--cyan)}
+.meeting.mandatory.attended{border-color:var(--mandatory-line);box-shadow:inset 4px 0 0 var(--cyan)}
+.attended-label,.meeting.mandatory .attended-label{color:var(--cyan);font-size:12.5px;margin-top:4px}
+.text-button,.meeting.mandatory .text-button{color:var(--cyan);font-size:13px}
+
+/* ---------- Requirement key ---------- */
+.key{padding:24px 0 18px}
+.key>p{color:var(--text-2);font-size:13px}
+.key>div{color:var(--text-2);font-size:13px}
+.key strong{color:var(--text);font-size:13px}
+.swatch{border-radius:8px;border:1px solid var(--line-strong)}
+.swatch.mandatory{background:linear-gradient(135deg,var(--mandatory-bg),var(--mandatory-bg-2));border-color:var(--mandatory-line)}
+.swatch.conditional{background:var(--indigo-bg);border-color:var(--indigo-line)}
+.swatch.optional{background:var(--surface-quiet)}
+
+/* ---------- Calendar subscription ---------- */
+.key>.calendar-add{margin-top:22px;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);color:var(--text-2);font-size:14px;line-height:1.55}
+.calendar-add h3{color:var(--text);font-size:17px;line-height:1.35}
+.calendar-add>p{margin:6px 0 0;color:var(--text-2)}
+.calendar-add .actions,.checkin-cal .actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 4px}
+.calendar-add .actions>*,.checkin-cal .actions>*{flex:1 1 100%;font-size:14px}
+@media(min-width:560px){.calendar-add .actions>*,.checkin-cal .actions>*{flex-basis:180px}}
+.calendar-add .actions>.primary,.checkin-cal .actions>.primary{flex-basis:100%}
+.calendar-add .hint{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.6;color:var(--text-3)}
+
+/* ---------- Weekly check-in (amber) ---------- */
+.checkin{background:linear-gradient(var(--amber-soft),var(--amber-soft)),var(--surface);border:1px solid var(--amber-line);border-left:4px solid var(--amber);border-radius:var(--r-card);padding:14px 16px 10px;margin:0 0 12px;color:var(--text)}
+.checkin h2{font-size:17px}
+.checkin-due{background:var(--surface-2);color:var(--text-2);font-size:11.5px;padding:4px 10px}
+.checkin.due{background:linear-gradient(var(--amber-soft),var(--amber-soft)),var(--surface);border-color:var(--amber-line);border-left:4px solid var(--amber)}
+.checkin.due .checkin-due{background:var(--amber);color:var(--amber-ink)}
+#checkin-message{margin:6px 0 8px;font-size:13.5px;line-height:1.5;color:var(--text-2)}
+.checkin.due #checkin-message{color:var(--amber-text)}
+.checkin .check-label{margin:6px 0;padding:6px 12px;min-height:var(--h-ctl);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-ctl);font-size:14px;font-weight:600;line-height:1.35;color:var(--text);cursor:pointer}
+.check-label input{accent-color:var(--cyan)}
+.checkin #checkin-link{margin:6px 0 4px}
+.checkin-cal{border:0;font-size:13.5px;margin:2px 0 0;color:var(--text-2)}
+.checkin-cal summary{display:flex;align-items:center;min-height:var(--h-ctl);padding:0;color:var(--cyan);text-decoration:none;font-weight:600}
+.checkin-cal summary{list-style:none;gap:8px}.checkin-cal summary::-webkit-details-marker{display:none}
+.checkin-cal summary:before{content:'▸';display:inline-block;transition:transform .15s ease}
+.checkin-cal[open] summary:before{transform:rotate(90deg)}
+.checkin-cal .hint{color:var(--text-3)}
+.checkin-summary{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap}
+.checkin-summary #checkin-message{flex:1 1 200px}
+.checkin-toggle{background:transparent;border:0;padding:0 2px;color:var(--cyan);font-size:13.5px;font-weight:650;text-decoration:underline;text-underline-offset:3px}
+/* Completed: compact summary with a subtle cyan check */
+.checkin.done{background:var(--surface);border-color:var(--line);border-left-color:var(--cyan);padding:10px 16px}
+.checkin.done .checkin-due{background:var(--cyan-soft);color:var(--cyan)}
+.checkin.collapsed .checkin-head{display:none}
+.checkin.collapsed .checkin-summary{flex-wrap:nowrap}
+.checkin.collapsed #checkin-message{flex:1 1 auto;display:flex;align-items:center;gap:10px;margin:0;font-size:15px;font-weight:650;color:var(--text)}
+.checkin.collapsed #checkin-message:before{content:'✓';flex-shrink:0;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--cyan-soft);border:1px solid var(--cyan-line);color:var(--cyan);font-size:13px;font-weight:800}
+.checkin-toggle{flex:0 0 auto;min-height:var(--h-ctl)}
+
+/* ---------- Callouts, notices, status ---------- */
+.outside-callout{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:18px 18px 16px}
+.outside-callout p{color:var(--text-2);font-size:13.5px}
+.outside-callout .signout-note,.notice.warm{background:var(--amber-soft);border:1px solid var(--amber-line);color:var(--amber-text);border-radius:var(--r-ctl)}
+.notice,#status:not(:empty){background:var(--surface);border:1px solid var(--cyan-line);color:var(--text);border-radius:var(--r-ctl)}
+.meeting-kind{background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text-2)}
+
+/* ---------- History ---------- */
+.record,.week-card{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-row)}
+.record .eyebrow{color:var(--text-3)}
+.week-card{border-left:4px solid var(--line-strong)}
+.week-card-count,.empty,#history-summary{color:var(--text-2)}
+.status-chip{background:var(--surface-2);color:var(--text-2)}
+.week-card.met{border-left-color:var(--cyan)}.week-card.met .status-chip{background:var(--cyan-soft);color:var(--cyan)}
+.week-card.missed{border-left-color:var(--rose)}.week-card.missed .status-chip{background:var(--rose-soft);color:var(--rose)}
+.week-card.current{border-left-color:var(--violet)}
+
+/* ---------- Forms, dialogs ---------- */
+label{color:var(--text)}
+input:not([type=checkbox]),select,textarea{background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);border-radius:var(--r-ctl);color-scheme:dark}
+input:not([type=checkbox]):focus,select:focus,textarea:focus{border-color:var(--cyan);outline:none;box-shadow:0 0 0 3px var(--cyan-soft)}
+::placeholder{color:var(--text-3);opacity:1}
+dialog{background:var(--surface);border:1px solid var(--line-strong);color:var(--text);border-radius:20px;box-shadow:0 30px 70px -20px rgba(0,0,0,.85)}
+dialog::backdrop{background:rgba(4,4,12,.75);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#form-error,#phase-error,#sobriety-error{color:var(--rose)}
+
+/* ---------- Settings + footer ---------- */
+details{border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--text)}
+summary{color:var(--text);min-height:var(--h-ctl)}
+.details-body{color:var(--text-2)}
+.details-body h2{color:var(--text)}
+footer{color:var(--text-3)}
+footer .developer-credit a{color:var(--text-2)}
+@media(hover:hover){footer .developer-credit a:hover{color:var(--cyan)}}
+
+/* ---------- Phone widths ---------- */
+@media(max-width:420px){
+ .overview{padding:18px}
+ .meeting{grid-template-columns:86px 1fr}
+ .time{padding:13px 8px 13px 13px;font-size:13.5px}
+ .meeting-body{padding:12px 13px 13px}
+ .key>.calendar-add{padding:18px 16px}
+}
+@media(max-width:360px){
+ .meeting{grid-template-columns:78px 1fr}
+ .time{padding-left:10px;font-size:13px}
+ .day-nav button{width:44px;height:44px}
+}
+}
+@media screen and (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.primary:active,a.button:active,.actions button:active,.day-nav button:active,.attend-button:active{transform:none}}

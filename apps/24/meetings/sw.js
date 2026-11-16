@@ -1,8 +1,8 @@
-// 24 Meeting Tracker (ManicZone) — served from https://lab.maniczone.com/apps/24/meetings/
+// 24 Meeting Tracker — CyanViolet dark-theme prototype (copy of ManicZone). Production target would be https://lab.maniczone.com/apps/24/meetings/
 // Bump VERSION when icons, the share image, or the scan image change. Edits to the HTML, CSS, JS,
 // and manifest are picked up automatically: the app checks for them when it opens online.
-const VERSION='mz-v1';
-const PREFIX='24-meeting-tracker-'+encodeURIComponent(self.registration.scope)+'-';
+const VERSION='cv-v1';
+const PREFIX='24-cyan-violet-'+encodeURIComponent(self.registration.scope)+'-';
 const CACHE=PREFIX+VERSION;
 const CORE=['./','./index.html','./style.css','./app.js','./schedule.js','./storage.js','./manifest.webmanifest'];
 const STATIC=['./favicon.ico','./icons/favicon-16.png','./icons/favicon-32.png','./icons/apple-touch-icon.png','./icons/icon-any-192.png','./icons/icon-any-512.png','./icons/icon-maskable-192.png','./icons/icon-maskable-512.png','./schedule-scan.jpeg'];

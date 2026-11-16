@@ -193,7 +193,9 @@ function renderOverview(now,tracking){
  $('live-date').textContent=fmt(now.date,{month:'short',day:'numeric'});
  $('next-label').textContent=nextDay===now.date?'NEXT MEETING TODAY':`NEXT MEETING · TOMORROW, ${fmt(nextDay,{weekday:'long'}).toUpperCase()}`;
  $('next-title').textContent=next.title;
- $('next-detail').textContent=`${timeLabel(next.time)} · ${RULES[phase][ruleFor(next,phase)].label} · Starts in ${remaining}`;
+ const line=node('span',undefined,'next-line');
+ line.append(node('span',timeLabel(next.time),'next-time'),node('span',' · ','next-sep'),node('span',RULES[phase][ruleFor(next,phase)].label,'next-rule'));
+ $('next-detail').replaceChildren(line,node('span',`Starts in ${remaining}`,'next-countdown'));
 
  const ongoing=inProgressMeetings(now.date,now.minutes);
  $('in-progress').hidden=ongoing.length===0;
@@ -425,6 +427,8 @@ $('sobriety-save').onclick=()=>saveSobriety($('sobriety-date').value);
 $('sobriety-clear').onclick=()=>{$('sobriety-date').value='';saveSobriety('');};
 
 /* ---------- Weekly check-in ---------- */
+// A completed check-in collapses to a one-line summary; this holds the week whose checklist the user reopened.
+let checkinOpenWeek=null;
 const checkinFor=week=>store.checkins?.[week]||{sheet:null,addon:null};
 const checkinDone=c=>!!(c.sheet&&c.addon);
 const CHECKIN_LABEL=c=>checkinDone(c)?'Done':c.sheet||c.addon?'Partly done':'Not marked';
@@ -436,12 +440,18 @@ function renderCheckin(now){
  const week=weekStart(selected),sunday=shiftDate(week,6),c=checkinFor(week),done=checkinDone(c);
  const past=sunday<now.date,soon=sunday===now.date||sunday===shiftDate(now.date,1);
  card.dataset.week=week;
- card.className='checkin'+(done?' done':(past||soon)?' due':'');
+ const expanded=done&&checkinOpenWeek===week;
+ card.className='checkin'+(done?' done':(past||soon)?' due':'')+(done&&!expanded?' collapsed':'');
+ $('checkin-body').hidden=done&&!expanded;
+ $('checkin-toggle').hidden=!done;
+ $('checkin-toggle').textContent=expanded?'Hide':'Review';
+ $('checkin-toggle').setAttribute('aria-label',expanded?'Hide checklist':'Review checklist');
+ $('checkin-toggle').setAttribute('aria-expanded',String(expanded));
  $('checkin-sheet').checked=!!c.sheet;$('checkin-addon').checked=!!c.addon;
  const sun=fmt(sunday,{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
  $('checkin-due').textContent=done?'✓ DONE':past?`WAS DUE ${sun}`:sunday===now.date?'DUE TODAY':sunday===shiftDate(now.date,1)?'DUE TOMORROW':`DUE ${sun}`;
  const range=`${fmt(week,{month:'short',day:'numeric'})} – ${fmt(sunday,{month:'short',day:'numeric'})}`;
- $('checkin-message').textContent=done?`Your check-in for ${range} is marked done.`
+ $('checkin-message').textContent=done?'Weekly check-in completed.'
   :past?`The check-in for ${range} isn’t marked done. If you turned it in, check it off below.`
   :c.sheet?'Sheet turned in. Don’t forget to scan the QR code for the add-on check-in.'
   :c.addon?'Add-on check-in done. Don’t forget to turn in the sheet.'
@@ -453,9 +463,13 @@ function setCheckin(field,checked){
  const week=$('checkin-card').dataset.week,at=new Date().toISOString(),c=checkinFor(week);
  const next={...store,checkins:{...(store.checkins||{}),[week]:{sheet:c.sheet??null,addon:c.addon??null,[field]:checked?at:null,updatedAt:at}}};
  if(!persist(next)){render();return;}
+ const nowDone=checkinDone(checkinFor(week));
+ // Collapse to the summary as soon as both items are checked; keep keyboard focus on the card.
+ if(nowDone)checkinOpenWeek=null;
  render();
- if(checkinDone(checkinFor(week)))status('Weekly check-in marked done.');
+ if(nowDone){$('checkin-toggle').focus();status('Weekly check-in marked done.');}
 }
+$('checkin-toggle').onclick=()=>{const week=$('checkin-card').dataset.week;checkinOpenWeek=checkinOpenWeek===week?null:week;render();};
 $('checkin-sheet').onchange=e=>setCheckin('sheet',e.target.checked);
 $('checkin-addon').onchange=e=>setCheckin('addon',e.target.checked);
 
