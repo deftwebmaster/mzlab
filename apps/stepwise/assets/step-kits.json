@@ -1,0 +1,628 @@
+[
+  {
+    "stepNumber": 1,
+    "title": "Honesty",
+    "overview": "Recognize the limits of trying to manage alcohol through willpower alone.",
+    "readings": [
+      {
+        "title": "Big Book: The Doctor’s Opinion",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_foreworddoctorsopinion.pdf",
+        "detail": "Found after the forewords"
+      },
+      {
+        "title": "Big Book: Chapter 1, Bill’s Story",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt1.pdf",
+        "detail": "pp. 1–16"
+      },
+      {
+        "title": "Big Book: Chapter 2, There Is a Solution",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt2.pdf",
+        "detail": "pp. 17–29"
+      },
+      {
+        "title": "Big Book: Chapter 3, More About Alcoholism",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt3.pdf",
+        "detail": "pp. 30–43"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step One",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step1.pdf",
+        "detail": "Begins on p. 21"
+      }
+    ],
+    "discussion": [
+      "Think of a time you meant to have one drink or stop at a certain point. What happened after the first drink?",
+      "When you meant to stay sober and drank again, what made the first drink seem reasonable at the time?",
+      "Where had drinking or planning around drinking begun to run your life?",
+      "What does admitting powerlessness over alcohol mean for the help you’re willing to accept today?"
+    ],
+    "exercises": [
+      "Write down two past attempts to stop or control drinking. For each, note what you intended, what actually happened, and one consequence. Bring one pattern you noticed to your next conversation."
+    ],
+    "sponsorTips": [
+      "Share one example from your own drinking or attempts to stop, then ask what the sponsee recognizes in their own experience.",
+      "Listen for repeated patterns in what they describe. Give their everyday consequences the same attention as dramatic ones."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "33b94f2e-f2af-586d-b541-41f02e260cb7",
+        "title": "Step 1: honesty",
+        "instructions": "Write down two past attempts to stop or control drinking. For each, note what you intended, what actually happened, and one consequence. Bring one pattern you noticed to your next conversation.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": []
+  },
+  {
+    "stepNumber": 2,
+    "title": "Hope",
+    "overview": "Explore the possibility of help beyond your own unaided thinking.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 4, We Agnostics",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt4.pdf",
+        "detail": "pp. 44–57"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Two",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step2.pdf",
+        "detail": "Begins on p. 25"
+      }
+    ],
+    "discussion": [
+      "When alcohol started to seem like a reasonable answer again, what was going on in your thinking?",
+      "What have you seen in another member’s recovery that makes a different response seem possible?",
+      "What could a power greater than yourself mean to you today?",
+      "Where could you accept help this week while you’re still working out what you believe?"
+    ],
+    "exercises": [
+      "Choose one situation you tend to handle alone. Ask for help from an A.A. member or use another source of support you trust. Note what changed in your thinking or what became possible."
+    ],
+    "sponsorTips": [
+      "Let the sponsee describe a power greater than themselves in their own terms. Ask what they are open to trying.",
+      "Offer a concrete example of how you came to trust help beyond your own thinking. Leave room for their experience to differ."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "9a2e1cec-fca3-5bd6-8135-ff665f7f560e",
+        "title": "Step 2: hope",
+        "instructions": "Choose one situation you tend to handle alone. Ask for help from an A.A. member or use another source of support you trust. Note what changed in your thinking or what became possible.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": []
+  },
+  {
+    "stepNumber": 3,
+    "title": "Willingness",
+    "overview": "Consider a decision to seek guidance and take action.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 5, How It Works",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt5.pdf",
+        "detail": "pp. 58–64"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Three",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step3.pdf",
+        "detail": "Begins on p. 34"
+      }
+    ],
+    "discussion": [
+      "Where is trying to control the outcome making your life harder right now?",
+      "What would putting your will and life in the care of God, as you understand God, mean in that situation?",
+      "Which decision is yours to make today, and which outcome can you let go of?",
+      "What first action would put this decision into practice as you begin Step Four?"
+    ],
+    "exercises": [
+      "Write a sentence about what turning your will and life over means to you. If you choose to pray, use the Third Step Prayer or your own words. Set a time to start your first inventory entry."
+    ],
+    "sponsorTips": [
+      "Ask the sponsee to explain the decision in their own words. If they want to take the step with someone, let them choose whom to invite.",
+      "Agree on a specific time to begin the inventory and offer to walk through the workbook process together."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "e1d3acc7-75a8-54e1-84be-d6259d616a5a",
+        "title": "Step 3: willingness",
+        "instructions": "Write a sentence about what turning your will and life over means to you. If you choose to pray, use the Third Step Prayer or your own words. Set a time to start your first inventory entry.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "Third Step Prayer",
+        "words": "God, I offer myself to Thee—to build with me and to do with me as Thou wilt. Relieve me of the bondage of self, that I may better do Thy will. Take away my difficulties, that victory over them may bear witness to those I would help of Thy Power, Thy Love, and Thy Way of life. May I do Thy will always!",
+        "action": "After making the decision, set aside time to begin your Step Four inventory.",
+        "source": "how-it-works",
+        "page": 63,
+        "sourceLabel": "Read the Third Step Prayer in the Big Book",
+        "wording": "original"
+      }
+    ]
+  },
+  {
+    "stepNumber": 4,
+    "title": "Personal inventory",
+    "overview": "Take an honest look at resentments, fears, and conduct in relationships.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 5, How It Works",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt5.pdf#page=7",
+        "detail": "pp. 64–71"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Four",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step4.pdf",
+        "detail": "Begins on p. 42"
+      }
+    ],
+    "discussion": [
+      "In a resentment you’re comfortable discussing, what happened and what part of your life was affected?",
+      "How has a recurring fear changed what you think, decide, or do?",
+      "In a relationship you choose to reflect on, what does more honest or considerate conduct look like?",
+      "When you return for My part, what can you honestly name about your own conduct, if anything applies?"
+    ],
+    "exercises": [
+      "Start with one resentment in the workbook. Write who or what, the specific cause, and what was affected. Return for My part when ready. Try one entry in the fears or relationships section next and leave any prompt blank as needed."
+    ],
+    "sponsorTips": [
+      "Demonstrate the first pass and My part with a fictional or personal example. Ask permission before discussing any real entry.",
+      "Respect the writer’s privacy. Keep Stepwise conversation notes about the process and next check-in. Responsibility for abuse or coercion belongs to the person who caused it."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "4f54775e-5026-5c11-a5d0-b417d334f9ae",
+        "title": "Step 4: personal inventory",
+        "instructions": "Start with one resentment in the workbook. Write who or what, the specific cause, and what was affected. Return for My part when ready. Try one entry in the fears or relationships section next and leave any prompt blank as needed.",
+        "resourceIds": [
+          "621f1c4c-65ab-550e-b4c5-caf7e475d71f"
+        ]
+      }
+    ],
+    "resourceIds": [
+      "621f1c4c-65ab-550e-b4c5-caf7e475d71f"
+    ],
+    "prayers": [
+      {
+        "title": "When resentment takes over",
+        "words": "God, help me respond with patience instead of retaliation. Give me room to see this clearly and choose what is helpful and safe.",
+        "action": "Return to the inventory and look at your own conduct where it applies. Keep any boundaries you need for safety.",
+        "source": "how-it-works",
+        "page": 67
+      },
+      {
+        "title": "When fear is driving me",
+        "words": "God, ease my fear and turn my attention toward the person You would have me be in this situation.",
+        "action": "Write down the fear and where relying on yourself alone fell short. Identify one way to ask for help or act differently.",
+        "source": "how-it-works",
+        "page": 68
+      },
+      {
+        "title": "For healthier conduct in relationships",
+        "words": "God, help me see what honesty and consideration look like in this relationship. Guide me in what to do and help me follow through.",
+        "action": "Write one principle for your future conduct and discuss a difficult situation with someone you trust.",
+        "source": "how-it-works",
+        "page": 69,
+        "endPage": 70
+      }
+    ]
+  },
+  {
+    "stepNumber": 5,
+    "title": "Sharing the inventory",
+    "overview": "Share the nature of the inventory with a trusted person.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 6, Into Action",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf",
+        "detail": "pp. 72–75"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Five",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step5.pdf",
+        "detail": "Begins on p. 55"
+      }
+    ],
+    "discussion": [
+      "Who can listen carefully and handle the inventory in confidence?",
+      "What would help you speak honestly in a private, unhurried setting?",
+      "What do you most need the listener to understand about the nature of your wrongs?",
+      "After sharing, what did you notice in quiet reflection about anything important you may have left out?"
+    ],
+    "exercises": [
+      "Arrange a private time with a trusted listener. Agree on confidentiality beforehand. After sharing, set aside quiet time to reflect, revisit Steps One through Five, and decide what still needs attention."
+    ],
+    "sponsorTips": [
+      "Respect the sponsee’s choice of listener. If invited to listen, agree on privacy and allow time for them to speak without interruption.",
+      "Keep inventory details out of sponsor records. Offer a check-in after their quiet review to discuss the process and the next step."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "4499bd84-a2e7-561c-89a3-50b90ff34995",
+        "title": "Step 5: sharing the inventory",
+        "instructions": "Arrange a private time with a trusted listener. Agree on confidentiality beforehand. After sharing, set aside quiet time to reflect, revisit Steps One through Five, and decide what still needs attention.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "Gratitude after sharing the inventory",
+        "words": "God, thank You for helping me tell the truth and for the chance to know You better. Help me see anything I have left out.",
+        "action": "After sharing, find a quiet place to review the first five steps and consider whether anything important was omitted.",
+        "source": "into-action",
+        "page": 75
+      }
+    ]
+  },
+  {
+    "stepNumber": 6,
+    "title": "Readiness",
+    "overview": "Reflect on willingness to let go of patterns that cause harm.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 6, Into Action",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf#page=5",
+        "detail": "p. 76"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Six",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step6.pdf",
+        "detail": "Begins on p. 63"
+      }
+    ],
+    "discussion": [
+      "Which pattern from your inventory do you recognize but still want to keep?",
+      "What does it seem to protect you from or give you in the short term?",
+      "What has holding on to it cost you or someone else?",
+      "Where are you ready to let God remove a pattern, and where do you still need help becoming willing?"
+    ],
+    "exercises": [
+      "Pick one pattern you still hold on to. Write what you get from it, what it costs, and what you fear losing. Bring one honest sentence about your willingness to your next conversation."
+    ],
+    "sponsorTips": [
+      "Ask what makes the pattern difficult to let go of. Give the sponsee space to be honest about mixed feelings.",
+      "Share how willingness grew in your own experience. If they want to pray for willingness, point them to the Step Six prayer."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "edbd7cc5-32a5-5b2d-aefd-f02cf19470f0",
+        "title": "Step 6: readiness",
+        "instructions": "Pick one pattern you still hold on to. Write what you get from it, what it costs, and what you fear losing. Bring one honest sentence about your willingness to your next conversation.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "When willingness is missing",
+        "words": "God, I am still holding on to this. Help me become willing to let it go.",
+        "action": "Name the pattern you still want to keep and talk it through with your sponsor.",
+        "source": "into-action",
+        "page": 76
+      }
+    ]
+  },
+  {
+    "stepNumber": 7,
+    "title": "Humility",
+    "overview": "Practice asking for help and responding with humility.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 6, Into Action",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf#page=5",
+        "detail": "p. 76"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Seven",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step7.pdf",
+        "detail": "Begins on p. 70"
+      }
+    ],
+    "discussion": [
+      "Which shortcoming are you ready to ask God to remove?",
+      "How has that shortcoming kept you from being useful to other people?",
+      "What makes it hard to ask for help with this specifically?",
+      "Where could you practice humility or be of service today after making that request?"
+    ],
+    "exercises": [
+      "Use the Seventh Step Prayer or your own words to ask God to remove the shortcomings that keep you from being useful. Name one you notice often and choose a situation today where you can practice humility or be of service."
+    ],
+    "sponsorTips": [
+      "Ask how the shortcoming limits what they can give or do for others. Let them choose their own words for the request.",
+      "At the next check-in, ask what they noticed when they practiced humility and what help they still need."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "17464063-cd49-50d5-9aea-1a6126e53fee",
+        "title": "Step 7: humility",
+        "instructions": "Use the Seventh Step Prayer or your own words to ask God to remove the shortcomings that keep you from being useful. Name one you notice often and choose a situation today where you can practice humility or be of service.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "Seventh Step Prayer",
+        "words": "My Creator, I am now willing that you should have all of me, good and bad. I pray that you now remove from me every single defect of character which stands in the way of my usefulness to you and my fellows. Grant me strength, as I go out from here, to do your bidding. Amen.",
+        "action": "Choose one situation where you can act with humility or be useful to someone today.",
+        "source": "into-action",
+        "page": 76,
+        "sourceLabel": "Read the Seventh Step Prayer in the Big Book",
+        "wording": "original"
+      }
+    ]
+  },
+  {
+    "stepNumber": 8,
+    "title": "Responsibility",
+    "overview": "Identify people harmed and develop willingness to make amends.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 6, Into Action",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf#page=5",
+        "detail": "pp. 76–77"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Eight",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step8.pdf",
+        "detail": "Begins on p. 77"
+      }
+    ],
+    "discussion": [
+      "Who experienced harm from something you did, failed to do, or repeatedly put off?",
+      "For one person on your list, what did your conduct cost them?",
+      "Which names are hardest to put down, and what makes willingness difficult there?",
+      "Where is it still unclear what harm was yours to take responsibility for?"
+    ],
+    "exercises": [
+      "Use your inventory to make a private list of people you harmed. Beside each name, write what you did or failed to do and whether you are willing, unsure, or reluctant to make amends. Mark situations to discuss before any contact."
+    ],
+    "sponsorTips": [
+      "Help the sponsee name their own conduct and its effects. Keep the list focused on the harm they caused, including when someone else also caused harm.",
+      "Use this meeting to work on the list and willingness. Discuss timing, contact, and possible injury when planning Step Nine."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "5f5c3259-1af4-5417-a1bb-7a0357e50757",
+        "title": "Step 8: responsibility",
+        "instructions": "Use your inventory to make a private list of people you harmed. Beside each name, write what you did or failed to do and whether you are willing, unsure, or reluctant to make amends. Mark situations to discuss before any contact.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "For willingness to make amends",
+        "words": "God, help me become willing to face the harm I caused and to repair what I can.",
+        "action": "Review the list with your sponsor and name where you are still reluctant. Use Step Nine to plan any contact.",
+        "source": "into-action",
+        "page": 76
+      }
+    ]
+  },
+  {
+    "stepNumber": 9,
+    "title": "Amends",
+    "overview": "Plan thoughtful direct amends while avoiding further injury.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 6, Into Action",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf#page=6",
+        "detail": "pp. 77–84"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Nine",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step9.pdf",
+        "detail": "Begins on p. 83"
+      }
+    ],
+    "discussion": [
+      "What specific harm can you acknowledge in your own words?",
+      "What repair would address the harm, and what can you realistically follow through on?",
+      "Could contact or disclosure put the person or anyone else at risk of further harm?",
+      "How will you respect the person’s boundaries if they decline contact or respond differently than you hope?"
+    ],
+    "exercises": [
+      "Rehearse one amends conversation with your sponsor. Describe what you did, offer a specific repair, and leave room for the person to respond. Before making contact, consider who could be affected and whether direct contact would cause further injury."
+    ],
+    "sponsorTips": [
+      "Listen for specific ownership, a realistic repair, and respect for the other person’s choice. Rehearse how to respond if the person declines.",
+      "When contact could cause further injury or violate a boundary, pause and discuss how else the sponsee can repair harm or change their conduct."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "1eecdb49-ff22-5354-9496-f705eaf0b736",
+        "title": "Step 9: amends",
+        "instructions": "Rehearse one amends conversation with your sponsor. Describe what you did, offer a specific repair, and leave room for the person to respond. Before making contact, consider who could be affected and whether direct contact would cause further injury.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "For direction before making amends",
+        "words": "God, give me the courage to acknowledge what I did and the judgment to make amends without causing further harm.",
+        "action": "Review the plan with your sponsor before making contact. If a proposed action could involve or affect others, consider who needs to consent.",
+        "source": "into-action",
+        "page": 79,
+        "endPage": 80
+      }
+    ]
+  },
+  {
+    "stepNumber": 10,
+    "title": "Daily inventory",
+    "overview": "Build a continuing practice of noticing, admitting, and correcting harm.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 6, Into Action",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf#page=13",
+        "detail": "pp. 84–85"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Ten",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step10.pdf",
+        "detail": "Begins on p. 88"
+      }
+    ],
+    "discussion": [
+      "What recent situation showed you resentment, fear, selfishness, or dishonesty as it was happening?",
+      "Were you wrong in any part of it, and what would admitting that promptly sound like?",
+      "Who can you talk to, and is there any repair you can make now?",
+      "Once you’ve dealt with your part, who could you be useful to today?"
+    ],
+    "exercises": [
+      "The next time you notice one of these patterns, pause and ask for help. Name your part, talk it through promptly, and admit or repair any wrong as appropriate. Then look for a specific way to be useful."
+    ],
+    "sponsorTips": [
+      "Use a recent incident and walk through the sequence together. Ask what helped them notice it sooner and what repair is still open.",
+      "If a pattern repeats, help them identify the earliest point where they can act differently or reach out."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "e1adba44-f4e8-5d81-ad21-d7c1c837109a",
+        "title": "Step 10: daily inventory",
+        "instructions": "The next time you notice one of these patterns, pause and ask for help. Name your part, talk it through promptly, and admit or repair any wrong as appropriate. Then look for a specific way to be useful.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "When a problem comes up",
+        "words": "God, help me let go of the fear, resentment, dishonesty, or selfishness I see in myself right now. Show me where I need to make something right.",
+        "action": "Talk it through promptly. Make amends where appropriate and look for a way to help someone.",
+        "source": "into-action",
+        "page": 84
+      }
+    ]
+  },
+  {
+    "stepNumber": 11,
+    "title": "Reflection",
+    "overview": "Develop a regular practice of prayer, meditation, and reflection.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 6, Into Action",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf#page=14",
+        "detail": "pp. 85–88"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Eleven",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step11.pdf",
+        "detail": "Begins on p. 96"
+      }
+    ],
+    "discussion": [
+      "When you pray in the morning, what are you asking to see more clearly about the day ahead?",
+      "What helps you tell the difference between guidance and an outcome you already want?",
+      "When you felt agitated or unsure today, what changed when you paused before responding?",
+      "Looking back tonight, what calls for an apology, an honest conversation, or a change tomorrow?"
+    ],
+    "exercises": [
+      "Choose a short practice you can repeat. In the morning, ask for guidance and the strength to act on it. During the day, pause when unsure. In the evening, review one thing you handled well and one correction you can make."
+    ],
+    "sponsorTips": [
+      "Offer the morning, pause, and evening readings as starting points. Ask what language and timing fit the sponsee’s own practice.",
+      "Ask which action followed from prayer or meditation. If the sponsee is becoming stuck in remorse, return to one correction they can make."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "43c6ca71-0776-538f-8cf8-cf2da906bdcb",
+        "title": "Step 11: reflection",
+        "instructions": "Choose a short practice you can repeat. In the morning, ask for guidance and the strength to act on it. During the day, pause when unsure. In the evening, review one thing you handled well and one correction you can make.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "Morning prayer",
+        "words": "God, guide my thinking today. Help me see where I am driven by self-pity, dishonesty, or my own interests. Show me what to do and give me the strength to do it.",
+        "action": "Look at the day ahead, spend a few minutes in quiet, and identify one way to put that guidance into practice.",
+        "source": "into-action",
+        "page": 86,
+        "endPage": 87
+      },
+      {
+        "title": "Pause during the day",
+        "words": "God, help me pause. Show me what to say or do next, and help me follow through.",
+        "action": "When you feel agitated or unsure, take a moment before responding.",
+        "source": "into-action",
+        "page": 87,
+        "endPage": 88
+      },
+      {
+        "title": "Evening prayer",
+        "words": "God, help me look honestly at today. Forgive me where I fell short and guide me toward what I can put right.",
+        "action": "Review the day. Note any apology or conversation you owe and what you can do about it.",
+        "source": "into-action",
+        "page": 86
+      },
+      {
+        "title": "Prayer of St. Francis",
+        "words": null,
+        "action": "Read it slowly as a meditation. Pick one idea you can practice today.",
+        "source": "twelve-and-twelve",
+        "page": 99,
+        "sourceLabel": "Read the Prayer of St. Francis in Twelve Steps and Twelve Traditions"
+      }
+    ]
+  },
+  {
+    "stepNumber": 12,
+    "title": "Carrying the message",
+    "overview": "Share experience and practice these principles in everyday life.",
+    "readings": [
+      {
+        "title": "Big Book: Chapter 7, Working With Others",
+        "url": "https://www.aa.org/sites/default/files/2026-10/en_bigbook_chapt7.pdf",
+        "detail": "pp. 89–103"
+      },
+      {
+        "title": "Big Book: Chapter 11, A Vision for You",
+        "url": "https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt11.pdf",
+        "detail": "pp. 151–164"
+      },
+      {
+        "title": "Twelve Steps and Twelve Traditions: Step Twelve",
+        "url": "https://www.aa.org/sites/default/files/2022-01/en_step12.pdf",
+        "detail": "Begins on p. 106"
+      }
+    ],
+    "discussion": [
+      "What part of your recovery story could give hope to someone who still struggles with alcohol?",
+      "How would you offer help and give the person room to decline or choose their own pace?",
+      "How can you serve while respecting other members’ anonymity and your own limits?",
+      "Which principle can you practice at home, at work, or in another relationship this week?"
+    ],
+    "exercises": [
+      "Choose one concrete act of service this week, such as helping at a meeting or welcoming a newcomer who is open to talking. Choose one place outside A.A. to practice a principle. Discuss what you learned from each."
+    ],
+    "sponsorTips": [
+      "Model speaking from your own experience. Ask before sharing another person’s story or contact information.",
+      "Help the sponsee choose service that fits their capacity. Talk about what to do when someone asks for help beyond sponsorship."
+    ],
+    "assignmentTemplates": [
+      {
+        "id": "b9d8493b-eb79-534b-88af-f2a2e74d3ee4",
+        "title": "Step 12: carrying the message",
+        "instructions": "Choose one concrete act of service this week, such as helping at a meeting or welcoming a newcomer who is open to talking. Choose one place outside A.A. to practice a principle. Discuss what you learned from each.",
+        "resourceIds": []
+      }
+    ],
+    "resourceIds": [],
+    "prayers": [
+      {
+        "title": "For a way to be of service",
+        "words": "God, show me one thing I can do today to help someone who is still struggling with alcohol.",
+        "action": "Choose one practical act of service you can follow through on today.",
+        "source": "a-vision-for-you",
+        "page": 164
+      }
+    ]
+  }
+]
